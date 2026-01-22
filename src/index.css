@@ -1,0 +1,27 @@
+@import "tailwindcss";
+
+@theme {
+  /* In v4, defining a variable here AUTOMATICALLY creates 
+    utility classes like bg-primary, text-primary, border-primary, etc.
+  */
+  
+  /* Primary Color (Orange) */
+  --color-primary: #16a349;
+  --color-primary-hover: #1FE066;
+
+  /* Accent Color (Green) */
+  --color-accent: #16A34A;
+
+  /* Custom Backgrounds */
+  /* This creates 'bg-background' and 'bg-background-sidebar' */
+  --color-background: #F8F9FB;
+  --color-background-sidebar: #F3F4F6;
+}
+
+/* Now that the theme is defined above, the classes exist.
+   We can safely apply them.
+*/
+body {
+  @apply bg-background text-gray-900;
+  font-family: 'Inter', system-ui, sans-serif; /* Optional: standard font */
+}
