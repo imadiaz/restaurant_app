@@ -17,7 +17,7 @@ const AnatomyTextField: React.FC<AnatomyTextFieldProps> = ({
     <div className={`w-full text-left space-y-1 ${className}`}>
       {/* Reusing the standardized Label */}
       {label && (
-        <AnatomyText.Label className="ml-4">
+        <AnatomyText.Label>
           {label}
         </AnatomyText.Label>
       )}

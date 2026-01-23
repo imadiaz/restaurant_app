@@ -7,6 +7,8 @@ import PublicRoute from './routes/PublicRoute';
 import DashboardLayout from './components/layout/DashboardLayout';
 import OrdersPage from './pages/orders/OrdersPage';
 import UsersPage from './pages/users/UsersPage';
+import ProductsPage from './pages/products/ProductsPage';
+import AddProductPage from './pages/products/AddProductPage';
 
 function App() {
   
@@ -27,7 +29,8 @@ function App() {
             <Route index element={<HomePage />} />
             <Route path="orders" element={<OrdersPage />} />
             <Route path="users" element={<UsersPage />} />
-            
+            <Route path="products" element={<ProductsPage />} />
+            <Route path="products/add" element={<AddProductPage />} /> {/* Add this line */}
             {/* Add other pages here later */}
             {/* <Route path="orders" element={<OrdersPage />} /> */}
             

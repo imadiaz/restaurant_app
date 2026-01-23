@@ -78,7 +78,7 @@ const LoginPage: React.FC = () => {
             />
 
             <div className="w-full flex justify-start">
-              <AnatomyText.Link href="#">
+              <AnatomyText.Link>
                 Forgot password?
               </AnatomyText.Link>
             </div>
@@ -88,6 +88,7 @@ const LoginPage: React.FC = () => {
               variant="primary" 
               className="mt-4"
               isLoading={isLoading}
+              fullWidth={true}
             >
               Login
             </AnatomyButton>
@@ -97,7 +98,7 @@ const LoginPage: React.FC = () => {
 
         {/* Footer */}
         <div className="pb-4 pt-8">
-          <AnatomyText.Link href="#" className="text-gray-500 font-normal hover:text-gray-700 hover:no-underline">
+          <AnatomyText.Link  className="text-gray-500 font-normal hover:text-gray-700 hover:no-underline">
             {/* Overriding the default Link color slightly for the footer style */}
             Need help? Contact support
           </AnatomyText.Link>

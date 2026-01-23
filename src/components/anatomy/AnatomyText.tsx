@@ -1,69 +1,70 @@
 import React from 'react';
 
-// Base props for all text components
+
+// Common interface for text props
 interface TextProps extends React.HTMLAttributes<HTMLElement> {
   children: React.ReactNode;
   className?: string;
 }
 
-// 1. Main Page Title (e.g., "Login form")
-const H1: React.FC<TextProps> = ({ children, className = "", ...props }) => {
-  return (
-    <h1 className={`text-3xl font-bold text-gray-900 ${className}`} {...props}>
-      {children}
-    </h1>
-  );
-};
+// 1. Existing H1
+const H1: React.FC<TextProps> = ({ children, className = "", ...props }) => (
+  <h1 className={`text-2xl font-bold text-gray-900 ${className}`} {...props}>
+    {children}
+  </h1>
+);
 
-// 2. Subtitles / Explainer Text (e.g., "Lorem Ipsum...")
-const Subtitle: React.FC<TextProps> = ({ children, className = "", ...props }) => {
-  return (
-    <p className={`text-gray-400 text-sm leading-relaxed ${className}`} {...props}>
-      {children}
-    </p>
-  );
-};
+// --- NEW COMPONENT: H3 ---
+const H3: React.FC<TextProps> = ({ children, className = "", ...props }) => (
+  <h3 className={`text-lg font-bold text-gray-800 ${className}`} {...props}>
+    {children}
+  </h3>
+);
 
-// 3. Input Labels (e.g., "Username")
-const Label: React.FC<TextProps> = ({ children, className = "", ...props }) => {
-  return (
-    <label className={`text-xs text-gray-500 font-medium block ${className}`} {...props}>
-      {children}
-    </label>
-  );
-};
+// 2. Existing Subtitle
+const Subtitle: React.FC<TextProps> = ({ children, className = "", ...props }) => (
+  <p className={`text-gray-500 text-sm ${className}`} {...props}>
+    {children}
+  </p>
+);
 
-// 4. Small / Footer Text (e.g., "End user agreement")
-const Small: React.FC<TextProps> = ({ children, className = "", ...props }) => {
-  return (
-    <span className={`text-gray-500 text-sm ${className}`} {...props}>
-      {children}
-    </span>
-  );
-};
+// --- NEW COMPONENT: BODY ---
+const Body: React.FC<TextProps> = ({ children, className = "", ...props }) => (
+  <p className={`text-sm text-gray-600 leading-relaxed ${className}`} {...props}>
+    {children}
+  </p>
+);
 
-// 5. Interactive Links (e.g., "Forgot password?")
-interface LinkProps extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
-  children: React.ReactNode;
-}
-const Link: React.FC<LinkProps> = ({ children, className = "", ...props }) => {
-  return (
-    <a 
-      className={`font-bold text-sm hover:underline cursor-pointer ${className}`} 
-      {...props}
-    >
-      {children}
-    </a>
-  );
-};
+// 3. Existing Label
+const Label: React.FC<TextProps> = ({ children, className = "", ...props }) => (
+  <span className={`text-xs font-bold text-gray-500 uppercase tracking-wide ${className}`} {...props}>
+    {children}
+  </span>
+);
 
-// Export them all as a single object
+// 4. Existing Small
+const Small: React.FC<TextProps> = ({ children, className = "", ...props }) => (
+  <span className={`text-sm text-gray-500 ${className}`} {...props}>
+    {children}
+  </span>
+);
+
+// 5. Existing Link (Optional, often useful)
+const Link: React.FC<TextProps> = ({ children, className = "", ...props }) => (
+  <span className={`text-sm font-medium text-primary cursor-pointer hover:underline ${className}`} {...props}>
+    {children}
+  </span>
+);
+
+// Export as a Compound Component
 const AnatomyText = {
   H1,
+  H3,       // <--- Don't forget to export this
   Subtitle,
+  Body,     // <--- And this
   Label,
   Small,
-  Link,
+  Link
 };
 
 export default AnatomyText;

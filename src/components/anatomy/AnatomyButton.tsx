@@ -1,57 +1,51 @@
 import React from 'react';
 import { Loader2 } from 'lucide-react';
 
-type ButtonVariant = 'primary' | 'secondary' | 'ghost';
 
-interface AnatomyButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  children: React.ReactNode;
+type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger';
+
+interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: ButtonVariant;
-  isLoading?: boolean; // New prop to control loading state
+  isLoading?: boolean; // <--- New Prop
+  fullWidth?: boolean; // <--- New Prop
+  className?: string;
+  children: React.ReactNode;
 }
 
-
-
-const AnatomyButton: React.FC<AnatomyButtonProps> = ({ 
-  children, 
+const AnatomyButton: React.FC<ButtonProps> = ({ 
   variant = 'primary', 
   isLoading = false,
+  fullWidth = false,
   className = "", 
+  children, 
   disabled,
   ...props 
 }) => {
   
-const variants: Record<ButtonVariant, string> = {
-  primary: "bg-primary hover:bg-primary-hover text-white shadow-md border-transparent",
-  secondary: "bg-white hover:bg-gray-50 text-gray-700 border-gray-200 border shadow-sm",
-  ghost: "bg-transparent hover:bg-primary/10 text-primary border-transparent"
-};
+  // 1. BASE STYLES
+  // We switch between 'flex w-full' (for full width) and 'inline-flex' (for auto width)
+  const layoutStyles = fullWidth ? "flex w-full" : "inline-flex";
+  
+  const baseStyles = `${layoutStyles} items-center justify-center px-6 py-3 rounded-xl font-bold text-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-70 disabled:cursor-not-allowed whitespace-nowrap`;
+
+  // 2. VARIANTS
+  const variants: Record<ButtonVariant, string> = {
+    primary: "bg-primary hover:bg-primary-hover text-white shadow-md shadow-primary/30 border border-transparent focus:ring-primary",
+    secondary: "bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 shadow-sm focus:ring-gray-200",
+    ghost: "bg-transparent hover:bg-gray-100 text-gray-600 border border-transparent hover:text-gray-900",
+    danger: "bg-red-50 hover:bg-red-100 text-red-600 border border-transparent"
+  };
 
   return (
-    <button
-      disabled={isLoading || disabled} // Disable if loading OR if explicitly disabled
-      className={`
-        relative w-full font-medium py-3 rounded-full transition-all 
-        flex justify-center items-center
-        ${variants[variant]}
-        ${(isLoading || disabled) ? 'opacity-70 cursor-not-allowed' : ''}
-        ${className}
-      `}
+    <button 
+      className={`${baseStyles} ${variants[variant]} ${className}`} 
+      disabled={disabled || isLoading} // Disable if loading
       {...props}
     >
-      {/* If loading, show the spinner absolutely centered. 
-         We keep the children rendered but invisible (opacity-0) so the button 
-         maintains its exact width/height and doesn't jump.
-      */}
-      {isLoading && (
-        <div className="absolute inset-0 flex items-center justify-center">
-          <Loader2 className="w-5 h-5 animate-spin" />
-        </div>
-      )}
-
-      {/* Hide text when loading so it doesn't clash with the spinner */}
-      <span className={isLoading ? "opacity-0" : "opacity-100"}>
-        {children}
-      </span>
+      {/* Show Spinner if loading */}
+      {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+      
+      {children}
     </button>
   );
 };
