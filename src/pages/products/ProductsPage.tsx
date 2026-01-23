@@ -1,7 +1,6 @@
 // Inside src/pages/ProductsPage.tsx
 import { useNavigate } from 'react-router-dom';
 import AnatomyButton from '../../components/anatomy/AnatomyButton';
-import { useToastStore } from '../../store/toast.store';
 import AnatomyText from '../../components/anatomy/AnatomyText';
 import { useState } from 'react';
 import AnatomySearchBar from '../../components/anatomy/AnatomySearchBar';
@@ -64,9 +63,7 @@ const MOCK_PRODUCTS = [
 
 // --- COMPONENT: PRODUCT CARD ---
 const ProductCard = ({ product, onViewDetails }: { product: any, onViewDetails: () => void }) => {
-  const navigate = useNavigate();
-  const addToast = useToastStore((state) => state.addToast);
-  
+  const navigate = useNavigate();  
 
   const handleEdit = () => {
     navigate('/dashboard/products/add'); 

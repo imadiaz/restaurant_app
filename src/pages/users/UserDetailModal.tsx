@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, Mail, Phone, MapPin, Shield, Calendar, Edit } from 'lucide-react';
+import { X, Mail, Phone, MapPin, Calendar, Edit } from 'lucide-react';
 import AnatomyText from '../../components/anatomy/AnatomyText';
 import AnatomyButton from '../../components/anatomy/AnatomyButton';
 
