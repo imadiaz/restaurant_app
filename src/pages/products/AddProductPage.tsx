@@ -105,7 +105,6 @@ const AddProductPage: React.FC = () => {
 
   const handleSave = () => {
     console.log({ productName, description, basePrice, category, modifierGroups });
-   // navigate('/dashboard/products');
   };
 
   return (
