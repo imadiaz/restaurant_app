@@ -1,14 +1,9 @@
 import { 
   LayoutDashboard, 
   ClipboardList, 
-  CreditCard, 
-  List, 
   Package, 
-  Clock, 
-  Truck, 
   Users, 
   HelpCircle,
-  LogOut
 } from 'lucide-react';
 
 export const NAV_ITEMS = [

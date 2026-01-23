@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import AnatomyText from '../../components/anatomy/AnatomyText';
-import { ShoppingBag, Clock, CheckCircle, Utensils, Sparkles, Flame } from 'lucide-react';
-import AnatomySearchBar from '../../components/anatomy/AnatomySearchbar';
+import { ShoppingBag, Clock, CheckCircle, Sparkles, Flame } from 'lucide-react';
+import AnatomySearchBar from '../../components/anatomy/AnatomySearchBar';
 
 
 // --- MOCK DATA ---
@@ -206,7 +206,7 @@ const OrdersPage: React.FC = () => {
             <AnatomyText.Subtitle>Manage incoming orders</AnatomyText.Subtitle>
           </div>
           <div className="w-full md:w-96">
-            <AnatomySearchBar 
+            <AnatomySearchBar
               placeholder="Search customer or ID..." 
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}

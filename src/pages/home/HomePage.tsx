@@ -1,17 +1,9 @@
 import React from 'react';
 
-import { useNavigate } from 'react-router-dom';
 import AnatomyText from '../../components/anatomy/AnatomyText';
-import AnatomyButton from '../../components/anatomy/AnatomyButton';
 
 const HomePage: React.FC = () => {
-  const navigate = useNavigate();
 
-  const handleLogout = () => {
-    // In a real app, you would clear the token here
-    localStorage.removeItem('isAuthenticated');
-    navigate('/');
-  };
 
   return (
     <div className="p-10">

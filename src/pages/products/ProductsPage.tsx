@@ -7,7 +7,9 @@ const ProductsPage = () => {
   // ...
   return (
     // ...
-    <AnatomyButton onClick={() => navigate('add')}>+ Add Product</AnatomyButton>
+    <AnatomyButton onClick={() => {
+     navigate('add');
+    }}>+ Add Product</AnatomyButton>
     // ...
   );
 }

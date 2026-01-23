@@ -9,11 +9,13 @@ import OrdersPage from './pages/orders/OrdersPage';
 import UsersPage from './pages/users/UsersPage';
 import ProductsPage from './pages/products/ProductsPage';
 import AddProductPage from './pages/products/AddProductPage';
+import { ToastProvider } from './components/common/ToastProvider';
 
 function App() {
   
   return (
     <BrowserRouter>
+    <ToastProvider />
       <Routes>
         
         {/* PUBLIC ROUTES (Restricted for logged-in users) */}
