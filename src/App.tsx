@@ -10,6 +10,7 @@ import UsersPage from './pages/users/UsersPage';
 import ProductsPage from './pages/products/ProductsPage';
 import AddProductPage from './pages/products/AddProductPage';
 import { ToastProvider } from './components/common/ToastProvider';
+import AddUserPage from './pages/users/AddUsersPage';
 
 function App() {
   
@@ -31,6 +32,7 @@ function App() {
             <Route index element={<HomePage />} />
             <Route path="orders" element={<OrdersPage />} />
             <Route path="users" element={<UsersPage />} />
+            <Route path="users/add" element={<AddUserPage />} />
             <Route path="products" element={<ProductsPage />} />
             <Route path="products/add" element={<AddProductPage />} /> {/* Add this line */}
             {/* Add other pages here later */}
