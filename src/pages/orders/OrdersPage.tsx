@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import AnatomyText from '../../components/anatomy/AnatomyText';
 import { ShoppingBag, Clock, CheckCircle, Sparkles, Flame } from 'lucide-react';
 import AnatomySearchBar from '../../components/anatomy/AnatomySearchBar';
+import OrderDetailModal, { type OrderDetail } from './OrderDetailModal';
+import PageHeader from '../../components/common/PageHeader';
 
 
 // --- MOCK DATA ---
@@ -62,10 +64,37 @@ const MOCK_ORDERS = [
   },
 ];
 
+const MOCK_ORDERS_DETAILS: OrderDetail[] = [
+  {
+    id: '#044',
+    status: 'new',
+    date: '7 Apr, 11:30 AM',
+    customer: { name: 'Robert Fox', phone: '(555) 123-4567', email: 'robert@test.com' },
+    address: '123 Maple Street, Apt 4B, Springfield, IL 62704',
+    paymentMethod: 'Visa ending in 4242',
+    orderNote: 'Please do not ring the doorbell, baby sleeping.',
+    subtotal: 16.00,
+    tax: 1.28,
+    deliveryFee: 2.00,
+    total: 19.28,
+    items: [
+      { 
+        name: 'Cheese Burger', 
+        qty: 1, 
+        price: 12.00, 
+        modifiers: [
+          { name: 'Extra Cheese', price: 1.00 },
+          { name: 'No Onions', price: 0.00 }
+        ] 
+      },
+      { name: 'Lemonade', qty: 1, price: 4.00, note: 'Less ice please' },
+    ]
+  },
+  // ... (You can duplicate the structure above for other mock items)
+];
 // --- COMPONENT: ORDER CARD ---
 
-const OrderCard = ({ order }: { order: typeof MOCK_ORDERS[0] }) => {
-  let statusConfig = {
+const OrderCard = ({ order, onClick }: { order: OrderDetail, onClick: () => void }) => {  let statusConfig = {
     icon: Sparkles,
     text: 'New Order',
     className: 'bg-purple-100 text-purple-600',
@@ -82,13 +111,13 @@ const OrderCard = ({ order }: { order: typeof MOCK_ORDERS[0] }) => {
   const itemCount = order.items.reduce((acc, item) => acc + item.qty, 0);
 
   return (
-    <div className="bg-white p-5 rounded-3xl shadow-sm border border-gray-200 flex flex-col hover:shadow-md transition-shadow h-full">
+    <div className="bg-white p-5 rounded-3xl shadow-sm border border-gray-200 flex flex-col hover:shadow-md transition-shadow h-full" onClick={onClick}>
       
       {/* 1. Header: Name & ID */}
       <div className="flex justify-between items-start mb-4">
         {/* Using AnatomyText.H1 but overridden to be smaller for the card */}
         <AnatomyText.H1 className="text-lg font-bold text-gray-900">
-          {order.customerName}
+          {order.customer.name}
         </AnatomyText.H1>
         
         {/* Using AnatomyText.Label for ID */}
@@ -193,26 +222,36 @@ const OrdersPage: React.FC = () => {
     return true;
   });
 
+  const [selectedOrder, setSelectedOrder] = useState<OrderDetail | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // Handlers
+  const handleCardClick = (order: OrderDetail) => {
+    setSelectedOrder(order);
+    setIsModalOpen(true);
+  };
+
+  const handleStatusChange = (newStatus: string) => {
+    console.log(`Update Order ${selectedOrder?.id} to ${newStatus}`);
+    // Update local state or call API here
+    setIsModalOpen(false);
+  };
+
   return (
     <div className="space-y-8 max-w-7xl mx-auto h-full flex flex-col">
       
       {/* HEADER AREA */}
-      <div className="bg-white p-4 rounded-3xl shadow-sm border border-gray-100 flex flex-col gap-6">
-        
-        {/* Title & Search */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div>
-            <AnatomyText.H1>Orders</AnatomyText.H1>
-            <AnatomyText.Subtitle>Manage incoming orders</AnatomyText.Subtitle>
-          </div>
-          <div className="w-full md:w-96">
+       <PageHeader title={"Orders"} subtitle={"Manage incoming orders"} showNavBack={false} actions={
+      <div className="w-full md:w-96" >
             <AnatomySearchBar
               placeholder="Search customer or ID..." 
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
-        </div>
+        } />
+      <div className="bg-white p-4 rounded-3xl shadow-sm border border-gray-100 flex flex-col gap-6">
+        
 
         {/* Tabs Row */}
         <div className="border-b border-gray-100">
@@ -250,7 +289,7 @@ const OrdersPage: React.FC = () => {
         {filteredOrders.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pb-10">
             {filteredOrders.map((order) => (
-              <OrderCard key={order.id} order={order} />
+              <OrderCard key={order.id} order={MOCK_ORDERS_DETAILS[0]} onClick={() => handleCardClick(MOCK_ORDERS_DETAILS[0])} /> // <--- Pass the click handler />
             ))}
           </div>
         ) : (
@@ -259,6 +298,14 @@ const OrdersPage: React.FC = () => {
           </div>
         )}
       </div>
+
+
+      <OrderDetailModal
+        isOpen={isModalOpen}
+        order={selectedOrder}
+        onClose={() => setIsModalOpen(false)}
+        onStatusChange={handleStatusChange}
+      />
 
     </div>
   );
