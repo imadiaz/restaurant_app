@@ -3,7 +3,7 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import { LogOut, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useLayoutStore } from '../../store/layout.store';
 import { useAuthStore } from '../../store/auth.store';
-import { NAV_ITEMS } from '../../navigation/navigation';
+import { NAV_ITEMS } from '../../pages/navigation/navigation';
 
 
 

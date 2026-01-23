@@ -11,14 +11,16 @@ import ProductsPage from './pages/products/ProductsPage';
 import AddProductPage from './pages/products/AddProductPage';
 import { ToastProvider } from './components/common/ToastProvider';
 import AddUserPage from './pages/users/AddUsersPage';
+import SocketManager from './components/managers/SocketManager';
 
 function App() {
-  
+
   return (
     <BrowserRouter>
-    <ToastProvider />
+      <ToastProvider />
+      <SocketManager />
       <Routes>
-        
+
         {/* PUBLIC ROUTES (Restricted for logged-in users) */}
         <Route element={<PublicRoute />}>
           <Route path="/" element={<LoginPage />} />
@@ -27,7 +29,7 @@ function App() {
         {/* PROTECTED ROUTES (Requires login) */}
         <Route element={<ProtectedRoute />}>
           <Route path="/dashboard" element={<DashboardLayout />}>
-      
+
             {/* The index route (default for /dashboard) */}
             <Route index element={<HomePage />} />
             <Route path="orders" element={<OrdersPage />} />
@@ -37,13 +39,13 @@ function App() {
             <Route path="products/add" element={<AddProductPage />} /> {/* Add this line */}
             {/* Add other pages here later */}
             {/* <Route path="orders" element={<OrdersPage />} /> */}
-            
+
           </Route>
         </Route>
 
         {/* CATCH ALL - Redirect to root */}
         <Route path="*" element={<Navigate to="/" replace />} />
-        
+
       </Routes>
     </BrowserRouter>
   );
