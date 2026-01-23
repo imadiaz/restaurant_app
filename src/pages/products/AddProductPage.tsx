@@ -16,6 +16,7 @@ import AnatomyTextField from '../../components/anatomy/AnatomyTextField';
 import AnatomyTextArea from '../../components/anatomy/AnatomyTextArea';
 import AnatomySelect from '../../components/anatomy/AnatomySelect';
 import PageHeader from '../../components/common/PageHeader';
+import { DragDropContext, Droppable, Draggable, type DropResult } from '@hello-pangea/dnd';
 
 
 // --- TYPES ---
@@ -34,7 +35,6 @@ interface ModifierGroup {
 }
 
 const AddProductPage: React.FC = () => {
-  const navigate = useNavigate();
 
   // --- FORM STATE ---
   const [productName, setProductName] = useState('');
@@ -54,14 +54,52 @@ const AddProductPage: React.FC = () => {
     }
   };
 
-  // --- MODIFIER LOGIC ---
+  // --- DRAG AND DROP HANDLER ---
+  const onDragEnd = (result: DropResult) => {
+    const { source, destination, type } = result;
+
+    // 1. Dropped outside the list? Do nothing.
+    if (!destination) return;
+
+    // 2. Reordering GROUPS (Moving a whole card up/down)
+    if (type === 'GROUP') {
+      const newGroups = Array.from(modifierGroups);
+      const [movedGroup] = newGroups.splice(source.index, 1);
+      newGroups.splice(destination.index, 0, movedGroup);
+      setModifierGroups(newGroups);
+      return;
+    }
+
+    // 3. Reordering OPTIONS (Moving an item inside a group)
+    if (type === 'OPTION') {
+      // Find the group we are dragging FROM and TO
+      const sourceGroupIndex = modifierGroups.findIndex(g => g.id === source.droppableId);
+      const destGroupIndex = modifierGroups.findIndex(g => g.id === destination.droppableId);
+
+      if (sourceGroupIndex === -1 || destGroupIndex === -1) return;
+
+      const newGroups = [...modifierGroups];
+      const sourceGroup = newGroups[sourceGroupIndex];
+      const destGroup = newGroups[destGroupIndex];
+
+      // Remove from old index
+      const [movedOption] = sourceGroup.options.splice(source.index, 1);
+      
+      // Add to new index (potentially in a different group!)
+      destGroup.options.splice(destination.index, 0, movedOption);
+
+      setModifierGroups(newGroups);
+    }
+  };
+
+  // --- MODIFIER LOGIC (Add/Remove/Update) ---
   const addModifierGroup = () => {
     const newGroup: ModifierGroup = {
-      id: Date.now().toString(),
+      id: `group-${Date.now()}`, // Ensure string ID
       name: '',
       required: false,
       multiSelect: false,
-      options: [{ id: Date.now().toString() + 'opt', name: '', price: '' }]
+      options: [{ id: `opt-${Date.now()}`, name: '', price: '' }]
     };
     setModifierGroups([...modifierGroups, newGroup]);
   };
@@ -81,7 +119,7 @@ const AddProductPage: React.FC = () => {
       if (g.id !== groupId) return g;
       return {
         ...g,
-        options: [...g.options, { id: Date.now().toString(), name: '', price: '' }]
+        options: [...g.options, { id: `opt-${Date.now()}`, name: '', price: '' }]
       };
     }));
   };
@@ -111,7 +149,7 @@ const AddProductPage: React.FC = () => {
     <div className="max-w-6xl mx-auto space-y-6 pb-20">
       
       {/* HEADER */}
-     <PageHeader 
+      <PageHeader 
      title={"Add New Dish"} 
      subtitle={"Create a new item for your menu"} 
      actions={
@@ -140,8 +178,7 @@ const AddProductPage: React.FC = () => {
               </div>
 
               <div className="col-span-2">
-                {/* REPLACED WITH ANATOMY TEXTAREA */}
-                <AnatomyTextArea
+                <AnatomyTextArea 
                   label="Description"
                   placeholder="Describe ingredients and taste..."
                   rows={3}
@@ -151,8 +188,7 @@ const AddProductPage: React.FC = () => {
               </div>
 
               <div>
-                {/* REPLACED WITH ANATOMY SELECT */}
-                <AnatomySelect
+                <AnatomySelect 
                   label="Category"
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
@@ -176,134 +212,188 @@ const AddProductPage: React.FC = () => {
             </div>
           </div>
 
-          {/* 2. Modifiers Section */}
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <AnatomyText.H3>Customization & Add-ons</AnatomyText.H3>
-              <button 
-                onClick={addModifierGroup}
-                className="text-primary text-sm font-bold flex items-center hover:underline"
-              >
-                <Plus className="w-4 h-4 mr-1" /> Add Group
-              </button>
-            </div>
-
-            {modifierGroups.length === 0 ? (
-              <div className="bg-gray-50 border border-dashed border-gray-200 rounded-3xl p-8 text-center">
-                <AnatomyText.Body className="text-gray-400">No modifiers added yet.</AnatomyText.Body>
-                <AnatomyText.Small className="text-gray-400 mt-1">Add groups like "Choice of Size" or "Extra Toppings"</AnatomyText.Small>
+          {/* 2. Modifiers Section (DRAG AND DROP CONTEXT) */}
+          <DragDropContext onDragEnd={onDragEnd}>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <AnatomyText.H3>Customization & Add-ons</AnatomyText.H3>
+                <button 
+                  onClick={addModifierGroup}
+                  className="text-primary text-sm font-bold flex items-center hover:underline"
+                >
+                  <Plus className="w-4 h-4 mr-1" /> Add Group
+                </button>
               </div>
-            ) : (
-              modifierGroups.map((group) => (
-                <div key={group.id} className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 relative group-card">
-                  
-                  {/* Remove Group */}
-                  <button 
-                    onClick={() => removeModifierGroup(group.id)}
-                    className="absolute top-6 right-6 text-gray-400 hover:text-red-500 transition-colors"
+
+              {/* DROPPABLE AREA FOR GROUPS */}
+              <Droppable droppableId="groups-list" type="GROUP">
+                {(provided) => (
+                  <div 
+                    {...provided.droppableProps} 
+                    ref={provided.innerRef}
+                    className="space-y-4" // Add spacing between draggable groups
                   >
-                    <Trash2 className="w-5 h-5" />
-                  </button>
-
-                  {/* Group Header */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6 pr-8">
-                    <div>
-                      <AnatomyTextField 
-                        label="Group Name"
-                        placeholder="e.g. Select Size"
-                        value={group.name}
-                        onChange={(e) => updateGroupField(group.id, 'name', e.target.value)}
-                      />
-                    </div>
-                    
-                    <div className="flex items-end gap-6 pb-3">
-                      {/* Required Checkbox */}
-                      <label className="flex items-center gap-2 cursor-pointer select-none">
-                        <input 
-                          type="checkbox" 
-                          checked={group.required}
-                          onChange={(e) => updateGroupField(group.id, 'required', e.target.checked)}
-                          className="w-5 h-5 text-primary border-gray-300 rounded focus:ring-primary"
-                        />
-                        <AnatomyText.Label className="mb-0 cursor-pointer">Required?</AnatomyText.Label>
-                      </label>
-
-                      {/* Multi-Select Toggle */}
-                      <div className="flex items-center bg-gray-100 rounded-lg p-1">
-                        <button 
-                          onClick={() => updateGroupField(group.id, 'multiSelect', false)}
-                          className={`px-3 py-1 rounded-md text-xs font-bold transition-all ${!group.multiSelect ? 'bg-white shadow-sm text-gray-800' : 'text-gray-400'}`}
-                        >
-                          Single (1)
-                        </button>
-                        <button 
-                          onClick={() => updateGroupField(group.id, 'multiSelect', true)}
-                          className={`px-3 py-1 rounded-md text-xs font-bold transition-all ${group.multiSelect ? 'bg-white shadow-sm text-gray-800' : 'text-gray-400'}`}
-                        >
-                          Multi (+)
-                        </button>
+                    {modifierGroups.length === 0 ? (
+                      <div className="bg-gray-50 border border-dashed border-gray-200 rounded-3xl p-8 text-center">
+                        <AnatomyText.Body className="text-gray-400">No modifiers added yet.</AnatomyText.Body>
+                        <AnatomyText.Small className="text-gray-400 mt-1">Add groups like "Choice of Size" or "Extra Toppings"</AnatomyText.Small>
                       </div>
-                    </div>
-                  </div>
+                    ) : (
+                      modifierGroups.map((group, index) => (
+                        <Draggable key={group.id} draggableId={group.id} index={index}>
+                          {(provided) => (
+                            <div 
+                              ref={provided.innerRef}
+                              {...provided.draggableProps}
+                              className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 relative group-card"
+                            >
+                              
+                              {/* Remove Group Button */}
+                              <button 
+                                onClick={() => removeModifierGroup(group.id)}
+                                className="absolute top-6 right-6 text-gray-400 hover:text-red-500 transition-colors"
+                              >
+                                <Trash2 className="w-5 h-5" />
+                              </button>
 
-                  {/* Options List */}
-                  <div className="space-y-3 bg-gray-50/50 p-4 rounded-2xl">
-                     <div className="flex px-2">
-                        <AnatomyText.Label className="flex-1 text-xs uppercase text-gray-400">Option Name</AnatomyText.Label>
-                        <AnatomyText.Label className="w-24 text-right text-xs uppercase text-gray-400">Price (+$)</AnatomyText.Label>
-                        <span className="w-8"></span>
-                     </div>
-                     
-                     {group.options.map((option) => (
-                       <div key={option.id} className="flex items-center gap-4">
-                          <div className="flex-1 flex items-center gap-3">
-                            <GripVertical className="w-4 h-4 text-gray-300 cursor-move" />
-                            {group.multiSelect ? (
-                              <CheckSquare className="w-4 h-4 text-gray-300" />
-                            ) : (
-                              <CircleDot className="w-4 h-4 text-gray-300" />
-                            )}
-                            <div className="flex-1">
-                              <AnatomyTextField 
-                                placeholder="e.g. Mushrooms"
-                                value={option.name}
-                                onChange={(e) => updateOption(group.id, option.id, 'name', e.target.value)}
-                                className="bg-white"
-                              />
+                              {/* Drag Handle for Group */}
+                              <div 
+                                {...provided.dragHandleProps} 
+                                className="absolute top-6 left-4 cursor-grab active:cursor-grabbing text-gray-300 hover:text-gray-500"
+                              >
+                                <GripVertical className="w-5 h-5" />
+                              </div>
+
+                              {/* Group Header */}
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6 pl-6 pr-8">
+                                <div>
+                                  <AnatomyTextField 
+                                    label="Group Name"
+                                    placeholder="e.g. Select Size"
+                                    value={group.name}
+                                    onChange={(e) => updateGroupField(group.id, 'name', e.target.value)}
+                                  />
+                                </div>
+                                
+                                <div className="flex items-end gap-6 pb-3">
+                                  {/* Required Checkbox */}
+                                  <label className="flex items-center gap-2 cursor-pointer select-none">
+                                    <input 
+                                      type="checkbox" 
+                                      checked={group.required}
+                                      onChange={(e) => updateGroupField(group.id, 'required', e.target.checked)}
+                                      className="w-5 h-5 text-primary border-gray-300 rounded focus:ring-primary"
+                                    />
+                                    <AnatomyText.Label className="mb-0 cursor-pointer">Required?</AnatomyText.Label>
+                                  </label>
+
+                                  {/* Multi-Select Toggle */}
+                                  <div className="flex items-center bg-gray-100 rounded-lg p-1">
+                                    <button 
+                                      onClick={() => updateGroupField(group.id, 'multiSelect', false)}
+                                      className={`px-3 py-1 rounded-md text-xs font-bold transition-all ${!group.multiSelect ? 'bg-white shadow-sm text-gray-800' : 'text-gray-400'}`}
+                                    >
+                                      Single (1)
+                                    </button>
+                                    <button 
+                                      onClick={() => updateGroupField(group.id, 'multiSelect', true)}
+                                      className={`px-3 py-1 rounded-md text-xs font-bold transition-all ${group.multiSelect ? 'bg-white shadow-sm text-gray-800' : 'text-gray-400'}`}
+                                    >
+                                      Multi (+)
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+
+                              {/* DROPPABLE AREA FOR OPTIONS */}
+                              <Droppable droppableId={group.id} type="OPTION">
+                                {(provided) => (
+                                  <div 
+                                    ref={provided.innerRef}
+                                    {...provided.droppableProps}
+                                    className="space-y-3 bg-gray-50/50 p-4 rounded-2xl"
+                                  >
+                                    <div className="flex px-2">
+                                      <AnatomyText.Label className="flex-1 text-xs uppercase text-gray-400">Option Name</AnatomyText.Label>
+                                      <AnatomyText.Label className="w-24 text-right text-xs uppercase text-gray-400">Price (+$)</AnatomyText.Label>
+                                      <span className="w-8"></span>
+                                    </div>
+                                    
+                                    {group.options.map((option, optIndex) => (
+                                      <Draggable key={option.id} draggableId={option.id} index={optIndex}>
+                                        {(provided) => (
+                                          <div 
+                                            ref={provided.innerRef}
+                                            {...provided.draggableProps}
+                                            className="flex items-center gap-4"
+                                          >
+                                            <div className="flex-1 flex items-center gap-3">
+                                              
+                                              {/* Drag Handle for Option */}
+                                              <div 
+                                                {...provided.dragHandleProps}
+                                                className="cursor-grab active:cursor-grabbing"
+                                              >
+                                                <GripVertical className="w-4 h-4 text-gray-300 hover:text-gray-500" />
+                                              </div>
+
+                                              {group.multiSelect ? (
+                                                <CheckSquare className="w-4 h-4 text-gray-300" />
+                                              ) : (
+                                                <CircleDot className="w-4 h-4 text-gray-300" />
+                                              )}
+                                              <div className="flex-1">
+                                                <AnatomyTextField 
+                                                  placeholder="e.g. Mushrooms"
+                                                  value={option.name}
+                                                  onChange={(e) => updateOption(group.id, option.id, 'name', e.target.value)}
+                                                  className="bg-white"
+                                                />
+                                              </div>
+                                            </div>
+                                            
+                                            <div className="w-24">
+                                              <AnatomyTextField 
+                                                type="number"
+                                                placeholder="0.00"
+                                                value={option.price}
+                                                onChange={(e) => updateOption(group.id, option.id, 'price', e.target.value)}
+                                                className="text-right bg-white"
+                                              />
+                                            </div>
+                                            
+                                            <button 
+                                              onClick={() => removeOption(group.id, option.id)}
+                                              className="w-8 flex justify-end text-gray-300 hover:text-red-500"
+                                            >
+                                              <Trash2 className="w-4 h-4" />
+                                            </button>
+                                          </div>
+                                        )}
+                                      </Draggable>
+                                    ))}
+                                    {provided.placeholder}
+
+                                    <button 
+                                      onClick={() => addOption(group.id)}
+                                      className="text-xs font-bold text-primary flex items-center mt-2 px-2 hover:underline"
+                                    >
+                                      <Plus className="w-3 h-3 mr-1" /> Add Option
+                                    </button>
+                                  </div>
+                                )}
+                              </Droppable>
                             </div>
-                          </div>
-                          
-                          <div className="w-24">
-                            <AnatomyTextField 
-                              type="number"
-                              placeholder="0.00"
-                              value={option.price}
-                              onChange={(e) => updateOption(group.id, option.id, 'price', e.target.value)}
-                              className="text-right bg-white"
-                            />
-                          </div>
-                          
-                          <button 
-                            onClick={() => removeOption(group.id, option.id)}
-                            className="w-8 flex justify-end text-gray-300 hover:text-red-500"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                       </div>
-                     ))}
-
-                     <button 
-                       onClick={() => addOption(group.id)}
-                       className="text-xs font-bold text-primary flex items-center mt-2 px-2 hover:underline"
-                     >
-                       <Plus className="w-3 h-3 mr-1" /> Add Option
-                     </button>
+                          )}
+                        </Draggable>
+                      ))
+                    )}
+                    {provided.placeholder}
                   </div>
-
-                </div>
-              ))
-            )}
-          </div>
+                )}
+              </Droppable>
+            </div>
+          </DragDropContext>
 
         </div>
 
@@ -338,7 +428,9 @@ const AddProductPage: React.FC = () => {
                />
              </div>
           </div>
+        
         </div>
+
       </div>
     </div>
   );
