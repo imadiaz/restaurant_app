@@ -5,7 +5,7 @@ export interface IUser {
   email: string;
   firstName: string;
   lastName: string;
-  role: 'admin' | 'manager' | 'staff';
+  role: string;
   avatarUrl?: string;
   token: string; // The JWT token from the server
 }
@@ -15,7 +15,7 @@ export class User implements IUser {
   email: string;
   firstName: string;
   lastName: string;
-  role: 'admin' | 'manager' | 'staff';
+  role: string;
   avatarUrl?: string;
   token: string;
 

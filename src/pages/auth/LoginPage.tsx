@@ -17,8 +17,8 @@ const LoginPage: React.FC = () => {
     e.preventDefault();
     
     try {
-      await login({ email, password });
-      navigate('/dashboard');
+       await login({ email, password });
+      navigate('/', { replace: true });
     } catch (err) {
       console.error("Login flow failed", err);
     }

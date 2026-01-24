@@ -19,7 +19,7 @@ export const authService = {
       email: credentials.email,
       firstName: 'Immanuel',
       lastName: 'Diaz',
-      role: 'manager',
+      role:  'super_admin',
       token: 'fake-jwt-token-xyz',
       avatarUrl: 'https://i.pravatar.cc/150?u=u_123'
     };

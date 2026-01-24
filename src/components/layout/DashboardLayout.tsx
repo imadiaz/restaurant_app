@@ -1,71 +1,95 @@
 import React, { useState } from 'react';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useNavigate } from 'react-router-dom';
 
 import { useLayoutStore } from '../../store/layout.store';
 import Header from './Header';
 import Sidebar from './Sidebar';
+import { Building2, ArrowLeft } from 'lucide-react';
+import { useAppStore } from '../../store/app.store';
+
 
 
 const DashboardLayout: React.FC = () => {
+  const navigate = useNavigate();
   const { isSidebarCollapsed } = useLayoutStore();
-  const [isMobileOpen, setIsMobileOpen] = useState(false); // Local state for mobile drawer
+  const { activeRestaurant, setActiveRestaurant } = useAppStore(); // Get Context
+  const [isMobileOpen, setIsMobileOpen] = useState(false);
 
-  // Helper to close mobile menu when clicking backdrop
+  // --- HANDLERS ---
   const handleMobileClose = () => setIsMobileOpen(false);
-  
-  // Helper to toggle mobile menu from Header
   const handleMobileToggle = () => setIsMobileOpen(!isMobileOpen);
 
+  // EXIT IMPERSONATION
+  const handleExitRestaurant = () => {
+    setActiveRestaurant(null); // Clear the specific restaurant
+    navigate('/admin/restaurants'); // Go back to global list
+  };
+
   return (
-    <div className="min-h-screen bg-[#F8F9FB] font-sans">
+    <div className="min-h-screen bg-[#F8F9FB] font-sans flex flex-col">
       
       {/* ----------------------------------------------------
-          1. MOBILE SIDEBAR (Drawer)
-          Visible only on small screens (< md).
-          It slides in from the left.
+          1. MOBILE SIDEBAR
          ---------------------------------------------------- */}
       <div className={`md:hidden fixed inset-0 z-50 ${isMobileOpen ? 'pointer-events-auto' : 'pointer-events-none'}`}>
-        
-        {/* Backdrop (Dark Overlay) */}
         <div 
           className={`absolute inset-0 bg-black/50 transition-opacity duration-300 ${isMobileOpen ? 'opacity-100' : 'opacity-0'}`}
           onClick={handleMobileClose}
         />
-
-        {/* The Sidebar itself */}
         <div className={`absolute left-0 top-0 bottom-0 w-64 transition-transform duration-300 ${isMobileOpen ? 'translate-x-0' : '-translate-x-full'}`}>
-           <Sidebar mobile /> {/* We pass a prop to force standard width style */}
+           <Sidebar mobile />
         </div>
       </div>
 
       {/* ----------------------------------------------------
           2. DESKTOP SIDEBAR
-          Visible only on medium+ screens (md:block).
-          It stays fixed on the left.
          ---------------------------------------------------- */}
-      <div className="hidden md:block">
+      <div className="hidden md:block fixed left-0 top-0 bottom-0 z-40">
         <Sidebar />
       </div>
 
       {/* ----------------------------------------------------
           3. MAIN CONTENT AREA
-          We push this div to the right using 'ml-...' so the
-          fixed sidebar doesn't cover the text.
          ---------------------------------------------------- */}
       <div 
         className={`
           flex flex-col min-h-screen transition-all duration-300 ease-in-out
-          
-          /* MOBILE: No margin (Sidebar is an overlay) */
-          ml-0 
-          
-          /* DESKTOP: Add margin equal to Sidebar width */
+          ml-0
           ${isSidebarCollapsed ? 'md:ml-20' : 'md:ml-64'}
         `}
       >
-        {/* Pass the toggle function to Header so the button works */}
+        
+        {/* === SUPER ADMIN CONTEXT BANNER === 
+            Only visible if we are currently looking at a specific restaurant
+        */}
+        {activeRestaurant && (
+          <div className="bg-gray-900 text-white px-4 md:px-6 py-2 flex items-center justify-between shadow-md z-30 sticky top-0">
+            <div className="flex items-center gap-3">
+              <div className="p-1.5 bg-white/10 rounded-lg hidden sm:block">
+                <Building2 className="w-4 h-4 text-primary" />
+              </div>
+              <div>
+                <p className="text-[10px] text-gray-400 font-medium uppercase tracking-wider">Viewing As Admin</p>
+                <p className="text-sm font-bold text-white leading-none">{activeRestaurant.name}</p>
+              </div>
+            </div>
+
+            <button 
+              onClick={handleExitRestaurant}
+              className="text-xs font-bold bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded-lg transition-colors flex items-center text-white"
+            >
+              <ArrowLeft className="w-3 h-3 mr-2" />
+              <span className="hidden sm:inline">Back to Global</span>
+              <span className="sm:hidden">Exit</span>
+            </button>
+          </div>
+        )}
+
+        {/* HEADER */}
+        {/* We pass the toggle function */}
         <Header onMobileMenuClick={handleMobileToggle} />
 
+        {/* PAGE CONTENT */}
         <main className="flex-1 p-6 overflow-x-hidden">
           <Outlet /> 
         </main>

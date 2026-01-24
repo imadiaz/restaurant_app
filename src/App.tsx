@@ -12,19 +12,33 @@ import AddProductPage from './pages/products/AddProductPage';
 import { ToastProvider } from './components/common/ToastProvider';
 import AddUserPage from './pages/users/AddUsersPage';
 import SocketManager from './components/managers/SocketManager';
+import RestaurantsPage from './pages/restaurants/RestaurantPage';
+import RoleGuard from './routes/RoleGuard';
+import { useAuthStore } from './store/auth.store';
 
 function App() {
 
   return (
     <BrowserRouter>
-      <ToastProvider />
-      <SocketManager />
-      <Routes>
 
-        {/* PUBLIC ROUTES (Restricted for logged-in users) */}
+      <ToastProvider />
+
+      <SocketManager />
+
+      <Routes>
+      <Route path="/" element={<RootRedirect />} />
+      
         <Route element={<PublicRoute />}>
-          <Route path="/" element={<LoginPage />} />
+          <Route path="/login" element={<LoginPage />} />
         </Route>
+
+        <Route element={<RoleGuard allowedRoles={['super_admin']} />}>
+        <Route path="/admin" element={<DashboardLayout />}>
+           <Route path="restaurants" element={<RestaurantsPage />} />
+           <Route path="analytics" element={<>Analytics</>} />
+           <Route path="settings" element={<>Seittings</>} />
+        </Route>
+      </Route>
 
         {/* PROTECTED ROUTES (Requires login) */}
         <Route element={<ProtectedRoute />}>
@@ -52,3 +66,15 @@ function App() {
 }
 
 export default App;
+
+// Create this small component inside App.tsx or separate file
+const RootRedirect = () => {
+  const { user, isAuthenticated } = useAuthStore();
+  
+  if (!isAuthenticated) return <Navigate to="/login" replace />;
+  
+  // Redirect based on role if they hit "/"
+  if (user?.role === 'super_admin') return <Navigate to="/admin/restaurants" replace />;
+  return <Navigate to="/dashboard/orders" replace />;
+};
+
