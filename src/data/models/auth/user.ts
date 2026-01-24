@@ -6,6 +6,7 @@ export interface IUser {
   firstName: string;
   lastName: string;
   role: string;
+  restaurantId?: string;
   avatarUrl?: string;
   token: string; // The JWT token from the server
 }
@@ -18,6 +19,7 @@ export class User implements IUser {
   role: string;
   avatarUrl?: string;
   token: string;
+  restaurantId?: string;
 
   constructor(data: IUser) {
     this.id = data.id;
@@ -27,15 +29,11 @@ export class User implements IUser {
     this.role = data.role;
     this.avatarUrl = data.avatarUrl;
     this.token = data.token;
+    this.restaurantId = data.restaurantId;
   }
 
   // Helper method to get full name
   get fullName(): string {
     return `${this.firstName} ${this.lastName}`;
-  }
-
-  // Helper to check permissions
-  get isAdmin(): boolean {
-    return this.role === 'admin';
   }
 }

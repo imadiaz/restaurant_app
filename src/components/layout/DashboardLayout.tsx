@@ -6,6 +6,7 @@ import Header from './Header';
 import Sidebar from './Sidebar';
 import { Building2, ArrowLeft } from 'lucide-react';
 import { useAppStore } from '../../store/app.store';
+import { useAuthStore } from '../../store/auth.store';
 
 
 
@@ -14,7 +15,7 @@ const DashboardLayout: React.FC = () => {
   const { isSidebarCollapsed } = useLayoutStore();
   const { activeRestaurant, setActiveRestaurant } = useAppStore(); // Get Context
   const [isMobileOpen, setIsMobileOpen] = useState(false);
-
+  const { user } = useAuthStore();
   // --- HANDLERS ---
   const handleMobileClose = () => setIsMobileOpen(false);
   const handleMobileToggle = () => setIsMobileOpen(!isMobileOpen);
@@ -24,6 +25,8 @@ const DashboardLayout: React.FC = () => {
     setActiveRestaurant(null); // Clear the specific restaurant
     navigate('/admin/restaurants'); // Go back to global list
   };
+
+  const showImpersonationBanner = user?.role === 'super_admin' && activeRestaurant;
 
   return (
     <div className="min-h-screen bg-[#F8F9FB] font-sans flex flex-col">
@@ -62,7 +65,7 @@ const DashboardLayout: React.FC = () => {
         {/* === SUPER ADMIN CONTEXT BANNER === 
             Only visible if we are currently looking at a specific restaurant
         */}
-        {activeRestaurant && (
+        {showImpersonationBanner && (
           <div className="bg-gray-900 text-white px-4 md:px-6 py-2 flex items-center justify-between shadow-md z-30 sticky top-0">
             <div className="flex items-center gap-3">
               <div className="p-1.5 bg-white/10 rounded-lg hidden sm:block">

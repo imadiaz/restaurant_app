@@ -5,6 +5,7 @@ import { useState } from 'react';
 import AnatomyText from '../../components/anatomy/AnatomyText';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../store/auth.store';
+import { useAppStore } from '../../store/app.store';
 
 
 const LoginPage: React.FC = () => {
@@ -18,6 +19,25 @@ const LoginPage: React.FC = () => {
     
     try {
        await login({ email, password });
+       const user = useAuthStore.getState().user;
+       console.log("User after login:", user);
+       if (user?.restaurantId) {
+       const myRestaurant = {
+         id: user.restaurantId,
+         name: 'Burger King Downtown', // You would fetch this
+         logo: 'https://images.unsplash.com/photo-1571091718767-18b5b1457add?auto=format&fit=crop&w=100&q=80',
+         address: '123 Main St, New York, NY',
+         status: 'active' as const,
+         ownerName: `${user.firstName} ${user.lastName}`,
+         stats: { totalOrders: 0, totalRevenue: 0 }
+       };
+
+       // ⚡️ HYDRATE THE STORE
+       useAppStore.getState().setActiveRestaurant(myRestaurant);
+    } else {
+       // If I am super admin, ensure context is clear
+       useAppStore.getState().setActiveRestaurant(null);
+    }
       navigate('/', { replace: true });
     } catch (err) {
       console.error("Login flow failed", err);

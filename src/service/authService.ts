@@ -1,3 +1,4 @@
+import { ROLES } from "../config/roles";
 import type { LoginCredentials } from "../data/models/auth/loginCredentials";
 import { User, type IUser } from "../data/models/auth/user";
 
@@ -19,7 +20,7 @@ export const authService = {
       email: credentials.email,
       firstName: 'Immanuel',
       lastName: 'Diaz',
-      role:  'super_admin',
+      role:  ROLES.ADMIN,
       token: 'fake-jwt-token-xyz',
       avatarUrl: 'https://i.pravatar.cc/150?u=u_123'
     };

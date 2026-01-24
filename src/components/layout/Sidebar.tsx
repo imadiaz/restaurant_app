@@ -6,6 +6,7 @@ import { useAuthStore } from '../../store/auth.store';
 import { NAV_ITEMS } from '../../pages/navigation/navigation';
 import { useAppStore } from '../../store/app.store';
 import AnatomyText from '../anatomy/AnatomyText';
+import { getMenuForRole, ROLES, type UserRole } from '../../config/roles';
 
 
 
@@ -26,36 +27,26 @@ const Sidebar: React.FC<SidebarProps> = ({ mobile = false }) => {
   
   // Get Super Admin context
   const { activeRestaurant } = useAppStore();
-  
   const user = useAuthStore((state) => state.user);
-  const isSuperAdmin = user?.role === 'super_admin'; // MOCK for now
-
-  // --- MENU CONFIGURATION ---
-  
-  // 1. Menu for Single Restaurant (Managers or Super Admin Impersonating)
-  const RESTAURANT_MENU = [
-    { label: 'Overview', path: '/dashboard/overview', icon: LayoutDashboard },
-    { label: 'Orders', path: '/dashboard/orders', icon: ShoppingBag },
-    { label: 'Products', path: '/dashboard/products', icon: Coffee },
-    { label: 'Team', path: '/dashboard/users', icon: Users },
-    { label: 'Settings', path: '/dashboard/settings', icon: Settings },
-  ];
-
-  // 2. Menu for Super Admin (Global View)
-  const SUPER_ADMIN_MENU = [
-    { label: 'Restaurants', path: '/admin/restaurants', icon: Building2 },
-    { label: 'Global Analytics', path: '/admin/analytics', icon: BarChart3 },
-    { label: 'Settings', path: '/admin/settings', icon: Settings },
-  ];
 
   // DECIDE WHICH MENU TO SHOW
   // If we are a Super Admin AND we are NOT impersonating a restaurant -> Show Global Menu
   // Otherwise -> Show Restaurant Menu
-  const menuItems = (isSuperAdmin && !activeRestaurant) 
-    ? SUPER_ADMIN_MENU 
-    : RESTAURANT_MENU;
+  const menuItems = user 
+    ? getMenuForRole(user.role as UserRole, !!activeRestaurant) 
+    : [];
 
   const isActive = (path: string) => location.pathname.includes(path);
+
+  const getSidebarTitle = () => {
+  if (activeRestaurant) return activeRestaurant.name; // "Burger King"
+  
+  // Fallback: If no restaurant is loaded yet
+  if (user?.role === ROLES.SUPER_ADMIN) return 'Super Admin Panel';
+  
+  // If I am a normal admin but data hasn't loaded
+  return 'Restaurant'; 
+};
 
   return (
     <div className={`
@@ -64,16 +55,35 @@ const Sidebar: React.FC<SidebarProps> = ({ mobile = false }) => {
     `}>
       
       {/* LOGO AREA */}
-      <div className="h-20 flex items-center justify-center border-b border-gray-50">
-        <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-primary/30 shadow-lg">
-          {/* Change Logo based on context */}
-          {activeRestaurant ? activeRestaurant.name.charAt(0) : 'A'}
-        </div>
+      <div className="h-20 flex items-center justify-center border-b border-gray-50 px-4">
+        
+        {/* LOGO LOGIC */}
+        {activeRestaurant && activeRestaurant.logo ? (
+          // 1. If we have a restaurant AND a logo -> Show Circle Image
+          <img 
+            src={activeRestaurant.logo} 
+            alt={activeRestaurant.name}
+            className="w-10 h-10 rounded-full object-cover shadow-lg border-2 border-white bg-gray-100 shrink-0"
+          />
+        ) : (
+          // 2. Fallback: Show Initial Letter in a Colored Box
+          <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-primary/30 shadow-lg shrink-0">
+            {activeRestaurant ? activeRestaurant.name.charAt(0).toUpperCase() : 'A'}
+          </div>
+        )}
+
+        {/* TITLE TEXT */}
         {(!isSidebarCollapsed || mobile) && (
-          <div className="ml-3">
-             <AnatomyText.H3 className="text-base">
-               {activeRestaurant ? 'Restaurant' : 'Admin Panel'}
-             </AnatomyText.H3>
+          <div className="ml-3 overflow-hidden">
+             <AnatomyText.Body className="text-sm font-bold truncate leading-tight">
+               {getSidebarTitle()}
+             </AnatomyText.Body>
+             {/* Optional: Add a small label if it's a restaurant */}
+             {activeRestaurant && (
+               <p className="text-[10px] text-gray-400 font-medium uppercase tracking-wider truncate">
+                 Restaurant
+               </p>
+             )}
           </div>
         )}
       </div>

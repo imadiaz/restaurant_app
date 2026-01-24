@@ -73,10 +73,10 @@ export const useSocketStore = create<SocketState>((set) => {
             order: newOrder,
             onClose: () => useToastStore.getState().removeToast(toastId)
           }),
-         10000
+         12000000
         );
 
-      }, 120000);
+      }, 12000000);
     },
 
     disconnect: () => {

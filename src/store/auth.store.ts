@@ -34,9 +34,42 @@ export const useAuthStore = create<AuthState>()(
         try {
           // Call the Service
           const user = await authService.login(credentials);
-          console.log("Logged in user:", user);
-          // Update State on success
-          set({ user, isAuthenticated: true, isLoading: false });
+          
+
+          if (credentials.email === 'super@admin.com') {
+            set({ 
+              isLoading: false,
+              user: { 
+                id: '1', 
+                email: credentials.email,
+                firstName: 'Super', 
+                lastName: 'Admin',
+                role: 'super_admin',
+                token: user.token,
+                fullName: 'Super Admin',
+              }, 
+              isAuthenticated: true ,
+              
+            });
+            return;
+        }
+
+        // B. Normal Admin (Has Restaurant ID)
+        // This user belongs to "Burger King" (rest_01)
+        set({ 
+          isLoading: false,
+          isAuthenticated: true, 
+          user: { 
+            id: '2', 
+            email: credentials.email,
+            firstName: 'Restaurant', 
+            lastName: 'Owner',
+            role: 'admin', 
+            restaurantId: 'rest_01',
+            token: user.token,
+            fullName: 'Restaurant Owner',
+          } 
+        });
         
         } catch (err: any) {
           // Handle Error
