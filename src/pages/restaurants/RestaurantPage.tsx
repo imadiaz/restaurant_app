@@ -63,7 +63,7 @@ const RestaurantsPage: React.FC = () => {
           <AnatomyText.H1>Restaurants</AnatomyText.H1>
           <AnatomyText.Subtitle>Super Admin Overview</AnatomyText.Subtitle>
         </div>
-        <AnatomyButton>
+        <AnatomyButton onClick={() => navigate('add')}>
           <Plus className="w-5 h-5 mr-2" /> Create Restaurant
         </AnatomyButton>
       </div>

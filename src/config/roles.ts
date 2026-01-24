@@ -1,6 +1,7 @@
 import { 
   LayoutDashboard, ShoppingBag, Coffee, Users, 
-  Settings, Building2, BarChart3, Shield 
+  Settings, Building2, BarChart3, Shield, 
+  Calendar
 } from 'lucide-react';
 
 // 1. DEFINE ROLES (Prevent typos)
@@ -25,6 +26,7 @@ const MENUS = {
     { label: 'Products', path: '/dashboard/products', icon: Coffee },
     { label: 'Team', path: '/dashboard/users', icon: Users },
     { label: 'Settings', path: '/dashboard/settings', icon: Settings },
+    { label: 'Schedule', path: '/dashboard/schedule', icon: Calendar },
   ]
 };
 

@@ -16,6 +16,8 @@ import RootRedirect from './routes/RootRedirect';
 import { ROLES } from './config/roles';
 import GuestGuard from './routes/GuestGuard';
 import UnauthorizedPage from './pages/error/UnauthorizedPage';
+import AddRestaurantPage from './pages/restaurants/AddRestaurantPage';
+import SchedulePage from './pages/schedule/SchedulePage';
 
 function App() {
 
@@ -37,6 +39,7 @@ function App() {
         <Route element={<RoleGuard allowedRoles={[ROLES.SUPER_ADMIN]} />}>
         <Route path="/admin" element={<DashboardLayout />}>
            <Route path="restaurants" element={<RestaurantsPage />} />
+          <Route path="restaurants/add" element={<AddRestaurantPage />} />
            <Route path="analytics" element={<>Analytics</>} />
            <Route path="settings" element={<>Seittings</>} />
         </Route>
@@ -52,7 +55,8 @@ function App() {
             <Route path="users/add" element={<AddUserPage />} />
             <Route path="products" element={<ProductsPage />} />
             <Route path="products/add" element={<AddProductPage />} />
-          
+              <Route path="schedule" element={<SchedulePage />} />
+
           </Route>
         </Route>
 
