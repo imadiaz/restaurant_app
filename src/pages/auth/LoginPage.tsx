@@ -6,6 +6,7 @@ import AnatomyText from '../../components/anatomy/AnatomyText';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../store/auth.store';
 import { useAppStore } from '../../store/app.store';
+import ThemeToggle from '../../components/common/ThemeToggle';
 
 
 const LoginPage: React.FC = () => {
@@ -48,7 +49,7 @@ const LoginPage: React.FC = () => {
     <div className="flex h-screen w-full font-sans overflow-hidden">
       
       {/* LEFT SIDE */}
-      <div className="w-full lg:w-1/2 flex flex-col justify-between items-center bg-white p-8 lg:p-16 overflow-y-auto">
+      <div className="w-full lg:w-1/2 flex flex-col justify-between items-center p-8 lg:p-16 overflow-y-auto">
         
         {/* Logo */}
         <div className="w-full flex justify-center pt-10">
@@ -64,7 +65,6 @@ const LoginPage: React.FC = () => {
           {error}
         </div>
       )}
-
         {/* Text Area */}
         <div className="w-full max-w-md flex flex-col items-center text-center space-y-6">
           <div className="space-y-2">

@@ -61,20 +61,21 @@ const MOCK_PRODUCTS = [
   },
 ];
 
+
 // --- COMPONENT: PRODUCT CARD ---
 const ProductCard = ({ product, onViewDetails }: { product: any, onViewDetails: () => void }) => {
   const navigate = useNavigate();  
 
-  const handleEdit = () => {
-    navigate('/dashboard/products/add'); 
+  const handleEdit = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent triggering card click if we had one
+    navigate(`/dashboard/products/edit/${product.id}`); 
   };
 
-
   return (
-    <div className="bg-white rounded-3xl shadow-sm border border-gray-100 flex flex-col h-full group hover:shadow-md transition-all duration-300">
+    <div className="bg-background-card rounded-3xl shadow-sm border border-border flex flex-col h-full group hover:shadow-md transition-all duration-300">
       
       {/* 1. Image Area */}
-      <div className="relative aspect-[4/3] rounded-2xl overflow-hidden mb-4 bg-gray-50">
+      <div className="relative aspect-[4/3] rounded-2xl overflow-hidden mb-4 bg-gray-100 dark:bg-gray-800 m-2">
         <img 
           src={product.image} 
           alt={product.name} 
@@ -84,7 +85,7 @@ const ProductCard = ({ product, onViewDetails }: { product: any, onViewDetails: 
         {/* Status Badge */}
         <div className="absolute top-3 left-3">
           <span className={`
-            px-3 py-1 rounded-full text-xs font-bold backdrop-blur-md
+            px-3 py-1 rounded-full text-xs font-bold backdrop-blur-md shadow-sm
             ${product.status === 'active' 
               ? 'bg-green-500/90 text-white' 
               : 'bg-gray-500/90 text-white'}
@@ -98,14 +99,14 @@ const ProductCard = ({ product, onViewDetails }: { product: any, onViewDetails: 
       <div className="flex-1 space-y-2 px-4">
         <div className="flex justify-between items-start">
           <AnatomyText.Label className="text-primary">{product.category}</AnatomyText.Label>
-          <AnatomyText.H3 className="text-lg">${product.price.toFixed(2)}</AnatomyText.H3>
+          <AnatomyText.H3 className="text-lg text-text-main">${product.price.toFixed(2)}</AnatomyText.H3>
         </div>
         
-        <AnatomyText.H3 className="text-base line-clamp-1" title={product.name}>
+        <AnatomyText.H3 className="text-base line-clamp-1 text-text-main" title={product.name}>
           {product.name}
         </AnatomyText.H3>
         
-        <AnatomyText.Body className="text-xs line-clamp-2 h-10">
+        <AnatomyText.Body className="text-xs line-clamp-2 h-10 text-text-muted">
           {product.description}
         </AnatomyText.Body>
       </div>
@@ -116,7 +117,7 @@ const ProductCard = ({ product, onViewDetails }: { product: any, onViewDetails: 
         <AnatomyButton 
           variant="secondary" 
           onClick={onViewDetails}
-          className="px-0 py-2 text-xs" // Override padding for compact card
+          className="px-0 py-2 text-xs" 
         >
           <Eye className="w-4 h-4 mr-2" />
           Details
@@ -151,24 +152,29 @@ const ProductsPage: React.FC = () => {
   const [selectedProduct, setSelectedProduct] = useState<typeof MOCK_PRODUCTS[0] | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // 2. Update Handler
+  // Update Handler
   const handleOpenDetails = (product: typeof MOCK_PRODUCTS[0]) => {
     setSelectedProduct(product);
     setIsModalOpen(true);
   };
 
   return (
-    <div className="max-w-7xl mx-auto space-y-8 h-full flex flex-col">
+    <div className="max-w-7xl mx-auto space-y-8 h-full flex flex-col pb-20">
       
-      <PageHeader title={"Products"} subtitle={"Manage your menu items catalog"} showNavBack={false} actions={
-         <AnatomyButton onClick={() => navigate('add')}>
+      <PageHeader 
+        title="Products" 
+        subtitle="Manage your menu items catalog" 
+        showNavBack={false} 
+        actions={
+          <AnatomyButton onClick={() => navigate('add')}>
             <Plus className="w-5 h-5 mr-2" />
             Add New Dish
           </AnatomyButton>
-      } />
+        } 
+      />
 
       {/* --- CONTROLS BAR --- */}
-      <div className="bg-white p-4 rounded-3xl shadow-sm border border-gray-100 flex flex-col md:flex-row gap-4 items-center">
+      <div className="bg-background-card p-4 rounded-3xl shadow-sm border border-border flex flex-col md:flex-row gap-4 items-center">
         
         {/* Search */}
         <div className="w-full md:flex-1">
@@ -181,13 +187,13 @@ const ProductsPage: React.FC = () => {
 
         {/* Filters */}
         <div className="w-full md:w-64 flex items-center gap-2">
-          <div className="text-gray-400">
+          <div className="text-text-muted">
              <SlidersHorizontal className="w-5 h-5" />
           </div>
-          <AnatomySelect
+          <AnatomySelect 
             value={categoryFilter} 
             onChange={(e) => setCategoryFilter(e.target.value)}
-            className="border-none bg-gray-50" // Simple style override for filter context
+            className="!bg-background !border-border text-text-main" // Overrides for this specific context if needed
           >
             <option value="All">All Categories</option>
             <option value="Burgers">Burgers</option>
@@ -201,13 +207,17 @@ const ProductsPage: React.FC = () => {
       {/* --- PRODUCT GRID --- */}
       <div className="flex-1">
         {filteredProducts.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pb-10">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {filteredProducts.map((product) => (
-              <ProductCard key={product.id} product={product} onViewDetails={() => handleOpenDetails(product)} />
+              <ProductCard 
+                key={product.id} 
+                product={product} 
+                onViewDetails={() => handleOpenDetails(product)} 
+              />
             ))}
           </div>
         ) : (
-          <div className="flex flex-col items-center justify-center h-64 bg-white rounded-3xl border border-dashed border-gray-200">
+          <div className="flex flex-col items-center justify-center h-64 bg-background-card rounded-3xl border border-dashed border-border">
             <AnatomyText.Subtitle>No products found matching your search.</AnatomyText.Subtitle>
             <AnatomyButton 
               variant="ghost" 
@@ -220,11 +230,13 @@ const ProductsPage: React.FC = () => {
         )}
       </div>
 
-<ProductDetailModal
+      {/* Detail Modal (If you have one) */}
+      <ProductDetailModal
          isOpen={isModalOpen}
          product={selectedProduct}
          onClose={() => setIsModalOpen(false)}
-       />
+      /> 
+     
     </div>
   );
 };

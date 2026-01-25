@@ -1,27 +1,60 @@
 @import "tailwindcss";
 
+/* 1. TELL TAILWIND TO USE 'CLASS' STRATEGY 
+   This line makes the 'dark:' prefix work by looking for the .dark class 
+   instead of the system preference.
+*/
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
-  /* In v4, defining a variable here AUTOMATICALLY creates 
-    utility classes like bg-primary, text-primary, border-primary, etc.
-  */
+  /* --- COLORS --- */
   
-  /* Primary Color (Orange) */
+  /* Primary Color */
   --color-primary: #16a349;
   --color-primary-hover: #1FE066;
 
-  /* Accent Color (Green) */
+  /* Accent */
   --color-accent: #16A34A;
 
-  /* Custom Backgrounds */
-  /* This creates 'bg-background' and 'bg-background-sidebar' */
-  --color-background: #F8F9FB;
-  --color-background-sidebar: #F3F4F6;
+  /* --- SEMANTIC COLORS (The Magic Part) --- */
+  /* We define variables for specific PARTS of the UI, not just colors. */
+  
+  /* Backgrounds */
+  --color-background: #F8F9FB;          /* Light Page BG */
+  --color-background-card: #FFFFFF;     /* Light Card BG */
+  --color-background-sidebar: #FFFFFF;  /* Light Sidebar BG */
+  
+  /* Borders */
+  --color-border: #E5E7EB;              /* Gray 200 */
+
+  /* Text */
+  --color-text-main: #111827;           /* Gray 900 (Black-ish) */
+  --color-text-muted: #6B7280;          /* Gray 500 */
 }
 
-/* Now that the theme is defined above, the classes exist.
-   We can safely apply them.
+/* 2. DARK MODE OVERRIDES 
+   When the <html> tag has the class "dark", we swap the values of the variables.
+   The rest of your app updates automatically!
+*/
+:root.dark {
+  /* Dark Page BG (Deep Blue/Gray) */
+  --color-background: #0f172a; 
+  
+  /* Dark Card/Sidebar BG (Slightly lighter than page) */
+  --color-background-card: #1e293b; 
+  --color-background-sidebar: #1e293b;
+
+  /* Dark Borders */
+  --color-border: #334155;
+
+  /* Dark Text (White) */
+  --color-text-main: #f8fafc;
+  --color-text-muted: #94a3b8;
+}
+
+/* 3. BASE STYLES 
+   Apply the variables to the body so they are the default.
 */
 body {
-  @apply bg-background text-gray-900;
-  font-family: 'Inter', system-ui, sans-serif; /* Optional: standard font */
+  @apply bg-background text-text-main font-sans antialiased transition-colors duration-300;
 }

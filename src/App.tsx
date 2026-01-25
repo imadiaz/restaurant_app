@@ -18,6 +18,7 @@ import GuestGuard from './routes/GuestGuard';
 import UnauthorizedPage from './pages/error/UnauthorizedPage';
 import AddRestaurantPage from './pages/restaurants/AddRestaurantPage';
 import SchedulePage from './pages/schedule/SchedulePage';
+import ThemeManager from './components/managers/ThemeManager';
 
 function App() {
 
@@ -25,7 +26,7 @@ function App() {
     <BrowserRouter>
 
       <ToastProvider />
-
+      <ThemeManager />
       <SocketManager />
 
       <Routes>

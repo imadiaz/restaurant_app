@@ -94,24 +94,38 @@ const MOCK_ORDERS_DETAILS: OrderDetail[] = [
 ];
 // --- COMPONENT: ORDER CARD ---
 
-const OrderCard = ({ order, onClick }: { order: OrderDetail, onClick: () => void }) => {  let statusConfig = {
+const OrderCard = ({ order, onClick }: { order: OrderDetail, onClick: () => void }) => {  
+
+  let statusConfig = {
     icon: Sparkles,
     text: 'New Order',
-    className: 'bg-purple-100 text-purple-600',
+    className: 'bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-300',
   };
 
   if (order.status === 'cooking') {
-    statusConfig = { icon: Flame, text: 'Cooking', className: 'bg-orange-100 text-orange-600' };
+    statusConfig = { 
+      icon: Flame, 
+      text: 'Cooking', 
+      className: 'bg-orange-100 text-orange-600 dark:bg-orange-900/30 dark:text-orange-300' 
+    };
   } else if (order.status === 'ready') {
-    statusConfig = { icon: ShoppingBag, text: 'Ready to serve', className: 'bg-blue-100 text-blue-600' };
+    statusConfig = { 
+      icon: ShoppingBag, 
+      text: 'Ready to serve', 
+      className: 'bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-300' 
+    };
   } else if (order.status === 'completed') {
-    statusConfig = { icon: CheckCircle, text: 'Completed', className: 'bg-gray-100 text-gray-500' };
+    statusConfig = { 
+      icon: CheckCircle, 
+      text: 'Completed', 
+      className: 'bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400' 
+    };
   }
 
   const itemCount = order.items.reduce((acc, item) => acc + item.qty, 0);
 
   return (
-    <div className="bg-white p-5 rounded-3xl shadow-sm border border-gray-200 flex flex-col hover:shadow-md transition-shadow h-full" onClick={onClick}>
+    <div className="bg-background-card p-5 rounded-3xl shadow-sm border border-border flex flex-col hover:shadow-md transition-all duration-300 cursor-pointer group h-full" onClick={onClick}>
       
       {/* 1. Header: Name & ID */}
       <div className="flex justify-between items-start mb-4">
@@ -143,15 +157,15 @@ const OrderCard = ({ order, onClick }: { order: OrderDetail, onClick: () => void
       </div>
 
       {/* Dashed Divider */}
-      <div className="border-b border-dashed border-gray-200 my-2"></div>
+      <div className="border-b border-dashed border-border my-2"></div>
 
-      {/* 3. Items List Summary */}
+     {/* 3. Items List Summary */}
       <div className="flex justify-between items-center mt-4 mb-2">
-        <AnatomyText.Label className="ml-0 text-gray-800 text-sm font-bold">
+        <AnatomyText.Label className="ml-0 text-text-main">
           Order ({itemCount})
         </AnatomyText.Label>
         
-        <AnatomyText.Label className="ml-0 text-green-600 text-sm font-bold">
+        <AnatomyText.Label className="ml-0 text-primary">
           ${order.total.toFixed(2)}
         </AnatomyText.Label>
       </div>
@@ -160,21 +174,21 @@ const OrderCard = ({ order, onClick }: { order: OrderDetail, onClick: () => void
       <div className="space-y-2 mb-6 flex-1">
         {order.items.slice(0, 3).map((item, idx) => (
           <div key={idx} className="flex justify-between">
-            <AnatomyText.Small className="text-gray-500">
-              {item.qty}x {item.name}
-            </AnatomyText.Small>
-            <AnatomyText.Small className="font-medium text-gray-700">
+            <span className="text-sm text-text-muted">
+              <span className="font-bold text-text-main">{item.qty}x</span> {item.name}
+            </span>
+            <span className="text-sm font-medium text-text-main">
               ${item.price.toFixed(2)}
-            </AnatomyText.Small>
+            </span>
           </div>
         ))}
         
         {/* "See more" link */}
-        {order.items.length > 2 && (
+        {order.items.length > 3 && (
            <div className="text-center pt-1">
-             <AnatomyText.Link className="text-xs text-green-600 font-medium no-underline hover:underline">
-               See more &gt;
-             </AnatomyText.Link>
+             <span className="text-xs text-primary font-medium hover:underline">
+               See {order.items.length - 3} more items &gt;
+             </span>
            </div>
         )}
       </div>
@@ -238,7 +252,7 @@ const OrdersPage: React.FC = () => {
   };
 
   return (
-    <div className="space-y-8 max-w-7xl mx-auto h-full flex flex-col">
+    <div className="space-y-8 max-w-7xl mx-auto h-full flex flex-col pb-20">
       
       {/* HEADER AREA */}
        <PageHeader title={"Orders"} subtitle={"Manage incoming orders"} showNavBack={false} actions={
@@ -250,11 +264,11 @@ const OrdersPage: React.FC = () => {
             />
           </div>
         } />
-      <div className="bg-white p-4 rounded-3xl shadow-sm border border-gray-100 flex flex-col gap-6">
-        
+
+<div className="bg-background-card p-4 rounded-3xl shadow-sm border border-border flex flex-col gap-6">        
 
         {/* Tabs Row */}
-        <div className="border-b border-gray-100">
+        <div>
           <div className="flex gap-6 overflow-x-auto pb-1 scrollbar-hide">
             {(['all', 'new', 'cooking', 'ready', 'completed'] as const).map((tab) => (
               <button
@@ -271,7 +285,7 @@ const OrdersPage: React.FC = () => {
                 
                 {/* Count Badge */}
                 <span className={`
-                  px-2 py-0.5 rounded-full text-xs font-bold
+px-2 py-0.5 rounded-full text-xs font-bold transition-colors
                   ${activeTab === tab 
                     ? 'bg-primary text-white' 
                     : 'bg-gray-100 text-gray-600'}
@@ -287,14 +301,21 @@ const OrdersPage: React.FC = () => {
       {/* GRID CONTENT */}
       <div className="flex-1">
         {filteredOrders.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pb-10">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {filteredOrders.map((order) => (
-              <OrderCard key={order.id} order={MOCK_ORDERS_DETAILS[0]} onClick={() => handleCardClick(MOCK_ORDERS_DETAILS[0])} /> // <--- Pass the click handler />
+              <OrderCard 
+                key={order.id} 
+                order={MOCK_ORDERS_DETAILS[0]}
+                onClick={() => handleCardClick(MOCK_ORDERS_DETAILS[0])} 
+              /> 
             ))}
           </div>
         ) : (
-          <div className="flex flex-col items-center justify-center h-64 bg-white rounded-3xl border border-dashed border-gray-200">
-            <AnatomyText.Subtitle>No orders found.</AnatomyText.Subtitle>
+          <div className="flex flex-col items-center justify-center h-64 bg-background-card rounded-3xl border border-dashed border-border">
+             <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-full mb-4">
+                <ShoppingBag className="w-8 h-8 text-text-muted" />
+             </div>
+             <AnatomyText.Subtitle>No orders found.</AnatomyText.Subtitle>
           </div>
         )}
       </div>
