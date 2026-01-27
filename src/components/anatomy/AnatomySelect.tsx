@@ -16,7 +16,7 @@ const AnatomySelect: React.FC<SelectProps> = ({ label, children, className = "",
           className={`
             w-full p-3 pr-10 border border-gray-200 rounded-xl
             focus:ring-1 focus:ring-primary focus:border-primary outline-none
-            bg-white text-gray-700 text-sm appearance-none shadow-sm cursor-pointer
+            bg-background-card text-gray-700 text-sm appearance-none shadow-sm cursor-pointer
             ${className}
           `}
           {...props}

@@ -1,10 +1,6 @@
+import type { Restaurant } from "../restaurant/restaurant";
 import type { Role } from "./role";
 
-export interface RestaurantLite {
-  id: string;
-  name: string;
-  logoUrl?: string;
-}
 
 export interface User {
   id: string;
@@ -16,6 +12,6 @@ export interface User {
   phone: string;
   role: Role; 
   status: string;
-  restaurant?: RestaurantLite;
+  restaurant?: Restaurant;
   token?: string; 
 }

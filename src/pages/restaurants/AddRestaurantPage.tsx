@@ -101,13 +101,13 @@ const AddRestaurantPage: React.FC = () => {
                 />
               </div>
 
-              <AnatomyTextField 
+              {/* <AnatomyTextField 
                 label="RFC (Tax ID)" 
                 placeholder="e.g. XAXX010101000"
                 value={formData.rfc}
                 onChange={(e) => handleChange('rfc', e.target.value)}
                 icon={FileText}
-              />
+              /> */}
 
               <AnatomySelect 
                 label="Category"
@@ -187,7 +187,7 @@ const AddRestaurantPage: React.FC = () => {
                 />
               </div>
 
-              <AnatomyTextField 
+              {/* <AnatomyTextField 
                 label="Phone (Landline)" 
                 placeholder="(55) 1234 5678"
                 value={formData.phone}
@@ -201,7 +201,7 @@ const AddRestaurantPage: React.FC = () => {
                 value={formData.cellphone}
                 onChange={(e) => handleChange('cellphone', e.target.value)}
                 icon={Phone}
-              />
+              /> */}
             </div>
           </div>
 

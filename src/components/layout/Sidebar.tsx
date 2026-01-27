@@ -37,6 +37,7 @@ const Sidebar: React.FC<SidebarProps> = ({ mobile = false }) => {
   const isActive = (path: string) => location.pathname.includes(path);
 
   const getSidebarTitle = () => {
+    console.log("Active restaurant", activeRestaurant)
     if (activeRestaurant) return activeRestaurant.name;
     if (user?.role.name === ROLES.SUPER_ADMIN) return 'Super Admin Panel';
     return 'Restaurant'; 
@@ -53,9 +54,9 @@ const Sidebar: React.FC<SidebarProps> = ({ mobile = false }) => {
       <div className="h-20 flex items-center justify-center border-b border-border px-4">
         
         {/* LOGO LOGIC */}
-        {activeRestaurant && activeRestaurant.logo ? (
+        {activeRestaurant && activeRestaurant.logoUrl ? (
           <img 
-            src={activeRestaurant.logo} 
+            src={activeRestaurant.logoUrl} 
             alt={activeRestaurant.name}
             className="w-10 h-10 rounded-full object-cover shadow-lg border-2 border-white dark:border-gray-600 bg-gray-100 shrink-0"
           />

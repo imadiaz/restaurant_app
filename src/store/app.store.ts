@@ -1,18 +1,7 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
+import type { Restaurant } from '../data/models/restaurant/restaurant';
 
-export interface Restaurant {
-  id: string;
-  name: string;
-  logo: string;
-  address: string;
-  status: 'active' | 'inactive' | 'suspended';
-  ownerName: string;
-  stats: {
-    totalOrders: number;
-    totalRevenue: number;
-  }
-}
 
 interface AppState {
   activeRestaurant: Restaurant | null;

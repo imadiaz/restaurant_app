@@ -3,6 +3,7 @@ import {
   Settings, Building2, BarChart3, Shield, 
   Calendar
 } from 'lucide-react';
+import { Routes } from './routes';
 
 // 1. DEFINE ROLES (Prevent typos)
 export const ROLES = {
@@ -17,16 +18,13 @@ export type UserRole = typeof ROLES[keyof typeof ROLES];
 // 2. DEFINE MENU ITEMS (Centralized)
 const MENUS = {
   GLOBAL: [
-    { label: 'Restaurants', path: '/admin/restaurants', icon: Building2 },
-    { label: 'Global Analytics', path: '/admin/analytics', icon: BarChart3 },
-    { label: 'All Users', path: '/admin/users', icon: Shield },
-    { label: 'Settings', path: '/admin/settings', icon: Settings },
+    { label: 'Restaurants', path: `/admin${Routes.Restaurants}`, icon: Building2 },
+    { label: 'All Users', path: `/admin${Routes.Users}`, icon: Shield },
   ],
   RESTAURANT: [
     { label: 'Orders', path: '/dashboard/orders', icon: ShoppingBag },
     { label: 'Products', path: '/dashboard/products', icon: Coffee },
-    { label: 'Team', path: '/dashboard/users', icon: Users },
-    { label: 'Settings', path: '/dashboard/settings', icon: Settings },
+    { label: 'Team', path: `/dashboard${Routes.Users}`, icon: Users },
     { label: 'Schedule', path: '/dashboard/schedule', icon: Calendar },
   ]
 };

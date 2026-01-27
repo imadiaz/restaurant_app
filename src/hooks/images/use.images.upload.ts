@@ -20,5 +20,18 @@ export const useImagesUpload = () => {
     }
   };
 
-  return { upload, isUploading };
+  const uploadRestaurant = async (file: File): Promise<string | null> => {
+    setIsUploading(true);
+    try {
+      const url = await imagesService.uploadRestaurantImage(file);
+      return url;
+    } catch (error) {
+      handleError(error);
+      return null;
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  return { upload, isUploading, uploadRestaurant };
 };

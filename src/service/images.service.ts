@@ -22,5 +22,23 @@ export const imagesService = {
     );
 
     return response.data.url;
+  },
+
+  async uploadRestaurantImage(file: File): Promise<string> {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const response = await axiosClient.post<any, ApiResponse<ImagesResponse>>(
+      '/images/upload/restaurant-file', 
+      formData, 
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      }
+    );
+
+    return response.data.url;
   }
+
 };

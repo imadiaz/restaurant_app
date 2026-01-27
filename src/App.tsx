@@ -1,6 +1,6 @@
 
 import LoginPage from './pages/auth/LoginPage'
-import { BrowserRouter, Navigate, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Navigate,Route, Routes } from 'react-router-dom';
 import HomePage from './pages/home/HomePage';
 import DashboardLayout from './components/layout/DashboardLayout';
 import OrdersPage from './pages/orders/OrdersPage';
@@ -15,10 +15,10 @@ import RootRedirect from './routes/RootRedirect';
 import { ROLES } from './config/roles';
 import GuestGuard from './routes/GuestGuard';
 import UnauthorizedPage from './pages/error/UnauthorizedPage';
-import AddRestaurantPage from './pages/restaurants/AddRestaurantPage';
 import SchedulePage from './pages/schedule/SchedulePage';
 import ThemeManager from './components/managers/ThemeManager';
 import UserFormPage from './pages/users/UserFormPage';
+import RestaurantFormPage from './pages/restaurants/RestaurantFormPage';
 
 function App() {
 
@@ -39,8 +39,9 @@ function App() {
 
         <Route element={<RoleGuard allowedRoles={[ROLES.SUPER_ADMIN]} />}>
         <Route path="/admin" element={<DashboardLayout />}>
-           <Route path="restaurants" element={<RestaurantsPage />} />
-            <Route path="restaurants/add" element={<AddRestaurantPage />} />
+           <Route path={`restaurants`} element={<RestaurantsPage />} />
+            <Route path="restaurants/add" element={<RestaurantFormPage />} />
+            <Route path="restaurants/edit/:id" element={<RestaurantFormPage/>} />
             <Route path="users" element={<UsersPage />} />
             <Route path="users/add" element={<UserFormPage />} />
             <Route path="users/edit/:id" element={<UserFormPage/>} />

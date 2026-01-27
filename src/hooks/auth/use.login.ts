@@ -16,7 +16,11 @@ export const useLogin = () => {
     mutationFn: authService.login,
     onSuccess: (user) => {
       setCredentials(user);
-      setActiveRestaurant(null);
+      if(user.restaurant) {
+        setActiveRestaurant(user.restaurant);
+      } else {
+        setActiveRestaurant(null);
+      }
       navigate('/');
     },
     onError: (error) => {

@@ -14,7 +14,7 @@ const { user, logout } = useAuthStore(); // Get Logout function
 const handleGoHome = () => {
     // Dynamically send them to their safe "Home" based on their role
     if (user) {
-      const userRole = user.role as UserRole;
+      const userRole = user.role.name as UserRole;
       const targetRoute = ROLE_CONFIG[userRole]?.defaultRoute || '/';
       navigate(targetRoute, { replace: true });
     } else {

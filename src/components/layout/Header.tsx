@@ -65,8 +65,8 @@ const Header: React.FC<HeaderProps> = ({ onMobileMenuClick }) => {
         <div className="flex items-center gap-3 cursor-pointer p-2 -mr-2 hover:bg-background rounded-xl transition-colors">
           <div className="w-8 h-8 rounded-full overflow-hidden border border-border">
              <img 
-               src={"https://ui-avatars.com/api/?name=User&background=random"} 
-               alt="User" 
+               src={user?.profileImageUrl || "https://ui-avatars.com/api/?name=User&background=random"} 
+               alt={user?.username}
                className="w-full h-full object-cover" 
              />
           </div>
