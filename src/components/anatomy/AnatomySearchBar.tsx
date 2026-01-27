@@ -15,7 +15,7 @@ const AnatomySearchBar: React.FC<SearchBarProps> = ({ className = "", ...props }
         type="text"
         className="
           w-full py-3 pl-12 pr-4 
-          bg-white border border-gray-200 rounded-xl 
+          bg-background border border-gray-200 rounded-xl 
           text-gray-700 placeholder-gray-400
           focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary
           transition-colors shadow-sm

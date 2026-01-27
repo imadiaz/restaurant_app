@@ -8,7 +8,6 @@ import UsersPage from './pages/users/UsersPage';
 import ProductsPage from './pages/products/ProductsPage';
 import AddProductPage from './pages/products/AddProductPage';
 import { ToastProvider } from './components/common/ToastProvider';
-import AddUserPage from './pages/users/AddUsersPage';
 import SocketManager from './components/managers/SocketManager';
 import RestaurantsPage from './pages/restaurants/RestaurantPage';
 import RoleGuard from './routes/RoleGuard';
@@ -19,6 +18,7 @@ import UnauthorizedPage from './pages/error/UnauthorizedPage';
 import AddRestaurantPage from './pages/restaurants/AddRestaurantPage';
 import SchedulePage from './pages/schedule/SchedulePage';
 import ThemeManager from './components/managers/ThemeManager';
+import UserFormPage from './pages/users/UserFormPage';
 
 function App() {
 
@@ -40,21 +40,24 @@ function App() {
         <Route element={<RoleGuard allowedRoles={[ROLES.SUPER_ADMIN]} />}>
         <Route path="/admin" element={<DashboardLayout />}>
            <Route path="restaurants" element={<RestaurantsPage />} />
+            <Route path="restaurants/add" element={<AddRestaurantPage />} />
             <Route path="users" element={<UsersPage />} />
-          <Route path="restaurants/add" element={<AddRestaurantPage />} />
-           <Route path="analytics" element={<>Analytics</>} />
-           <Route path="settings" element={<>Seittings</>} />
+            <Route path="users/add" element={<UserFormPage />} />
+            <Route path="users/edit/:id" element={<UserFormPage/>} />
+            <Route path="analytics" element={<>Analytics</>} />
+            <Route path="settings" element={<>Seittings</>} />
         </Route>
       </Route>
 
         {/* PROTECTED ROUTES (Requires login) */}
-        <Route element={<RoleGuard allowedRoles={[ROLES.SUPER_ADMIN, ROLES.ADMIN, ROLES.MANAGER]} />}>
+        <Route element={<RoleGuard allowedRoles={[ROLES.ADMIN, ROLES.MANAGER]} />}>
           <Route path="/dashboard" element={<DashboardLayout />}>
 
             <Route index element={<HomePage />} />
             <Route path="orders" element={<OrdersPage />} />
             <Route path="users" element={<UsersPage />} />
-            <Route path="users/add" element={<AddUserPage />} />
+            <Route path="users/add" element={<UserFormPage />} />
+            <Route path="users/edit/:id" element={<UserFormPage/>} />
             <Route path="products" element={<ProductsPage />} />
             <Route path="products/add" element={<AddProductPage />} />
               <Route path="schedule" element={<SchedulePage />} />

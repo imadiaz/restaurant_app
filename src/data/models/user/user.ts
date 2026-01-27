@@ -6,7 +6,6 @@ export interface RestaurantLite {
   logoUrl?: string;
 }
 
-// La interfaz principal
 export interface User {
   id: string;
   firstName: string;

@@ -15,8 +15,8 @@ export interface CreateUserDto {
   userAccessType?: string; // Optional (e.g., 'web')
 }
 
-export interface UpdateUserDto extends Partial<Omit<CreateUserDto, 'password'>> {
-  isActive?: boolean;
+export interface UpdateUserDto extends Partial<CreateUserDto> {
+  status?: string;
 }
 
 
@@ -32,15 +32,19 @@ export const userService = {
     return response.data;
   },
 
+  async getUserById(userId: string): Promise<User> {
+    const response = await axiosClient.get<any, ApiResponse<User>>(`/users/${userId}`);
+    return response.data;
+  },
+
 
   async create(data: CreateUserDto): Promise<User> {
     const response = await axiosClient.post<any, ApiResponse<User>>('/users', data);
     return response.data;
   },
 
-//   // --- 4. UPDATE ---
-//   async update(id: string, data: UpdateUserDto): Promise<User> {
-//     const response = await axiosClient.patch<any, ApiResponse<User>>(`/users/${id}`, data);
-//     return response.data;
-//   }
+  async update(id: string, data: UpdateUserDto): Promise<User> {
+    const response = await axiosClient.patch<any, ApiResponse<User>>(`/users/${id}`, data);
+    return response.data;
+  }
 };

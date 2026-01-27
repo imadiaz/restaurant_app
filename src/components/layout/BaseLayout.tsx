@@ -41,7 +41,7 @@ const BasePageLayout = ({
 
       {/* CONTROLS */}
       {renderControls && (
-        <div className="bg-background-card p-4 rounded-3xl shadow-sm border border-border flex flex-col md:flex-row gap-4 items-center">
+        <div className="bg-background-card p-4 rounded-3xl flex flex-col md:flex-row gap-4 items-center">
           {renderControls}
         </div>
       )}

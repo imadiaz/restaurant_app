@@ -50,7 +50,7 @@ const LoginPage: React.FC = () => {
             <AnatomyTextField 
               label="Username" 
               placeholder="Enter username" 
-              icon={User}
+              icon={<User />}
               required 
               onChange={(e) => setUsername(e.target.value)}
             />
@@ -59,7 +59,7 @@ const LoginPage: React.FC = () => {
               label="Password" 
               type="password"
               placeholder="Enter password" 
-              icon={Lock}
+              icon={<Lock />}
               required
               onChange={(e) => setPassword(e.target.value)}
             />

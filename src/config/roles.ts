@@ -8,9 +8,9 @@ import {
 export const ROLES = {
   SUPER_ADMIN: 'super_admin',
   ADMIN: 'restaurant_admin',
-  MANAGER: 'manager',
+  MANAGER: 'restaurant_manager',
 } as const;
-
+ 
 
 export type UserRole = typeof ROLES[keyof typeof ROLES];
 

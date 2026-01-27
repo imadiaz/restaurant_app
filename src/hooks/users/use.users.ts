@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useErrorHandler } from '../use.error.handler';
 import { useToastStore } from '../../store/toast.store';
-import { userService } from '../../service/user.service';
+import { userService, type UpdateUserDto } from '../../service/user.service';
 import { useAuthStore } from '../../store/auth.store';
 import { isSuperAdmin } from '../../data/models/user/utils/user.utils';
 
@@ -14,14 +14,16 @@ export const useUsers = (restaurantId?: string) => {
 
   const queryKey = ['users', restaurantId || 'all'];
 
+
   // --- QUERIES ---
   const { 
     data: users = [], 
     isLoading, 
-    isError 
+    isError,
   } = useQuery({
     queryKey: queryKey,
     queryFn: () => {
+      console.log("🚀 Fetching users with restaurantId:", restaurantId);
       if (restaurantId && !isSuperAdmin(user)) {
         return userService.getAllByRestaurantId(restaurantId);
       }
@@ -30,25 +32,41 @@ export const useUsers = (restaurantId?: string) => {
     enabled: true, 
   });
 
+  const getUserById = async (id: string) => {
+    const cachedUsers = queryClient.getQueryData<any[]>(queryKey);
+    const foundUser = cachedUsers?.find((u) => u.id === id);
+
+    if (foundUser) {
+      return foundUser;
+    }
+
+    try {
+      return await userService.getUserById(id);
+    } catch (error) {
+      handleError(error);
+      return null;
+    }
+  };
+
   const createMutation = useMutation({
     mutationFn: userService.create,
-    onSuccess: () => {
+    onSuccess: (data) => {
+      console.log("🚀 User created:", data);
       addToast('Usuario creado correctamente', 'success');
       queryClient.invalidateQueries({ queryKey: ['users'] });
     },
     onError: handleError,
   });
 
-//   // 2. ACTUALIZAR
-//   const updateMutation = useMutation({
-//     mutationFn: ({ id, data }: { id: string; data: UpdateUserDto }) => 
-//       userService.update(id, data),
-//     onSuccess: () => {
-//       addToast('Usuario actualizado', 'success');
-//       queryClient.invalidateQueries({ queryKey: ['users'] });
-//     },
-//     onError: handleError,
-//   });
+  const updateMutation = useMutation({
+    mutationFn: ({ id, data }: { id: string; data: UpdateUserDto }) => 
+      userService.update(id, data),
+    onSuccess: () => {
+      addToast('Usuario actualizado', 'success');
+      queryClient.invalidateQueries({ queryKey: ['users'] });
+    },
+    onError: handleError,
+  });
 
   return {
     // Data
@@ -58,10 +76,11 @@ export const useUsers = (restaurantId?: string) => {
 
     // Actions
     createUser: createMutation.mutateAsync,
-  //  updateUser: updateMutation.mutateAsync,
+    updateUser: updateMutation.mutateAsync,
+    getUserById: getUserById,
     
     // States
     isCreating: createMutation.isPending,
-   // isUpdating: updateMutation.isPending,
+    isUpdating: updateMutation.isPending,
   };
 };

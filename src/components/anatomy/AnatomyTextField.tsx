@@ -22,10 +22,8 @@ const AnatomyTextField: React.FC<AnatomyTextFieldProps> = ({
       )}
       
       <div className="relative">
-        {/* ICON CONTAINER */}
         {icon && (
           <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-text-muted">
-            {/* We render the node directly now */}
             {icon}
           </div>
         )}

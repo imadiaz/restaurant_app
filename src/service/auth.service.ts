@@ -18,6 +18,7 @@ interface LoginResponsePayload {
       name: string;
       description?: string;
     };
+    status: string;
   };
 }
 
@@ -39,6 +40,7 @@ export const authService = {
       phone: user.phone,
       role: user.role,
       token: access_token,
+      status: user.status
     };
 
     return mappedUser;
