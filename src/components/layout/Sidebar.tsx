@@ -31,14 +31,14 @@ const Sidebar: React.FC<SidebarProps> = ({ mobile = false }) => {
 
   // DECIDE MENU
   const menuItems = user 
-    ? getMenuForRole(user.role as UserRole, !!activeRestaurant) 
+    ? getMenuForRole(user.role.name as UserRole, !!activeRestaurant) 
     : [];
 
   const isActive = (path: string) => location.pathname.includes(path);
 
   const getSidebarTitle = () => {
     if (activeRestaurant) return activeRestaurant.name;
-    if (user?.role === ROLES.SUPER_ADMIN) return 'Super Admin Panel';
+    if (user?.role.name === ROLES.SUPER_ADMIN) return 'Super Admin Panel';
     return 'Restaurant'; 
   };
 

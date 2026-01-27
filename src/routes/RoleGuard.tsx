@@ -18,7 +18,7 @@ const RoleGuard: React.FC<RoleGuardProps> = ({ allowedRoles }) => {
 
   // 2. If logged in but WRONG ROLE -> Unauthorized Page
   // We cast user.role to ensure type safety with our config
-  if (!allowedRoles.includes(user.role as UserRole)) {
+  if (!allowedRoles.includes(user.role.name as UserRole)) {
     return <Navigate to="/unauthorized" replace />;
   }
 

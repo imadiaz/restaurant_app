@@ -7,7 +7,7 @@ const GuestGuard: React.FC = () => {
   const { isAuthenticated, user } = useAuthStore();
 
   if (isAuthenticated && user) {
-    const userRole = user.role as UserRole;
+    const userRole = user.role.name as UserRole;
     const config = ROLE_CONFIG[userRole];
 
     // 🛑 STOP THE LOOP

@@ -3,6 +3,7 @@ import { Bell, Info, Menu, PanelLeft } from 'lucide-react';
 import { useLayoutStore } from '../../store/layout.store';
 import { useAuthStore } from '../../store/auth.store';
 import ThemeToggle from '../common/ThemeToggle';
+import { getUserDisplayName } from '../../data/models/user/utils/user.utils';
 
 
 interface HeaderProps {
@@ -64,18 +65,18 @@ const Header: React.FC<HeaderProps> = ({ onMobileMenuClick }) => {
         <div className="flex items-center gap-3 cursor-pointer p-2 -mr-2 hover:bg-background rounded-xl transition-colors">
           <div className="w-8 h-8 rounded-full overflow-hidden border border-border">
              <img 
-               src={user?.avatarUrl || "https://ui-avatars.com/api/?name=User&background=random"} 
+               src={"https://ui-avatars.com/api/?name=User&background=random"} 
                alt="User" 
                className="w-full h-full object-cover" 
              />
           </div>
           <div className="hidden sm:block text-right">
             <p className="text-sm font-semibold text-text-main leading-none">
-              {user?.firstName || 'Admin'}
+              {getUserDisplayName(user) || 'Admin'}
             </p>
             {/* Optional Role Subtext */}
             <p className="text-xs text-text-muted mt-0.5 capitalize">
-              {user?.role?.replace('_', ' ') || 'User'}
+              {user?.role.name?.replace('_', ' ') || 'User'}
             </p>
           </div>
         </div>

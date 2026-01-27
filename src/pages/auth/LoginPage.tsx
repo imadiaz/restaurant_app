@@ -3,46 +3,18 @@ import AnatomyTextField from '../../components/anatomy/AnatomyTextField';
 import AnatomyButton from '../../components/anatomy/AnatomyButton';
 import { useState } from 'react';
 import AnatomyText from '../../components/anatomy/AnatomyText';
-import { useNavigate } from 'react-router-dom';
-import { useAuthStore } from '../../store/auth.store';
-import { useAppStore } from '../../store/app.store';
-import ThemeToggle from '../../components/common/ThemeToggle';
+import { useLogin } from '../../hooks/auth/use.login';
 
 
 const LoginPage: React.FC = () => {
-  const navigate = useNavigate();
-  const { login, isLoading, error } = useAuthStore();
-  const [email, setEmail] = useState('');
+  const { login, isLoading } = useLogin(); 
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    try {
-       await login({ email, password });
-       const user = useAuthStore.getState().user;
-       console.log("User after login:", user);
-       if (user?.restaurantId) {
-       const myRestaurant = {
-         id: user.restaurantId,
-         name: 'Burger King Downtown', // You would fetch this
-         logo: 'https://images.unsplash.com/photo-1571091718767-18b5b1457add?auto=format&fit=crop&w=100&q=80',
-         address: '123 Main St, New York, NY',
-         status: 'active' as const,
-         ownerName: `${user.firstName} ${user.lastName}`,
-         stats: { totalOrders: 0, totalRevenue: 0 }
-       };
-
-       // ⚡️ HYDRATE THE STORE
-       useAppStore.getState().setActiveRestaurant(myRestaurant);
-    } else {
-       // If I am super admin, ensure context is clear
-       useAppStore.getState().setActiveRestaurant(null);
-    }
-      navigate('/', { replace: true });
-    } catch (err) {
-      console.error("Login flow failed", err);
-    }
+    login({ username, password });
   };
 
   return (
@@ -60,11 +32,6 @@ const LoginPage: React.FC = () => {
           </div>
         </div>
 
-        {error && (
-        <div className="bg-red-50 text-red-600 text-sm p-3 rounded-lg">
-          {error}
-        </div>
-      )}
         {/* Text Area */}
         <div className="w-full max-w-md flex flex-col items-center text-center space-y-6">
           <div className="space-y-2">
@@ -74,7 +41,7 @@ const LoginPage: React.FC = () => {
             </AnatomyText.H1>
             
             <AnatomyText.Subtitle className="max-w-xs mx-auto">
-              Lorem Ipsum has been the industry's standard dummy text ever since.
+              Sabores Morelos, una experiencia culinaria auténtica en el corazón de Morelos.
             </AnatomyText.Subtitle>
           </div>
 
@@ -85,7 +52,7 @@ const LoginPage: React.FC = () => {
               placeholder="Enter username" 
               icon={User}
               required 
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => setUsername(e.target.value)}
             />
 
             <AnatomyTextField 
@@ -119,7 +86,6 @@ const LoginPage: React.FC = () => {
         {/* Footer */}
         <div className="pb-4 pt-8">
           <AnatomyText.Link  className="text-gray-500 font-normal hover:text-gray-700 hover:no-underline">
-            {/* Overriding the default Link color slightly for the footer style */}
             Need help? Contact support
           </AnatomyText.Link>
         </div>

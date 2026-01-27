@@ -7,7 +7,7 @@ import {
 // 1. DEFINE ROLES (Prevent typos)
 export const ROLES = {
   SUPER_ADMIN: 'super_admin',
-  ADMIN: 'admin',
+  ADMIN: 'restaurant_admin',
   MANAGER: 'manager',
 } as const;
 

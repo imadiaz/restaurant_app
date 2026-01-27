@@ -7,6 +7,7 @@ import Sidebar from './Sidebar';
 import { Building2, ArrowLeft } from 'lucide-react';
 import { useAppStore } from '../../store/app.store';
 import { useAuthStore } from '../../store/auth.store';
+import { isSuperAdmin } from '../../data/models/user/utils/user.utils';
 
 const DashboardLayout: React.FC = () => {
   const navigate = useNavigate();
@@ -26,7 +27,7 @@ const DashboardLayout: React.FC = () => {
   };
 
   // Logic: Show banner only if Super Admin is inside a restaurant
-  const showImpersonationBanner = user?.role === 'super_admin' && activeRestaurant;
+  const showImpersonationBanner = isSuperAdmin(user)&& activeRestaurant;
 
   return (
     // 1. UPDATED: Use semantic background and transition

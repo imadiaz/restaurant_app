@@ -1,18 +1,15 @@
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
+import { AppError, type ApiErrorResponse } from '../../data/models/api/api.types';
 
-// Create a single instance to use throughout the app
 const axiosClient = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'https://api.your-backend.com', // Use env variable
+  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:3000',
   headers: {
     'Content-Type': 'application/json',
   },
-  timeout: 10000, // 10 seconds timeout
+  timeout: 100000,
 });
 
-// Request Interceptor: Auto-attach token if it exists
 axiosClient.interceptors.request.use((config) => {
-  // We will read the token from localStorage (managed by Zustand persistence)
-  // Or you can access the store directly here if needed.
   const storage = localStorage.getItem('auth-storage');
   if (storage) {
     const parsed = JSON.parse(storage);
@@ -23,5 +20,36 @@ axiosClient.interceptors.request.use((config) => {
   }
   return config;
 });
+
+axiosClient.interceptors.response.use(
+  (response) => response.data,
+
+  (error: AxiosError<ApiErrorResponse>) => {
+    let errorMessage = 'Ocurrió un error inesperado';
+    let statusCode = 500;
+    let errorCode: string | undefined = undefined;
+    let validationErrors: string[] = [];
+
+    if (error.response) {
+      const serverData = error.response.data;
+      
+      statusCode = serverData.statusCode || error.response.status;
+      errorCode = serverData.errorCode; 
+
+      if (Array.isArray(serverData.message)) {
+        errorMessage = serverData.message[0];
+        validationErrors = serverData.message;
+      } else {
+        errorMessage = serverData.message || error.message;
+      }
+    } else if (error.request) {
+      errorMessage = 'No hay conexión con el servidor.';
+      statusCode = 0;
+    }
+    return Promise.reject(
+      new AppError(errorMessage, statusCode, errorCode, validationErrors)
+    );
+  }
+);
 
 export default axiosClient;

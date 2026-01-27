@@ -13,7 +13,7 @@ const RootRedirect = () => {
   }
 
   // 2. Check Configuration
-  const userRole = user.role as UserRole;
+  const userRole = user.role.name as UserRole;
   const config = ROLE_CONFIG[userRole];
 
   // 3. Role NOT recognized in config? -> Go to Unauthorized
