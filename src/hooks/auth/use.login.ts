@@ -3,7 +3,7 @@ import { useMutation } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom'; // Asumiendo React Router
 import { useAuthStore } from '../../store/auth.store';
 import { useErrorHandler } from '../use.error.handler';
-import { authService } from '../../service/authService';
+import { authService } from '../../service/auth.service';
 import { useAppStore } from '../../store/app.store';
 
 export const useLogin = () => {

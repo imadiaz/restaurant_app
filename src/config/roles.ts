@@ -11,6 +11,7 @@ export const ROLES = {
   MANAGER: 'manager',
 } as const;
 
+
 export type UserRole = typeof ROLES[keyof typeof ROLES];
 
 // 2. DEFINE MENU ITEMS (Centralized)

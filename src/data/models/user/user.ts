@@ -12,9 +12,11 @@ export interface User {
   firstName: string;
   lastName: string;
   username: string; 
+  profileImageUrl?: string;
   email?: string; 
   phone: string;
   role: Role; 
+  status: string;
   restaurant?: RestaurantLite;
   token?: string; 
 }

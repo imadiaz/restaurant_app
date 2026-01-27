@@ -1,21 +1,20 @@
 import React from 'react';
-import type { LucideIcon } from 'lucide-react';
 import AnatomyText from './AnatomyText'; // Import the new text system
 
 interface AnatomyTextFieldProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string;
-  icon?: LucideIcon;
+  icon?: React.ReactNode; // Changed from LucideIcon to ReactNode for flexibility
 }
 
 const AnatomyTextField: React.FC<AnatomyTextFieldProps> = ({ 
   label, 
-  icon: Icon, 
+  icon, 
   className = "",
   ...props 
 }) => {
   return (
-    <div className={`w-full text-left space-y-1 ${className}`}>
-      {/* Reusing the standardized Label */}
+    <div className={`w-full text-left space-y-1.5 ${className}`}>
+      {/* Label */}
       {label && (
         <AnatomyText.Label>
           {label}
@@ -23,18 +22,30 @@ const AnatomyTextField: React.FC<AnatomyTextFieldProps> = ({
       )}
       
       <div className="relative">
-        {Icon && (
-          <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-            <Icon className="h-5 w-5 text-gray-800" />
+        {/* ICON CONTAINER */}
+        {icon && (
+          <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-text-muted">
+            {/* We render the node directly now */}
+            {icon}
           </div>
         )}
         
+        {/* INPUT FIELD */}
         <input
           className={`
-            w-full py-3 pr-4 border border-gray-200 rounded-full 
+            w-full py-3 pr-4 border rounded-full font-medium transition-colors
+            
+            /* Light Mode Colors */
+            bg-white border-gray-200 text-gray-900 placeholder-gray-400
+            
+            /* Dark Mode Colors */
+            dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:placeholder-gray-500
+            
+            /* Focus States */
             focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary
-            transition-colors placeholder-gray-300
-            ${Icon ? 'pl-12' : 'pl-4'} 
+            
+            /* Spacing if icon exists */
+            ${icon ? 'pl-11' : 'pl-4'} 
           `}
           {...props}
         />

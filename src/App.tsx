@@ -40,6 +40,7 @@ function App() {
         <Route element={<RoleGuard allowedRoles={[ROLES.SUPER_ADMIN]} />}>
         <Route path="/admin" element={<DashboardLayout />}>
            <Route path="restaurants" element={<RestaurantsPage />} />
+            <Route path="users" element={<UsersPage />} />
           <Route path="restaurants/add" element={<AddRestaurantPage />} />
            <Route path="analytics" element={<>Analytics</>} />
            <Route path="settings" element={<>Seittings</>} />
