@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import {  useParams } from "react-router-dom";
 import {
-  Building2, MapPin, FileText, Phone, DollarSign, 
-  ImageIcon, Upload, Save, User as UserIcon, Globe
+  Building2, MapPin, FileText, Phone, 
+  ImageIcon, Save, Globe
 } from "lucide-react";
 import AnatomyButton from "../../components/anatomy/AnatomyButton";
 import AnatomySelect from "../../components/anatomy/AnatomySelect";
@@ -162,6 +162,7 @@ const RestaurantFormPage: React.FC = () => {
       const url = await uploadRestaurant(logoFile);
       console.log("URL LOGO", url);
       if (url) {
+        finalLogoUrl = url;
         setLogoPreview(url);
         setIsLogoUploaded(true);
       }
@@ -171,6 +172,7 @@ const RestaurantFormPage: React.FC = () => {
       const url = await uploadRestaurant(heroFile);
       console.log("URL BANNER", url);
       if (url) {
+        finalHeroUrl = url;
         setHeroPreview(url);
         setIsBannerUploaded(true);
       }

@@ -5,7 +5,7 @@ import type { Restaurant } from '../data/models/restaurant/restaurant';
 
 interface AppState {
   activeRestaurant: Restaurant | null;
-  setActiveRestaurant: (restaurant: Restaurant | null) => void;
+  setActiveRestaurant: (restaurant: Restaurant | null | undefined) => void;
 }
 
 export const useAppStore = create<AppState>()(

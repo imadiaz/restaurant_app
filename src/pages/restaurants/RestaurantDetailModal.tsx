@@ -1,6 +1,6 @@
 import React from 'react';
 import { 
-  X, MapPin, Phone, FileText, Clock, 
+  X, MapPin, Phone, FileText, 
   User, Building2, ExternalLink, Edit 
 } from 'lucide-react';
 import AnatomyButton from '../../components/anatomy/AnatomyButton';

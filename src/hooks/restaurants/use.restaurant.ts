@@ -58,7 +58,7 @@ export const useRestaurants = (restaurantId?: string) => {
   const updateMutation = useMutation({
     mutationFn: ({ id, data }: { id: string; data: UpdateRestaurantDto }) => 
       restaurantService.update(id, data),
-    onSuccess: (data) => {
+    onSuccess: () => {
       addToast('Restaurante actualizado', 'success');
       queryClient.invalidateQueries({ queryKey: ['restaurants'] });
     },

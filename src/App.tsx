@@ -51,7 +51,7 @@ function App() {
       </Route>
 
         {/* PROTECTED ROUTES (Requires login) */}
-        <Route element={<RoleGuard allowedRoles={[ROLES.ADMIN, ROLES.MANAGER]} />}>
+        <Route element={<RoleGuard allowedRoles={[ROLES.SUPER_ADMIN,ROLES.ADMIN, ROLES.MANAGER]} />}>
           <Route path="/dashboard" element={<DashboardLayout />}>
 
             <Route index element={<HomePage />} />

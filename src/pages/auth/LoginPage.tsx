@@ -4,6 +4,7 @@ import AnatomyButton from '../../components/anatomy/AnatomyButton';
 import { useState } from 'react';
 import AnatomyText from '../../components/anatomy/AnatomyText';
 import { useLogin } from '../../hooks/auth/use.login';
+import AnatomyTextFieldPassword from '../../components/anatomy/AnatomyTextFieldPassword';
 
 
 const LoginPage: React.FC = () => {
@@ -14,6 +15,9 @@ const LoginPage: React.FC = () => {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log(username);
+    console.log(password);
+
     login({ username, password });
   };
 
@@ -52,16 +56,16 @@ const LoginPage: React.FC = () => {
               placeholder="Enter username" 
               icon={<User />}
               required 
-              onChange={(e) => setUsername(e.target.value)}
+              onChange={(e) => setUsername(e.target.value.trim())}
             />
 
-            <AnatomyTextField 
+            <AnatomyTextFieldPassword 
               label="Password" 
               type="password"
               placeholder="Enter password" 
               icon={<Lock />}
               required
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(e) => setPassword(e.target.value.trim())}
             />
 
             <div className="w-full flex justify-start">

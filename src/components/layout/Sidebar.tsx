@@ -37,7 +37,6 @@ const Sidebar: React.FC<SidebarProps> = ({ mobile = false }) => {
   const isActive = (path: string) => location.pathname.includes(path);
 
   const getSidebarTitle = () => {
-    console.log("Active restaurant", activeRestaurant)
     if (activeRestaurant) return activeRestaurant.name;
     if (user?.role.name === ROLES.SUPER_ADMIN) return 'Super Admin Panel';
     return 'Restaurant'; 

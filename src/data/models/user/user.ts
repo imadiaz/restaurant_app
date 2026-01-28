@@ -12,6 +12,7 @@ export interface User {
   phone: string;
   role: Role; 
   status: string;
+  restaurantId?: string;
   restaurant?: Restaurant;
   token?: string; 
 }

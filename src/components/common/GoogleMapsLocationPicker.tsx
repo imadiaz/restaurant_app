@@ -3,7 +3,6 @@ import { GoogleMap, useJsApiLoader, MarkerF, Autocomplete } from "@react-google-
 import { Crosshair, Loader2, MapPin, Search } from "lucide-react";
 import { extractAddressComponents, type AddressResult } from "../../utils/maps/google.maps.utils";
 import AnatomyText from "../anatomy/AnatomyText";
-import { useToastStore } from "../../store/toast.store";
 
 
 
@@ -36,8 +35,6 @@ const LocationPicker: React.FC<LocationPickerProps> = ({
   const mapRef = useRef<google.maps.Map | null>(null);
   const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
 
-  const {addToast} = useToastStore();
-
   // --- 1. GEOLOCATION & INIT LOGIC ---
   useEffect(() => {
     if (initialLat && initialLng && initialLat !== 0) {
@@ -63,8 +60,6 @@ const LocationPicker: React.FC<LocationPickerProps> = ({
         },
         () => {
           console.log("Geolocation permission denied or failed. Using default center.");
-            let type: 'error' = 'error';
-          addToast("Permissions denied, please go to settings and enable the location permissions", type, 4000);
         }
       );
     }

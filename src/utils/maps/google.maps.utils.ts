@@ -1,4 +1,3 @@
-import types from '@react-google-maps/api';
 
 export interface AddressResult {
   streetAddress: string;

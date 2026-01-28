@@ -6,13 +6,14 @@ import axiosClient from "./api/axiosClient";
 export interface CreateUserDto {
   firstName: string;
   lastName: string;
-  username?: string; // Optional per your BE DTO
-  email?: string;    // Optional per your BE DTO
-  phone: string;     // Required
-  password: string;  // Required, complex regex
-  roleId: number;    // 1=Admin, 2=Restaurante, 3=Driver, 4=Cliente/Staff
-  profileImageUrl: string; // Required string URL
-  userAccessType?: string; // Optional (e.g., 'web')
+  username?: string; 
+  email?: string;    
+  phone: string;    
+  password: string;
+  roleId: number;
+  profileImageUrl: string;
+  userAccessType?: string;
+  restaurantId?: string;
 }
 
 export interface UpdateUserDto extends Partial<CreateUserDto> {

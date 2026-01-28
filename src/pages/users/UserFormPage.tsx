@@ -8,6 +8,7 @@ import {
   Lock,
   AtSign,
   Activity,
+  Store,
 } from "lucide-react";
 import AnatomyButton from "../../components/anatomy/AnatomyButton";
 import AnatomyRolesSelect from "../../components/anatomy/AnatomyRolesSelect";
@@ -22,6 +23,9 @@ import { useUsers } from "../../hooks/users/use.users";
 import type { UpdateUserDto, CreateUserDto } from "../../service/user.service";
 import { useToastStore } from "../../store/toast.store";
 import { useAppNavigation } from "../../hooks/navigation/use.app.navigation";
+import { useAuthStore } from "../../store/auth.store";
+import { useRestaurants } from "../../hooks/restaurants/use.restaurant";
+import { isSuperAdmin } from "../../data/models/user/utils/user.utils";
 
 
 
@@ -30,6 +34,7 @@ const UserFormPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const isEditMode = Boolean(id);
   const { createUser, updateUser, getUserById, isCreating, isUpdating } = useUsers();
+  const { restaurants, isLoading: loadingRestaurants } = useRestaurants();
   const { upload, isUploading } = useImagesUpload();
   const addToast = useToastStore((state) => state.addToast);
   const [firstName, setFirstName] = useState("");
@@ -40,9 +45,12 @@ const UserFormPage: React.FC = () => {
   const [password, setPassword] = useState("");
   const [roleId, setRoleId] = useState<number | undefined>();
   const [status, setStatus] = useState<string>("active");
-  
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const currentUser = useAuthStore(state => state.user);
+  const [selectedRestaurantId, setSelectedRestaurantId] = useState<string>(
+    !isSuperAdmin(currentUser) ? currentUser?.restaurant?.id || '' : ''
+  );
 
   
 const hasLoadedData = useRef(false);
@@ -65,6 +73,7 @@ const hasLoadedData = useRef(false);
             setRoleId(user.role?.id);
             setStatus(user.status || "active");
             setImagePreview(user.profileImageUrl || null);
+            setSelectedRestaurantId(user.restaurantId || "");
             hasLoadedData.current = true;
           }
         } catch (error) {
@@ -122,6 +131,7 @@ const hasLoadedData = useRef(false);
           roleId,
           status,
           profileImageUrl: finalImageUrl,
+          restaurantId: selectedRestaurantId,
         };
         
         if (password) {
@@ -141,6 +151,7 @@ const hasLoadedData = useRef(false);
           password,
           roleId,
           profileImageUrl: finalImageUrl,
+          restaurantId: selectedRestaurantId,
         };
         console.log("User saved", createPayload)
         await createUser(createPayload);
@@ -253,8 +264,37 @@ const hasLoadedData = useRef(false);
               <AnatomyText.H3 className="mb-0">Role & Security</AnatomyText.H3>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">     
+
+                 {isSuperAdmin(currentUser) && (
+             <div className="space-y-4 mt-6 md:col-span-2">
+                <div className="flex items-center gap-2">
+                   <Store className="w-5 h-5 text-text-muted" />
+                   <h3 className="font-semibold">Asignar Restaurante</h3>
+                </div>
+
+                {loadingRestaurants ? (
+                  <p className="text-sm text-gray-500">Cargando restaurantes...</p>
+                ) : (
+                  <AnatomySelect 
+                    className="w-full p-3 border rounded-lg bg-background"
+                    value={selectedRestaurantId}
+                    onChange={(e) => setSelectedRestaurantId(e.target.value)}
+                  >
+                    <option value="">-- Selecciona un Restaurante --</option>
+                    {restaurants.map(rest => (
+                      <option key={rest.id} value={rest.id}>
+                        {rest.name} - {rest.city}
+                      </option>
+                    ))}
+                  </AnatomySelect>
+                )}
+                <p className="text-xs text-gray-500">
+                  Este usuario solo tendrá acceso a los datos de este local.
+                </p>
+             </div>
+           )}
+
               {/* Role Select */}
               <div>
                  <AnatomyRolesSelect

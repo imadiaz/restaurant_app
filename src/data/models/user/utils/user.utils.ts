@@ -4,6 +4,7 @@ export const ROLES = {
   RESTAURANT_ADMIN: 2,
   DRIVER: 3,
   CLIENT: 4,
+  RESTAURANT_MANAGEMENT: 5
 };
 
 export const getUserDisplayName = (user: User | null): string => {

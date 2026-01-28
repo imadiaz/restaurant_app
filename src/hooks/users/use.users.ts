@@ -4,6 +4,7 @@ import { useToastStore } from '../../store/toast.store';
 import { userService, type UpdateUserDto } from '../../service/user.service';
 import { useAuthStore } from '../../store/auth.store';
 import { isSuperAdmin } from '../../data/models/user/utils/user.utils';
+import type { User } from '../../data/models/user/user';
 
 // Aceptamos un filtro opcional (restaurantId)
 export const useUsers = (restaurantId?: string) => {
@@ -32,7 +33,7 @@ export const useUsers = (restaurantId?: string) => {
     enabled: true, 
   });
 
-  const getUserById = async (id: string) => {
+  const getUserById = async (id: string): Promise<User | null> => {
     const cachedUsers = queryClient.getQueryData<any[]>(queryKey);
     const foundUser = cachedUsers?.find((u) => u.id === id);
 

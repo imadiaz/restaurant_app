@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, Mail, Phone, Edit, AtSign, ShieldCheck, Store } from 'lucide-react';
+import {  Mail, Phone, Edit, AtSign, ShieldCheck, Store } from 'lucide-react';
 import AnatomyText from '../../components/anatomy/AnatomyText';
 import AnatomyButton from '../../components/anatomy/AnatomyButton';
 import type { User } from '../../data/models/user/user';

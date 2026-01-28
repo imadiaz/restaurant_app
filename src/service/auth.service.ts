@@ -1,27 +1,12 @@
 import type { ApiResponse } from "../data/models/api/api.types";
 import type { LoginCredentials } from "../data/models/auth/login.credentials";
-import type { Restaurant } from "../data/models/restaurant/restaurant";
 import type { User } from "../data/models/user/user";
 import axiosClient from "./api/axiosClient";
 
 
 interface LoginResponsePayload {
   access_token: string;
-  user: {
-    id: string;
-    email: string;
-    username: string;
-    firstName?: string; 
-    lastName?: string; 
-    phone: string;
-    role: {
-      id: number;
-      name: string;
-      description?: string;
-    };
-    status: string;
-    restaurant?: Restaurant
-  };
+  user: User
 }
 
 export const authService = {
@@ -43,6 +28,7 @@ export const authService = {
       role: user.role,
       token: access_token,
       status: user.status,
+      restaurantId: user.restaurantId,
       restaurant: user.restaurant
     };
 

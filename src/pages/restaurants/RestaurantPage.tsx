@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Plus, MapPin, ExternalLink, MoreVertical, TrendingUp, Store, DollarSign, Clock } from 'lucide-react';
+import { Plus, Store} from 'lucide-react';
 import { useAppStore } from '../../store/app.store';
 import AnatomyButton from '../../components/anatomy/AnatomyButton';
 import AnatomySearchBar from '../../components/anatomy/AnatomySearchBar';

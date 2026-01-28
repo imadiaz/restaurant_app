@@ -1,5 +1,5 @@
 import React from 'react';
-import { Bell, Info, Menu, PanelLeft } from 'lucide-react';
+import { Bell, Info, Menu, PanelLeft, User } from 'lucide-react';
 import { useLayoutStore } from '../../store/layout.store';
 import { useAuthStore } from '../../store/auth.store';
 import ThemeToggle from '../common/ThemeToggle';
@@ -63,12 +63,17 @@ const Header: React.FC<HeaderProps> = ({ onMobileMenuClick }) => {
 
         {/* User Profile */}
         <div className="flex items-center gap-3 cursor-pointer p-2 -mr-2 hover:bg-background rounded-xl transition-colors">
-          <div className="w-8 h-8 rounded-full overflow-hidden border border-border">
-             <img 
-               src={user?.profileImageUrl || "https://ui-avatars.com/api/?name=User&background=random"} 
-               alt={user?.username}
-               className="w-full h-full object-cover" 
-             />
+          <div className="w-8 h-8 rounded-full overflow-hidden border border-border bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
+             {user?.profileImageUrl ? (
+               <img 
+                 src={user.profileImageUrl} 
+                 alt={user.username || "User"}
+                 className="w-full h-full object-cover" 
+               />
+             ) : (
+               /* Fallback Icon if no image */
+               <User className="w-4 h-4 text-text-muted" />
+             )}
           </div>
           <div className="hidden sm:block text-right">
             <p className="text-sm font-semibold text-text-main leading-none">

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Clock, Save, Copy, CheckCircle, AlertCircle } from 'lucide-react';
+import { Clock, Save, Copy, AlertCircle } from 'lucide-react';
 import AnatomyButton from '../../components/anatomy/AnatomyButton';
 import AnatomyText from '../../components/anatomy/AnatomyText';
 import { useToastStore } from '../../store/toast.store';

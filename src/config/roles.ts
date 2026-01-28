@@ -1,6 +1,6 @@
 import { 
-  LayoutDashboard, ShoppingBag, Coffee, Users, 
-  Settings, Building2, BarChart3, Shield, 
+   ShoppingBag, Coffee, Users, 
+   Building2, Shield, 
   Calendar
 } from 'lucide-react';
 import { Routes } from './routes';
