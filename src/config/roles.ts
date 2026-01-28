@@ -1,7 +1,9 @@
 import { 
    ShoppingBag, Coffee, Users, 
    Building2, Shield, 
-  Calendar
+  Calendar,
+  Menu,
+  Album
 } from 'lucide-react';
 import { Routes } from './routes';
 
@@ -22,10 +24,11 @@ const MENUS = {
     { label: 'All Users', path: `/admin${Routes.Users}`, icon: Shield },
   ],
   RESTAURANT: [
-    { label: 'Orders', path: '/dashboard/orders', icon: ShoppingBag },
-    { label: 'Products', path: '/dashboard/products', icon: Coffee },
+    //{ label: 'Orders', path: '/dashboard/orders', icon: ShoppingBag },
+    { label: 'Menu Sections', path: '/dashboard/menu-sections', icon: Album },
+   // { label: 'Products', path: '/dashboard/products', icon: Coffee },
     { label: 'Team', path: `/dashboard${Routes.Users}`, icon: Users },
-    { label: 'Schedule', path: '/dashboard/schedule', icon: Calendar },
+   // { label: 'Schedule', path: '/dashboard/schedule', icon: Calendar },
   ]
 };
 

@@ -139,9 +139,7 @@ const hasLoadedData = useRef(false);
         }
         console.log("User updated", updatePayload);
         await updateUser({id, data: updatePayload});
-        goBack();
       } else {
-
         const createPayload: CreateUserDto = {
           firstName,
           lastName,
@@ -155,24 +153,12 @@ const hasLoadedData = useRef(false);
         };
         console.log("User saved", createPayload)
         await createUser(createPayload);
-        handleClearInputs();
       }
+      goBack();
     } catch (error) {
       console.error("Error saving user:", error);
       addToast(isEditMode ? "Failed to update user" : "Failed to create user", "error");
     }
-  };
-
-  const handleClearInputs = () => {
-    setFirstName("");
-    setLastName("");
-    setUsername("");
-    setEmail("");
-    setPhone("");
-    setPassword("");
-    setRoleId(undefined);
-    setImageFile(null);
-    setImagePreview(null);
   };
 
   const pageTitle = isEditMode ? "Edit User" : "Add New User";

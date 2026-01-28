@@ -8,4 +8,7 @@ export const Routes = {
   Users: '/users',
   UserAdd: '/users/add',
   UserEdit: (id: string) => `/users/edit/${id}`,
+  MenuSectionsAdd: '/menu-sections/add',
+  MenuSectionsEdit: (id: string) => `/menu-sections/edit/${id}`,
+
 };

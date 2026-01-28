@@ -19,6 +19,8 @@ import SchedulePage from './pages/schedule/SchedulePage';
 import ThemeManager from './components/managers/ThemeManager';
 import UserFormPage from './pages/users/UserFormPage';
 import RestaurantFormPage from './pages/restaurants/RestaurantFormPage';
+import MenuSectionsPage from './pages/menuSections/MenuSectionPage';
+import MenuSectionFormPage from './pages/menuSections/MenuSectionFormPage';
 
 function App() {
 
@@ -59,9 +61,12 @@ function App() {
             <Route path="users" element={<UsersPage />} />
             <Route path="users/add" element={<UserFormPage />} />
             <Route path="users/edit/:id" element={<UserFormPage/>} />
+            <Route path="menu-sections" element={<MenuSectionsPage />} />
+            <Route path="menu-sections/add" element={<MenuSectionFormPage />} />
+            <Route path="menu-sections/edit/:id" element={<MenuSectionFormPage/>} />
             <Route path="products" element={<ProductsPage />} />
             <Route path="products/add" element={<AddProductPage />} />
-              <Route path="schedule" element={<SchedulePage />} />
+            <Route path="schedule" element={<SchedulePage />} />
 
           </Route>
         </Route>

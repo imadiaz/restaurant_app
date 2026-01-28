@@ -1,9 +1,14 @@
-import { MoreVertical, Mail, Phone } from "lucide-react";
+import { MoreVertical, Mail, Phone, Edit, ExternalLink } from "lucide-react";
 import AnatomyText from "../../../components/anatomy/AnatomyText";
 import type { User } from "../../../data/models/user/user";
+import AnatomyTag from "../../../components/anatomy/AnatomyTag";
+import AnatomyButton from "../../../components/anatomy/AnatomyButton";
+import { Routes } from "../../../config/routes";
+import { useAppNavigation } from "../../../hooks/navigation/use.app.navigation";
 
 // --- USER CARD COMPONENT ---
 const UserCard = ({ user, onClick }: { user: User; onClick: () => void }) => {
+  const {navigateTo} = useAppNavigation();
   const getRoleStyle = (roleName: string) => {
     const normalized = roleName?.toLowerCase() || "";
     if (normalized.includes("super_admin"))
@@ -22,13 +27,8 @@ const UserCard = ({ user, onClick }: { user: User; onClick: () => void }) => {
 
   return (
     <div
-      onClick={onClick}
       className="bg-background-card p-6 rounded-3xl shadow-sm border border-border flex flex-col items-center text-center hover:shadow-md transition-all cursor-pointer group relative"
     >
-      <button className="absolute top-4 right-4 text-text-muted hover:text-text-main">
-        <MoreVertical className="w-5 h-5" />
-      </button>
-
       {/* Avatar */}
       <div className="w-20 h-20 rounded-full mb-4 border-2 border-background-card shadow-sm overflow-hidden group-hover:scale-105 transition-transform duration-300 ring-2 ring-gray-100 dark:ring-gray-700">
         <img
@@ -85,6 +85,25 @@ const UserCard = ({ user, onClick }: { user: User; onClick: () => void }) => {
     {user.status}
   </span>
 </div>
+
+
+           <div className="grid grid-cols-2 gap-3 pt-2 border-t border-border">
+          <AnatomyButton
+            variant="secondary" 
+            fullWidth
+            onClick={() => navigateTo(Routes.UserEdit(user.id))}
+                        className="px-0 h-10 text-xs"
+          >
+             <Edit className="w-4 h-4 mr-2" /> Edit
+          </AnatomyButton>
+
+          <AnatomyButton
+            className="px-0 h-10 text-xs"
+            onClick={onClick}
+          >
+            Detalles <ExternalLink className="w-3.5 h-3.5 ml-2" />
+          </AnatomyButton>
+        </div>
       </div>
     </div>
   );
