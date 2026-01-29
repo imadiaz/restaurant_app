@@ -35,7 +35,7 @@ const UserFormPage: React.FC = () => {
   const {goBack} = useAppNavigation();
   const { id } = useParams<{ id: string }>();
   const isEditMode = Boolean(id);
-  const { createUser, updateUser, getUserById, isCreating, isUpdating } = useUsers();
+  const { createUser, updateUser, getUserById, isCreating, isUpdating, isLoading: isLoadingUser } = useUsers();
   const { restaurants, isLoading: loadingRestaurants } = useRestaurants();
   const { upload, isUploading } = useImagesUpload();
   const addToast = useToastStore((state) => state.addToast);
@@ -163,7 +163,7 @@ const hasLoadedData = useRef(false);
 
   const pageTitle = isEditMode ? t('users.edit') : t('users.add');
   const pageSubtitle = isEditMode ? `${t('users.update_details_for')} ${firstName} ${lastName}` : t('users.create_account');
-  const isLoading = isCreating || isUploading || isUpdating;
+  const isLoading = isCreating || isUploading || isUpdating || isLoadingUser;
 
   return (
     <BasePageLayout

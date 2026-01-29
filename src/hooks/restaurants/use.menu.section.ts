@@ -11,13 +11,11 @@ export const useMenuSections = (restaurantIdInput?: string) => {
   const { handleError } = useErrorHandler();
   const addToast = useToastStore((state) => state.addToast);
   
-  // Get active restaurant from global state if not passed as argument
   const { activeRestaurant } = useAppStore((state) => state);
   const effectiveRestaurantId = restaurantIdInput || activeRestaurant?.id;
 
   const queryKey = ['menu-sections', effectiveRestaurantId || 'all'];
 
-  // --- QUERIES ---
   const { 
     data: sections = [], 
     isLoading, 
@@ -29,14 +27,12 @@ export const useMenuSections = (restaurantIdInput?: string) => {
       if (effectiveRestaurantId) {
         return menuSectionService.getAllByRestaurantId(effectiveRestaurantId);
       }
-      return Promise.resolve([]); // Return empty if no restaurant selected
+      return Promise.resolve([]);
     },
     enabled: !!effectiveRestaurantId, 
   });
 
-  // --- HELPER: Get By ID (Cache First) ---
   const getSectionById = async (id: string): Promise<MenuSection | null> => {
-    // 1. Try Cache
     const cachedSections = queryClient.getQueryData<MenuSection[]>(queryKey);
     const foundSection = cachedSections?.find((s) => s.id === id);
 
@@ -44,7 +40,6 @@ export const useMenuSections = (restaurantIdInput?: string) => {
       return foundSection;
     }
 
-    // 2. Fallback to API
     try {
       return await menuSectionService.getById(id);
     } catch (error) {
@@ -53,7 +48,6 @@ export const useMenuSections = (restaurantIdInput?: string) => {
     }
   };
 
-  // --- MUTATIONS ---
   const createMutation = useMutation({
     mutationFn: menuSectionService.create,
     onSuccess: () => {

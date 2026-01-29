@@ -20,7 +20,7 @@ const MenuSectionFormPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const isEditMode = Boolean(id);
   const { activeRestaurant } = useAppStore();
-  const { createSection, updateSection, getSectionById, isCreating, isUpdating } = useMenuSections();
+  const { createSection, updateSection, getSectionById, isCreating, isUpdating, isLoading: isLoadingSections } = useMenuSections();
   const addToast = useToastStore((state) => state.addToast);
   const [name, setName] = useState("");
   const [sortOrder, setSortOrder] = useState<number>(0);
@@ -75,7 +75,7 @@ const MenuSectionFormPage: React.FC = () => {
     }
   };
 
-  const isLoading = isCreating || isUpdating;
+  const isLoading = isCreating || isUpdating || isLoadingSections;
 
   return (
     <BasePageLayout

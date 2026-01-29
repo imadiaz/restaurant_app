@@ -1,40 +1,47 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useErrorHandler } from '../use.error.handler';
 import { useToastStore } from '../../store/toast.store';
-import { userService, type UpdateUserDto } from '../../service/user.service';
+import { userService, type CreateUserDto, type UpdateUserDto } from '../../service/user.service';
 import { useAuthStore } from '../../store/auth.store';
 import { isSuperAdmin } from '../../data/models/user/utils/user.utils';
 import type { User } from '../../data/models/user/user';
+import { useAppStore } from '../../store/app.store';
 
-// Aceptamos un filtro opcional (restaurantId)
-export const useUsers = (restaurantId?: string) => {
+export const useUsers = (restaurantIdOverride?: string) => {
   const queryClient = useQueryClient();
   const { handleError } = useErrorHandler();
   const addToast = useToastStore((state) => state.addToast);
-  const {user} = useAuthStore((state) => state);
+  const { user } = useAuthStore((state) => state);
+  const { activeRestaurant } = useAppStore((state) => state);
 
-  const queryKey = ['users', restaurantId || 'all'];
+  const effectiveRestaurantId = restaurantIdOverride || activeRestaurant?.id;
 
+  const queryKey = ['users', effectiveRestaurantId || 'all'];
 
-  // --- QUERIES ---
   const { 
     data: users = [], 
     isLoading, 
     isError,
   } = useQuery({
     queryKey: queryKey,
-    queryFn: () => {
-      console.log("🚀 Fetching users with restaurantId:", restaurantId);
-      if (restaurantId && !isSuperAdmin(user)) {
-        return userService.getAllByRestaurantId(restaurantId);
+    queryFn: async () => {
+      console.log("🚀 Fetching users. Effective Restaurant Context:", effectiveRestaurantId || "NONE (Global)");
+
+      if (effectiveRestaurantId) {
+         return userService.getAllByRestaurantId(effectiveRestaurantId);
       }
-      return userService.getAll();
+
+      if (isSuperAdmin(user)) {
+         return userService.getAll();
+      }
+
+      return []; 
     },
     enabled: true, 
   });
 
   const getUserById = async (id: string): Promise<User | null> => {
-    const cachedUsers = queryClient.getQueryData<any[]>(queryKey);
+    const cachedUsers = queryClient.getQueryData<User[]>(queryKey);
     const foundUser = cachedUsers?.find((u) => u.id === id);
 
     if (foundUser) {
@@ -50,11 +57,17 @@ export const useUsers = (restaurantId?: string) => {
   };
 
   const createMutation = useMutation({
-    mutationFn: userService.create,
+    mutationFn: (data: CreateUserDto) => {
+      const finalData = { ...data };
+      if (activeRestaurant?.id && !finalData.restaurantId) {
+          finalData.restaurantId = activeRestaurant.id;
+      }
+      return userService.create(finalData);
+    },
     onSuccess: (data) => {
       console.log("🚀 User created:", data);
       addToast('Usuario creado correctamente', 'success');
-      queryClient.invalidateQueries({ queryKey: ['users'] });
+      queryClient.invalidateQueries({ queryKey });
     },
     onError: handleError,
   });
@@ -64,7 +77,7 @@ export const useUsers = (restaurantId?: string) => {
       userService.update(id, data),
     onSuccess: () => {
       addToast('Usuario actualizado', 'success');
-      queryClient.invalidateQueries({ queryKey: ['users'] });
+      queryClient.invalidateQueries({ queryKey });
     },
     onError: handleError,
   });
@@ -78,7 +91,7 @@ export const useUsers = (restaurantId?: string) => {
     // Actions
     createUser: createMutation.mutateAsync,
     updateUser: updateMutation.mutateAsync,
-    getUserById: getUserById,
+    getUserById,
     
     // States
     isCreating: createMutation.isPending,

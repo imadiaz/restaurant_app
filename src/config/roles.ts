@@ -26,7 +26,7 @@ const MENUS = {
   RESTAURANT: [
     //{ label: 'Orders', path: '/dashboard/orders', icon: ShoppingBag },
     { label: 'Menu Sections', path: '/dashboard/menu-sections', icon: Album },
-   // { label: 'Products', path: '/dashboard/products', icon: Coffee },
+    { label: 'Products', path: '/dashboard/products', icon: Coffee },
     { label: 'Team', path: `/dashboard${Routes.Users}`, icon: Users },
    // { label: 'Schedule', path: '/dashboard/schedule', icon: Calendar },
   ]

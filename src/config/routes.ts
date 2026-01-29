@@ -10,5 +10,6 @@ export const Routes = {
   UserEdit: (id: string) => `/users/edit/${id}`,
   MenuSectionsAdd: '/menu-sections/add',
   MenuSectionsEdit: (id: string) => `/menu-sections/edit/${id}`,
-
+  ProudctAdd: '/products/add',
+  ProudctEdit: (id: string) => `/products/edit/${id}`,
 };

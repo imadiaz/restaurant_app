@@ -6,7 +6,6 @@ import DashboardLayout from './components/layout/DashboardLayout';
 import OrdersPage from './pages/orders/OrdersPage';
 import UsersPage from './pages/users/UsersPage';
 import ProductsPage from './pages/products/ProductsPage';
-import AddProductPage from './pages/products/AddProductPage';
 import { ToastProvider } from './components/common/ToastProvider';
 import SocketManager from './components/managers/SocketManager';
 import RestaurantsPage from './pages/restaurants/RestaurantPage';
@@ -21,6 +20,7 @@ import UserFormPage from './pages/users/UserFormPage';
 import RestaurantFormPage from './pages/restaurants/RestaurantFormPage';
 import MenuSectionsPage from './pages/menuSections/MenuSectionPage';
 import MenuSectionFormPage from './pages/menuSections/MenuSectionFormPage';
+import ProductFormPage from './pages/products/ProductFormPage';
 
 function App() {
 
@@ -65,7 +65,8 @@ function App() {
             <Route path="menu-sections/add" element={<MenuSectionFormPage />} />
             <Route path="menu-sections/edit/:id" element={<MenuSectionFormPage/>} />
             <Route path="products" element={<ProductsPage />} />
-            <Route path="products/add" element={<AddProductPage />} />
+            <Route path="products/add" element={<ProductFormPage />} />
+            <Route path="products/edit/:id" element={<ProductFormPage />} />
             <Route path="schedule" element={<SchedulePage />} />
 
           </Route>

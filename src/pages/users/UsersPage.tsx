@@ -6,7 +6,6 @@ import {
 } from "lucide-react";
 import AnatomySearchBar from "../../components/anatomy/AnatomySearchBar";
 import { useUsers } from "../../hooks/users/use.users";
-import { useAppStore } from "../../store/app.store";
 import type { User } from "../../data/models/user/user";
 import BasePageLayout from "../../components/layout/BaseLayout";
 import AnatomyRolesSelect from "../../components/anatomy/AnatomyRolesSelect";
@@ -18,8 +17,7 @@ import { useTranslation } from "react-i18next";
 
 const UsersPage: React.FC = () => {
   const {t} = useTranslation();
-  const { activeRestaurant } = useAppStore();
-  const { users, isLoading: isLoadingUsers } = useUsers(activeRestaurant?.id);
+  const { users, isLoading: isLoadingUsers } = useUsers();
   const [searchQuery, setSearchQuery] = useState("");
   const [roleFilter, setRoleFilter] = useState("All");
   const { navigateTo } = useAppNavigation();
@@ -85,7 +83,8 @@ const UsersPage: React.FC = () => {
           <UserCard
             key={user.id}
             user={user}
-            onClick={() => handleUserClick(user)}
+            onEdit={() => navigateTo(Routes.UserEdit(user.id))}
+            onViewDetails={() => handleUserClick(user)}
           />
         ))}
       </div>

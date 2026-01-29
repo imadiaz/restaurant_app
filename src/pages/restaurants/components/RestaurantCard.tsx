@@ -8,6 +8,8 @@ import type {
 } from "../../../data/models/restaurant/restaurant";
 import { useTranslation } from "react-i18next";
 import { STATUS } from "../../../config/status.config";
+import AnatomyCardActions from "../../../components/anatomy/AnatomyCardActions";
+import AnatomyTag from "../../../components/anatomy/AnatomyTag";
 
 interface RestaurantCardProps {
   restaurant: Restaurant;
@@ -22,7 +24,7 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({
   onEdit,
   onViewDetail,
 }) => {
-  const {t} = useTranslation();
+  const { t } = useTranslation();
   const getPriceSymbol = (range: PriceRange) => {
     const map = {
       inexpensive: "$",
@@ -56,30 +58,14 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({
         )}
 
         <div className="absolute top-3 right-3 flex gap-2">
-          <span
-            className={`
-              inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide border shadow-sm backdrop-blur-md
-              ${
-                restaurant.status === STATUS.active
-                  ? "bg-green-100/90 text-green-700 border-green-200"
-                  : "bg-red-100/90 text-red-700 border-red-200"
-              }
-            `}
+          <AnatomyTag
+            variant={`${restaurant.status == STATUS.active ? "success" : "error"}`}
           >
             {restaurant.status}
-          </span>
-          <span
-            className={`
-              inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide border shadow-sm backdrop-blur-md
-              ${
-                restaurant.isOpen
-                  ? "bg-blue-100/90 text-blue-700 border-blue-200"
-                  : "bg-gray-100/90 text-gray-600 border-gray-200"
-              }
-            `}
-          >
-            {restaurant.isOpen ? t('common.open') : t('common.closed')}
-          </span>
+          </AnatomyTag>
+          <AnatomyTag variant={`${restaurant.isOpen ? "primary" : "error"}`}>
+            {restaurant.isOpen ? t("common.open") : t("common.closed")}
+          </AnatomyTag>
         </div>
       </div>
 
@@ -99,7 +85,7 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({
             )}
           </div>
 
-          <div className="mb-1">
+          <div className="mb-1 mt-2">
             <AnatomyText.Label className="px-2 py-1 bg-gray-50 dark:bg-gray-900 rounded-lg border border-border">
               {getPriceSymbol(restaurant.priceRange)}
             </AnatomyText.Label>
@@ -126,7 +112,7 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({
                 <img
                   src={restaurant.user.profileImageUrl}
                   alt={restaurant.user.firstName}
-                  className="w-full h-full object-cover" 
+                  className="w-full h-full object-cover"
                 />
               ) : (
                 <User className="w-4 h-4 text-text-muted" />
@@ -135,7 +121,7 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({
 
             <div className="min-w-0 flex flex-col">
               <AnatomyText.Label className="text-[10px] leading-none mb-0.5">
-                {t('restaurants.owner')}
+                {t("restaurants.owner")}
               </AnatomyText.Label>
               <AnatomyText.Body className="text-xs font-bold !text-text-main truncate leading-tight">
                 {restaurant.user.firstName} {restaurant.user.lastName}
@@ -143,31 +129,18 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({
             </div>
           </div>
         )}
-
-        <div className="mt-auto"></div>
-
-        <div className="grid grid-cols-2 gap-3 pt-2 border-t border-border">
-          <AnatomyButton
-            variant="secondary"
-            className="px-0 h-10 text-xs"
-            onClick={(e) => {
-              e.stopPropagation();
-              onEdit();
-            }}
-          >
-            <Edit className="w-3.5 h-3.5 mr-2" /> {t('common.edit')}
-          </AnatomyButton>
-
-          <AnatomyButton
-            className="px-0 h-10 text-xs"
-            onClick={(e) => {
-              e.stopPropagation();
-              onEnterDashboard();
-            }}
-          >
-            {t('common.dashboard')} <ExternalLink className="w-3.5 h-3.5 ml-2" />
-          </AnatomyButton>
-        </div>
+        <AnatomyCardActions
+          secondary={{
+            label: t("common.edit"),
+            icon: Edit,
+            onClick: onEdit,
+          }}
+          primary={{
+            label: t("common.details"),
+            icon: ExternalLink,
+            onClick: onEnterDashboard,
+          }}
+        />
       </div>
     </div>
   );
