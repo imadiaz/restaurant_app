@@ -10,9 +10,11 @@ import type { Restaurant } from '../../data/models/restaurant/restaurant';
 import { Routes } from '../../config/routes';
 import { RestaurantCard } from './components/RestaurantCard';
 import RestaurantDetailModal from './RestaurantDetailModal';
+import { useTranslation } from 'react-i18next';
 
 
 const RestaurantsPage: React.FC = () => {
+  const {t} = useTranslation();
   const { isLoading, restaurants } = useRestaurants();
   const [searchQuery, setSearchQuery] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -36,11 +38,11 @@ const RestaurantsPage: React.FC = () => {
 
   return(
     <BasePageLayout
-      title="Restaurants"
-      subtitle="Manage your franchise locations"
+      title={t('restaurants.restaurants')}
+      subtitle={t('restaurants.description')}
       headerActions={
         <AnatomyButton onClick={() => navigateTo(Routes.RestaurantAdd)}>
-          <Plus className="w-5 h-5 mr-2" /> Add New Restaurant
+          <Plus className="w-5 h-5 mr-2" /> {t('restaurants.add')}
         </AnatomyButton>
       }
       isLoading={isLoading}
@@ -49,14 +51,14 @@ const RestaurantsPage: React.FC = () => {
         <>
           <div className="w-full md:flex-1">
             <AnatomySearchBar
-              placeholder="Search by name..."
+              placeholder={t('common.search')}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
         </>
       }
-      emptyLabel="No restaurants found."
+      emptyLabel={t('restaurants.empty')}
       emptyIcon={Store}
     >
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-10">

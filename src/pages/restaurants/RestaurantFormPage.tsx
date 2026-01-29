@@ -19,15 +19,16 @@ import { useToastStore } from "../../store/toast.store";
 import type { AddressResult } from "../../utils/maps/google.maps.utils";
 import GoogleMapsLocationPicker from "../../components/common/GoogleMapsLocationPicker";
 import { ROLES } from "../../config/roles";
+import { useTranslation } from "react-i18next";
 
 
 
 const RestaurantFormPage: React.FC = () => {
+  const {t} = useTranslation();
   const { goBack } = useAppNavigation();
   const { id } = useParams<{ id: string }>();
   const isEditMode = Boolean(id);
 
-  // Hooks
   const { 
     createRestaurant, 
     updateRestaurant, 
@@ -42,23 +43,16 @@ const RestaurantFormPage: React.FC = () => {
   const addToast = useToastStore((state) => state.addToast);
 
   const filteredUsers = allUsers.filter((value) => value.role.name == ROLES.ADMIN)
-
-  // --- FORM STATE ---
-  // General
   const [userId, setUserId] = useState("");
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [priceRange, setPriceRange] = useState<PriceRange>("moderate");
   const [commissionRate, setCommissionRate] = useState<number>(20);
   const [avgPrepTime, setAvgPrepTime] = useState<number>(25);
-
-  // Legal / Contact
   const [rfc, setRfc] = useState("");
   const [legalName, setLegalName] = useState("");
   const [publicPhone, setPublicPhone] = useState("");
   const [privatePhone, setPrivatePhone] = useState("");
-
-  // Location
   const [streetAddress, setStreetAddress] = useState("");
   const [colony, setColony] = useState("");
   const [city, setCity] = useState("");
@@ -66,26 +60,18 @@ const RestaurantFormPage: React.FC = () => {
   const [zipCode, setZipCode] = useState("");
   const [lat, setLat] = useState<number>(0);
   const [lng, setLng] = useState<number>(0);
-  
-  // Status
   const [status, setStatus] = useState("active");
-
   const [isLogoUploaded, setIsLogoUploaded] = useState(false);
   const [isBannerUploaded, setIsBannerUploaded] = useState(false);
-
-  // Images
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
   const [heroFile, setHeroFile] = useState<File | null>(null);
   const [heroPreview, setHeroPreview] = useState<string | null>(null);
-
-  // Loading Guard
   const hasLoadedData = useRef(false);
     useEffect(() => {
       hasLoadedData.current = false;
     }, [id]);
 
-  // --- 3. LOAD DATA (Edit Mode) ---
   useEffect(() => {
     if (isEditMode && id && !hasLoadedData.current) {
       const loadData = async () => {
@@ -126,7 +112,6 @@ const RestaurantFormPage: React.FC = () => {
     }
   }, [isEditMode, id, getRestaurantById]);
 
-  // --- 4. MAP SELECTION HANDLER ---
   const handleLocationSelect = (data: AddressResult) => {
     setStreetAddress(data.streetAddress);
     setColony(data.colony);
@@ -137,21 +122,19 @@ const RestaurantFormPage: React.FC = () => {
     setLng(data.lng);
   };
 
-  // --- 5. SAVE HANDLER ---
   const handleSave = async () => {
-    // Validation
     if (!name || !userId || !streetAddress || !zipCode || !city || !description) {
-      addToast("Please fill in required fields (Name, Owner, Address, Zip, City, Description)", "error");
+      addToast(t('restaurants.fields_validation'), "error");
       return;
     }
     
     if (lat === 0 && lng === 0) {
-      addToast("Please select a location on the map", "warning");
+      addToast(t('restaurants.validation_select_location'), "warning");
       return;
     }
 
     if(rfc == "" || rfc == null || rfc.length < 10) {
-        addToast("Invalid format for RFC","error");
+        addToast(t('restaurants.validation_rfc'),"error");
         return;
     }
 
@@ -202,7 +185,7 @@ const RestaurantFormPage: React.FC = () => {
         await updateRestaurant({id, data: payload});
       } else {
          if(finalLogoUrl == null || finalLogoUrl == "" || finalHeroUrl == null || finalHeroUrl == "") {
-            addToast("You need to upload an image and logo","error");
+            addToast(t('images.required_image'),"error");
             return;
         }
         const payload: CreateRestaurantDto = payloadBase;
@@ -219,37 +202,34 @@ const RestaurantFormPage: React.FC = () => {
 
   return (
     <BasePageLayout
-      title={isEditMode ? "Edit Restaurant" : "New Restaurant"}
-      subtitle={isEditMode ? `Managing ${name}` : "Onboard a new client franchise"}
+      title={isEditMode ? t('restaurants.edit') : t('restaurants.new')}
+      subtitle={isEditMode ? `${t('restaurants.managing')} ${name}` : t('restaurants.onboard_new')}
       showNavBack={true}
       headerActions={
         <div className="flex gap-3">
           <AnatomyButton onClick={handleSave} disabled={isLoading}>
-            {isLoading ? "Processing..." : <><Save className="w-4 h-4 mr-2"/> Save</>}
+            {isLoading ? t('common.loading') : <><Save className="w-4 h-4 mr-2"/> {t('common.save')}</>}
           </AnatomyButton>
         </div>
       }
       isLoading={isLoading}
     >
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 pb-20">
-        
-        {/* --- LEFT COLUMN (2/3): FORM DATA --- */}
-        <div className="lg:col-span-2 space-y-6">
+                <div className="lg:col-span-2 space-y-6">
           
-          {/* General Info */}
           <div className="bg-background-card p-6 rounded-3xl shadow-sm border border-border space-y-6">
             <div className="flex items-center gap-2 mb-2 pb-2 border-b border-border">
               <Building2 className="w-5 h-5 text-primary" />
-              <AnatomyText.H3 className="mb-0">General Information</AnatomyText.H3>
+              <AnatomyText.H3 className="mb-0">{t('restaurants.general_information')}</AnatomyText.H3>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="md:col-span-2">
                  <AnatomyTextField 
-                   label="Restaurant Name" 
+                   label={t('restaurants.field_name')}
                    value={name} 
                    onChange={e => setName(e.target.value)} 
-                   placeholder="e.g. Burger King Centro"
+                   placeholder="e.g. Burger King"
                    required
                  />
               </div>
@@ -257,11 +237,11 @@ const RestaurantFormPage: React.FC = () => {
               {/* Owner Selection */}
               <div className="md:col-span-2">
                  <AnatomySelect 
-                    label="Restaurant Owner (User)"
+                     label={t('restaurants.field_owner')}
                     value={userId}
                     onChange={e => setUserId(e.target.value)}
                  >
-                    <option value="">Select an Owner...</option>
+                    <option value="">{t('restaurants.select_owner')}</option>
                     {filteredUsers?.map(user => (
                       <option key={user.id} value={user.id}>
                     {user.firstName} {user.lastName} {` - @${user.username}`}
@@ -269,12 +249,12 @@ const RestaurantFormPage: React.FC = () => {
                     ))}
                  </AnatomySelect>
                  <AnatomyText.Small className="text-xs text-text-muted mt-1 block">
-                   * The user who will manage this restaurant.
+                   * {t('restaurants.field_owner_help')}.
                  </AnatomyText.Small>
               </div>
 
               <AnatomySelect 
-                label="Price Range"
+                label={t('restaurants.price_range')}
                 value={priceRange}
                 onChange={e => setPriceRange(e.target.value as PriceRange)}
               >
@@ -285,7 +265,7 @@ const RestaurantFormPage: React.FC = () => {
               </AnatomySelect>
 
               <AnatomyTextField 
-                label="Commission Rate (%)"
+                label={t('restaurants.commission_rate')}
                 type="number"
                 value={commissionRate}
                 onChange={e => setCommissionRate(Number(e.target.value))}
@@ -294,7 +274,7 @@ const RestaurantFormPage: React.FC = () => {
               
                <div className="md:col-span-2">
                  <AnatomyTextField 
-                   label="Description"
+                   label={t('common.description')}
                    value={description}
                    onChange={e => setDescription(e.target.value)}
                    placeholder="Best burgers in town..."
@@ -302,7 +282,7 @@ const RestaurantFormPage: React.FC = () => {
                </div>
 
                <AnatomyTextField 
-                   label="Time of preparation in minutes (Ej, 30, 40)"
+                   label={t('restaurants.time_preparation')}
                    value={avgPrepTime}
                    type="number"
                    onChange={e => setAvgPrepTime(Number(e.target.value))}
@@ -311,14 +291,12 @@ const RestaurantFormPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Location - NOW WITH MAP */}
           <div className="bg-background-card p-6 rounded-3xl shadow-sm border border-border space-y-6">
             <div className="flex items-center gap-2 mb-2 pb-2 border-b border-border">
               <MapPin className="w-5 h-5 text-primary" />
-              <AnatomyText.H3 className="mb-0">Location & Coordinates</AnatomyText.H3>
+              <AnatomyText.H3 className="mb-0">{t('restaurants.location_and_coordinates')}</AnatomyText.H3>
             </div>
 
-            {/* --- MAP COMPONENT --- */}
             <div className="mb-6">
                 <GoogleMapsLocationPicker 
                     apiKey={import.meta.env.VITE_GOOGLE_MAPS_KEY}
@@ -330,17 +308,16 @@ const RestaurantFormPage: React.FC = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="md:col-span-2">
-                <AnatomyTextField label="Street Address" value={streetAddress} onChange={e => setStreetAddress(e.target.value)} required />
+                <AnatomyTextField label={t('common.street_address')} value={streetAddress} onChange={e => setStreetAddress(e.target.value)} required />
               </div>
-              <AnatomyTextField label="Colony" value={colony} onChange={e => setColony(e.target.value)} />
-              <AnatomyTextField label="Zip Code" value={zipCode} onChange={e => setZipCode(e.target.value)} required />
-              <AnatomyTextField label="City" value={city} onChange={e => setCity(e.target.value)} required />
-              <AnatomyTextField label="State" value={stateGeo} onChange={e => setStateGeo(e.target.value)} required />
+              <AnatomyTextField label={t('common.colony')} value={colony} onChange={e => setColony(e.target.value)} />
+              <AnatomyTextField label={t('common.zip_code')} value={zipCode} onChange={e => setZipCode(e.target.value)} required />
+              <AnatomyTextField label={t('common.city')} value={city} onChange={e => setCity(e.target.value)} required />
+              <AnatomyTextField label={t('common.state')} value={stateGeo} onChange={e => setStateGeo(e.target.value)} required />
 
-              {/* Read Only Coordinates (User sets them via Map) */}
               <div className="opacity-80">
                 <AnatomyTextField 
-                    label="Latitude" 
+                    label={t('common.latitude')} 
                     value={lat} 
                     disabled
                     readOnly
@@ -349,7 +326,7 @@ const RestaurantFormPage: React.FC = () => {
               </div>
               <div className="opacity-80">
                 <AnatomyTextField 
-                    label="Longitude" 
+                    label={t('common.longitude')}
                     value={lng} 
                     readOnly
                     disabled
@@ -359,28 +336,25 @@ const RestaurantFormPage: React.FC = () => {
             </div>
           </div>
 
-           {/* Legal & Contact */}
            <div className="bg-background-card p-6 rounded-3xl shadow-sm border border-border space-y-6">
             <div className="flex items-center gap-2 mb-2 pb-2 border-b border-border">
               <FileText className="w-5 h-5 text-primary" />
-              <AnatomyText.H3 className="mb-0">Legal & Contact</AnatomyText.H3>
+              <AnatomyText.H3 className="mb-0">{t('restaurants.legal_contact')}</AnatomyText.H3>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-               <AnatomyTextField label="RFC" value={rfc} onChange={e => setRfc(e.target.value)} placeholder="XAXX010101000" minLength={10} maxLength={15} />
-               <AnatomyTextField label="Legal Name" value={legalName} onChange={e => setLegalName(e.target.value)} />
-               <AnatomyTextField label="Public Phone" value={publicPhone} onChange={e => setPublicPhone(e.target.value)} icon={<Phone className="w-4 h-4"/>} />
-               <AnatomyTextField label="Private Phone" value={privatePhone} onChange={e => setPrivatePhone(e.target.value)} icon={<Phone className="w-4 h-4"/>} />
+               <AnatomyTextField label={t('restaurants.rfc')} value={rfc} onChange={e => setRfc(e.target.value)} placeholder="XAXX010101000" minLength={10} maxLength={15} />
+               <AnatomyTextField label={t('restaurants.legal_name')} value={legalName} onChange={e => setLegalName(e.target.value)} />
+               <AnatomyTextField label={t('restaurants.public_phone')} value={publicPhone} onChange={e => setPublicPhone(e.target.value)} icon={<Phone className="w-4 h-4"/>} />
+               <AnatomyTextField label={t('restaurants.private_phone')}value={privatePhone} onChange={e => setPrivatePhone(e.target.value)} icon={<Phone className="w-4 h-4"/>} />
             </div>
            </div>
 
         </div>
 
-        {/* --- RIGHT COLUMN (1/3): IMAGES & STATUS --- */}
         <div className="space-y-6">
           
-          {/* Logo Upload */}
           <div className="bg-background-card p-6 rounded-3xl shadow-sm border border-border flex flex-col items-center text-center">
-             <AnatomyText.H3 className="mb-2">Logo</AnatomyText.H3>
+             <AnatomyText.H3 className="mb-2">{t('common.logo')}</AnatomyText.H3>
              <div className="relative group mb-4">
                <div className="w-40 h-40 rounded-full border-4 border-border shadow-inner overflow-hidden relative bg-gray-50 dark:bg-gray-800 flex items-center justify-center">
                  {logoPreview ? (
@@ -388,7 +362,7 @@ const RestaurantFormPage: React.FC = () => {
                  ) : (
                    <div className="text-center text-text-muted">
                       <ImageIcon className="w-8 h-8 mx-auto mb-1" />
-                      <span className="text-xs">Upload Logo</span>
+                      <span className="text-xs">{t('images.upload_logo')}</span>
                    </div>
                  )}
                  <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity rounded-full cursor-pointer">
@@ -410,14 +384,14 @@ const RestaurantFormPage: React.FC = () => {
 
           {/* Hero Image Upload */}
           <div className="bg-background-card p-6 rounded-3xl shadow-sm border border-border">
-             <AnatomyText.H3 className="mb-4">Cover Image</AnatomyText.H3>
+             <AnatomyText.H3 className="mb-4">{t('images.cover_image')}</AnatomyText.H3>
              <div className="w-full h-32 rounded-xl border-2 border-dashed border-border flex items-center justify-center relative overflow-hidden bg-gray-50 dark:bg-gray-800">
                 {heroPreview ? (
                    <img src={heroPreview} alt="Cover" className="w-full h-full object-cover" />
                 ) : (
                    <div className="text-center text-text-muted">
                       <ImageIcon className="w-8 h-8 mx-auto mb-1" />
-                      <span className="text-xs">Upload Cover</span>
+                      <span className="text-xs">{t('images.upload_cover')}</span>
                    </div>
                 )}
                 <input type="file" accept="image/*" className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" onChange={(e) => {
@@ -433,13 +407,12 @@ const RestaurantFormPage: React.FC = () => {
              </div>
           </div>
 
-          {/* Status (Edit Mode Only) */}
           {isEditMode && (
              <div className="bg-background-card p-6 rounded-3xl shadow-sm border border-border">
-                <AnatomySelect label="Status" value={status} onChange={e => setStatus(e.target.value)}>
-                   <option value="active">Active</option>
-                   <option value="inactive">Inactive</option>
-                   <option value="suspended">Suspended</option>
+                <AnatomySelect label={t('common.status')} value={status} onChange={e => setStatus(e.target.value)}>
+                   <option value="active">{t('status.status_active')}</option>
+                   <option value="inactive">{t('status.status_inactive')}</option>
+                   <option value="suspended">{t('status.status_suspended')}</option>
                 </AnatomySelect>
              </div>
           )}

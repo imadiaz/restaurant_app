@@ -14,17 +14,17 @@ import UserDetailModal from "./UserDetailModal";
 import { useAppNavigation } from "../../hooks/navigation/use.app.navigation";
 import { Routes } from "../../config/routes";
 import UserCard from "./components/UserCard";
+import { useTranslation } from "react-i18next";
 
 const UsersPage: React.FC = () => {
+  const {t} = useTranslation();
   const { activeRestaurant } = useAppStore();
   const { users, isLoading: isLoadingUsers } = useUsers(activeRestaurant?.id);
-
   const [searchQuery, setSearchQuery] = useState("");
   const [roleFilter, setRoleFilter] = useState("All");
   const { navigateTo } = useAppNavigation();
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-
   const filteredUsers = (users || []).filter((user) => {
     const fullName = `${user.firstName} ${user.lastName}`.toLowerCase();
     const matchesSearch =
@@ -46,11 +46,11 @@ const UsersPage: React.FC = () => {
 
   return (
     <BasePageLayout
-      title="Users"
-      subtitle="Manage team members and permissions"
+      title={t('users.user')}
+      subtitle={t('users.description')}
       headerActions={
         <AnatomyButton onClick={() => navigateTo(Routes.UserAdd)}>
-          <Plus className="w-5 h-5 mr-2" /> Add New User
+          <Plus className="w-5 h-5 mr-2" /> {t('users.add')}
         </AnatomyButton>
       }
       isLoading={isLoadingUsers}
@@ -59,7 +59,7 @@ const UsersPage: React.FC = () => {
         <>
           <div className="w-full md:flex-1">
             <AnatomySearchBar
-              placeholder="Search..."
+              placeholder={t('common.search')}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
@@ -75,7 +75,7 @@ const UsersPage: React.FC = () => {
           </div>
         </>
       }
-      emptyLabel="No users found matching your search."
+      emptyLabel={t('users.empty')}
       emptyIcon={UserIcon}
     >
       <>

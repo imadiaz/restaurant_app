@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
-import { FolderOpen, ArrowUpDown, Save, AlertCircle } from "lucide-react";
+import {  ArrowUpDown, Save, AlertCircle } from "lucide-react";
 import AnatomyButton from "../../components/anatomy/AnatomyButton";
 import AnatomyText from "../../components/anatomy/AnatomyText";
 import AnatomyTextField from "../../components/anatomy/AnatomyTextField";
@@ -10,9 +10,12 @@ import { useMenuSections } from "../../hooks/restaurants/use.menu.section";
 import type { CreateMenuSectionDto } from "../../service/menu.service";
 import { useAppStore } from "../../store/app.store";
 import { useToastStore } from "../../store/toast.store";
+import { useTranslation } from "react-i18next";
 
 
 const MenuSectionFormPage: React.FC = () => {
+    const {t} = useTranslation();
+
   const { goBack } = useAppNavigation();
   const { id } = useParams<{ id: string }>();
   const isEditMode = Boolean(id);
@@ -43,12 +46,12 @@ const MenuSectionFormPage: React.FC = () => {
 
   const handleSave = async () => {
     if (!name.trim()) {
-      addToast("Section name is required", "error");
+      addToast(t('menuSections.validation_name'), "error");
       return;
     }
 
     if (!activeRestaurant?.id) {
-       addToast("System Error: No active restaurant selected context.", "error");
+       addToast(t('errors.no_active_restaurant'), "error");
        return;
     }
 
@@ -60,7 +63,7 @@ const MenuSectionFormPage: React.FC = () => {
         });
       } else {
         const payload: CreateMenuSectionDto = {
-          restaurantId: activeRestaurant.id, // Auto-inject ID
+          restaurantId: activeRestaurant.id,
           name,
           sortOrder: Number(sortOrder)
         };
@@ -69,7 +72,6 @@ const MenuSectionFormPage: React.FC = () => {
       goBack();
     } catch (error) {
       console.error(error);
-      // Hook might handle error toast, but safe to have fallback
     }
   };
 
@@ -77,13 +79,13 @@ const MenuSectionFormPage: React.FC = () => {
 
   return (
     <BasePageLayout
-      title={isEditMode ? "Edit Section" : "New Menu Section"}
-      subtitle={isEditMode ? `Editing "${name}"` : "Create a category for your menu items"}
+      title={isEditMode ? t('menuSections.edit'): t('menuSections.add')}
+      subtitle={isEditMode ? `${t('common.editing')} "${name}"` : t('menuSections.add_description')}
       showNavBack={true}
       headerActions={
         <div className="flex gap-3">
           <AnatomyButton onClick={handleSave} disabled={isLoading}>
-            {isLoading ? "Saving..." : <><Save className="w-4 h-4 mr-2"/> Save Section</>}
+            {isLoading ? t('common.loading'): <><Save className="w-4 h-4 mr-2"/> {t('common.save')}</>}
           </AnatomyButton>
         </div>
       }
@@ -93,9 +95,9 @@ const MenuSectionFormPage: React.FC = () => {
            <div className="mb-6 bg-red-50 border border-red-200 rounded-2xl p-4 flex items-start gap-3">
               <AlertCircle className="w-5 h-5 text-red-600 mt-0.5" />
               <div>
-                 <AnatomyText.H3 className="!text-red-700 text-sm">Context Error</AnatomyText.H3>
+                 <AnatomyText.H3 className="!text-red-700 text-sm">{t('errors.error')}</AnatomyText.H3>
                  <AnatomyText.Body className="!text-red-600 text-xs">
-                    You are not inside a specific restaurant dashboard. We cannot create a section without knowing which restaurant it belongs to.
+                    {t('errors.no_active_restaurant_description')}
                  </AnatomyText.Body>
               </div>
            </div>
@@ -105,9 +107,8 @@ const MenuSectionFormPage: React.FC = () => {
            
 
            <div className="grid grid-cols-1 gap-6">
-              {/* Name Input */}
               <AnatomyTextField 
-                label="Section Name" 
+                label={t('menuSections.section_name')}
                 placeholder="e.g. Starters, Breakfast, Drinks" 
                 value={name} 
                 onChange={e => setName(e.target.value)} 
@@ -115,10 +116,9 @@ const MenuSectionFormPage: React.FC = () => {
                 disabled={!activeRestaurant}
               />
               
-              {/* Sort Order Input */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
                  <AnatomyTextField 
-                   label="Sort Order" 
+                   label={t('menuSections.sort_order')}
                    type="number"
                    value={sortOrder} 
                    onChange={e => setSortOrder(Number(e.target.value))} 
@@ -127,11 +127,10 @@ const MenuSectionFormPage: React.FC = () => {
                    disabled={!activeRestaurant}
                  />
                  
-                 {/* Helper Text Area */}
                  <div className="bg-gray-50 dark:bg-gray-900/50 p-4 rounded-xl border border-border">
-                    <AnatomyText.Label className="mb-1 block">Pro Tip</AnatomyText.Label>
+                    <AnatomyText.Label className="mb-1 block">{t('common.pro_tips')}</AnatomyText.Label>
                     <AnatomyText.Small className="leading-relaxed">
-                       Lower numbers appear first (e.g. 0, 1, 2). Use increments of 10 (10, 20, 30) so you can easily insert new sections in between later.
+                       {t('menuSections.sort_tips')}
                     </AnatomyText.Small>
                  </div>
               </div>

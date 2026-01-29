@@ -1,0 +1,21 @@
+{
+  "common": {
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "edit": "Edit",
+    "delete": "Delete",
+    "status": "Status",
+    "active": "Active",
+    "inactive": "Inactive",
+    "need_help":"Need heelp? Contact support"
+  },
+  "login": {
+    "login":"Iniciar sesion",
+    "login_description": "Morelos flavours is an a unique experience located in the center of the Morelos"
+  },
+  "forms": {
+    "username":"Usuario",
+    "password":"Contrasena",
+    "forgot_password":"Forgot password?"
+  }
+}

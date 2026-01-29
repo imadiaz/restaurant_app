@@ -8,34 +8,29 @@ import { Building2, ArrowLeft } from 'lucide-react';
 import { useAppStore } from '../../store/app.store';
 import { useAuthStore } from '../../store/auth.store';
 import { isSuperAdmin } from '../../data/models/user/utils/user.utils';
+import { useTranslation } from 'react-i18next';
 
 const DashboardLayout: React.FC = () => {
+  const {t} = useTranslation();
   const navigate = useNavigate();
   const { isSidebarCollapsed } = useLayoutStore();
   const { activeRestaurant, setActiveRestaurant } = useAppStore(); 
   const { user } = useAuthStore();
   const [isMobileOpen, setIsMobileOpen] = useState(false);
 
-  // --- HANDLERS ---
   const handleMobileClose = () => setIsMobileOpen(false);
   const handleMobileToggle = () => setIsMobileOpen(!isMobileOpen);
 
-  // EXIT IMPERSONATION
   const handleExitRestaurant = () => {
     setActiveRestaurant(null); 
     navigate('/admin/restaurants'); 
   };
 
-  // Logic: Show banner only if Super Admin is inside a restaurant
   const showImpersonationBanner = isSuperAdmin(user)&& activeRestaurant;
 
   return (
-    // 1. UPDATED: Use semantic background and transition
     <div className="min-h-screen bg-background text-text-main font-sans flex flex-col transition-colors duration-300">
-      
-      {/* ----------------------------------------------------
-          1. MOBILE SIDEBAR
-         ---------------------------------------------------- */}
+    
       <div className={`md:hidden fixed inset-0 z-50 ${isMobileOpen ? 'pointer-events-auto' : 'pointer-events-none'}`}>
         <div 
           className={`absolute inset-0 bg-black/50 transition-opacity duration-300 ${isMobileOpen ? 'opacity-100' : 'opacity-0'}`}
@@ -46,16 +41,10 @@ const DashboardLayout: React.FC = () => {
         </div>
       </div>
 
-      {/* ----------------------------------------------------
-          2. DESKTOP SIDEBAR
-         ---------------------------------------------------- */}
       <div className="hidden md:block fixed left-0 top-0 bottom-0 z-40">
         <Sidebar />
       </div>
 
-      {/* ----------------------------------------------------
-          3. MAIN CONTENT AREA
-         ---------------------------------------------------- */}
       <div 
         className={`
           flex flex-col min-h-screen transition-all duration-300 ease-in-out
@@ -63,14 +52,9 @@ const DashboardLayout: React.FC = () => {
           ${isSidebarCollapsed ? 'md:ml-20' : 'md:ml-64'}
         `}
       >
-        
-        {/* === STICKY HEADER GROUP ===
-            We wrap the Banner AND the Header in one sticky div.
-            This ensures the Header always sits perfectly below the banner.
-        */}
+
         <div className="sticky top-0 z-30 flex flex-col shadow-sm">
           
-          {/* SUPER ADMIN CONTEXT BANNER */}
           {showImpersonationBanner && (
             <div className="bg-gray-900 text-white px-4 md:px-6 py-2 flex items-center justify-between border-b border-gray-800">
               <div className="flex items-center gap-3">
@@ -78,7 +62,7 @@ const DashboardLayout: React.FC = () => {
                   <Building2 className="w-4 h-4 text-primary" />
                 </div>
                 <div>
-                  <p className="text-[10px] text-gray-400 font-medium uppercase tracking-wider">Viewing As Admin</p>
+                  <p className="text-[10px] text-gray-400 font-medium uppercase tracking-wider">{t('dashboard.view_as_admin')}</p>
                   <p className="text-sm font-bold text-white leading-none">{activeRestaurant?.name}</p>
                 </div>
               </div>
@@ -88,18 +72,16 @@ const DashboardLayout: React.FC = () => {
                 className="text-xs font-bold bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded-lg transition-colors flex items-center text-white"
               >
                 <ArrowLeft className="w-3 h-3 mr-2" />
-                <span className="hidden sm:inline">Back to Global</span>
-                <span className="sm:hidden">Exit</span>
+                <span className="hidden sm:inline">{t('dashboard.back_global')}</span>
+                <span className="sm:hidden">{t('common.exit')}</span>
               </button>
             </div>
           )}
 
-          {/* MAIN HEADER */}
           <Header onMobileMenuClick={handleMobileToggle} />
           
         </div>
 
-        {/* PAGE CONTENT */}
         <main className="flex-1 p-6 overflow-x-hidden">
           <Outlet /> 
         </main>

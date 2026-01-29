@@ -6,15 +6,14 @@ import { useAuthStore } from '../../store/auth.store';
 import { useAppStore } from '../../store/app.store';
 import AnatomyText from '../anatomy/AnatomyText';
 import { getMenuForRole, ROLES, type UserRole } from '../../config/roles';
-
-
-
+import { useTranslation } from 'react-i18next';
 
 interface SidebarProps {
   mobile?: boolean;
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ mobile = false }) => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
   const { isSidebarCollapsed } = useLayoutStore();
@@ -25,11 +24,9 @@ const Sidebar: React.FC<SidebarProps> = ({ mobile = false }) => {
     navigate('/');
   };
   
-  // Get Context
   const { activeRestaurant } = useAppStore();
   const user = useAuthStore((state) => state.user);
 
-  // DECIDE MENU
   const menuItems = user 
     ? getMenuForRole(user.role.name as UserRole, !!activeRestaurant) 
     : [];
@@ -39,7 +36,7 @@ const Sidebar: React.FC<SidebarProps> = ({ mobile = false }) => {
   const getSidebarTitle = () => {
     if (activeRestaurant) return activeRestaurant.name;
     if (user?.role.name === ROLES.SUPER_ADMIN) return 'Super Admin Panel';
-    return 'Restaurant'; 
+    return t('restaurants.restaurants'); 
   };
 
   return (
@@ -49,10 +46,8 @@ const Sidebar: React.FC<SidebarProps> = ({ mobile = false }) => {
       ${mobile ? 'w-full' : (isSidebarCollapsed ? 'w-20' : 'w-64')}
     `}>
       
-      {/* LOGO AREA */}
       <div className="h-20 flex items-center justify-center border-b border-border px-4">
         
-        {/* LOGO LOGIC */}
         {activeRestaurant && activeRestaurant.logoUrl ? (
           <img 
             src={activeRestaurant.logoUrl} 
@@ -65,7 +60,6 @@ const Sidebar: React.FC<SidebarProps> = ({ mobile = false }) => {
           </div>
         )}
 
-        {/* TITLE TEXT */}
         {(!isSidebarCollapsed || mobile) && (
           <div className="ml-3 overflow-hidden">
              <AnatomyText.Body className="text-sm font-bold truncate leading-tight text-text-main">
@@ -74,14 +68,13 @@ const Sidebar: React.FC<SidebarProps> = ({ mobile = false }) => {
              
              {activeRestaurant && (
                <p className="text-[10px] text-text-muted font-medium uppercase tracking-wider truncate">
-                 Restaurant
+                 {t('restaurants.restaurants')}
                </p>
              )}
           </div>
         )}
       </div>
 
-      {/* MENU ITEMS */}
       <div className="flex-1 py-6 space-y-2 overflow-y-auto px-3">
         {menuItems.map((item) => (
           <button
@@ -104,7 +97,6 @@ const Sidebar: React.FC<SidebarProps> = ({ mobile = false }) => {
         ))}
       </div>
 
-      {/* FOOTER */}
       <div className="p-4 border-t border-border">
         <button 
           onClick={handleLogout}
@@ -114,7 +106,7 @@ const Sidebar: React.FC<SidebarProps> = ({ mobile = false }) => {
           `}
         >
           <LogOut className={`w-5 h-5 ${(!isSidebarCollapsed || mobile) ? 'mr-3' : ''}`} />
-          {(!isSidebarCollapsed || mobile) && <span className="font-medium text-sm">Logout</span>}
+          {(!isSidebarCollapsed || mobile) && <span className="font-medium text-sm">{t('login.logout')}</span>}
         </button>
       </div>
 

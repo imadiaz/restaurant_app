@@ -2,6 +2,7 @@ import React from 'react';
 import AnatomySelect from './AnatomySelect';
 import { Loader2 } from 'lucide-react';
 import { useRoles } from '../../hooks/role/use.role';
+import { useTranslation } from 'react-i18next';
 
 interface AnatomyRolesSelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
   label?: string;
@@ -17,7 +18,7 @@ const AnatomyRolesSelect: React.FC<AnatomyRolesSelectProps> = ({
   disabled,
   ...props 
 }) => {
-  
+  const {t} = useTranslation();
   const { roles, isLoading } = useRoles();
   if (isLoading) {
     return (
@@ -34,8 +35,8 @@ const AnatomyRolesSelect: React.FC<AnatomyRolesSelectProps> = ({
       disabled={disabled}
       {...props}
     >
-      {showAllOption && <option value="All">All Roles</option>}
-      {!showAllOption && <option value="select">Select a role</option>}
+      {showAllOption && <option value="All">{t('roles.all')}</option>}
+      {!showAllOption && <option value="select">{t('roles.select_role')}</option>}
 
       {roles?.map((role) => (
         <option 

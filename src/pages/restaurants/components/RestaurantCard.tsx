@@ -6,6 +6,8 @@ import type {
   Restaurant,
   PriceRange,
 } from "../../../data/models/restaurant/restaurant";
+import { useTranslation } from "react-i18next";
+import { STATUS } from "../../../config/status.config";
 
 interface RestaurantCardProps {
   restaurant: Restaurant;
@@ -20,6 +22,7 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({
   onEdit,
   onViewDetail,
 }) => {
+  const {t} = useTranslation();
   const getPriceSymbol = (range: PriceRange) => {
     const map = {
       inexpensive: "$",
@@ -35,7 +38,6 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({
       onClick={onViewDetail}
       className="bg-background-card rounded-3xl overflow-hidden shadow-sm border border-border hover:shadow-md transition-all group relative flex flex-col h-full cursor-pointer"
     >
-      {/* 1. HERO IMAGE */}
       <div className="h-32 w-full bg-gray-100 dark:bg-gray-800 relative">
         {restaurant.heroImageUrl ? (
           <>
@@ -45,7 +47,6 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({
               className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
             />
 
-            {/* ✅ THE OVERLAY: Black opacity layer */}
             <div className="absolute inset-0 bg-black/40 transition-opacity duration-300 group-hover:opacity-50" />
           </>
         ) : (
@@ -54,13 +55,12 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({
           </div>
         )}
 
-        {/* Status Badges (Custom colors, so we keep spans but use Anatomy logic where possible) */}
         <div className="absolute top-3 right-3 flex gap-2">
           <span
             className={`
               inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide border shadow-sm backdrop-blur-md
               ${
-                restaurant.status === "active"
+                restaurant.status === STATUS.active
                   ? "bg-green-100/90 text-green-700 border-green-200"
                   : "bg-red-100/90 text-red-700 border-red-200"
               }
@@ -78,14 +78,12 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({
               }
             `}
           >
-            {restaurant.isOpen ? "Open" : "Closed"}
+            {restaurant.isOpen ? t('common.open') : t('common.closed')}
           </span>
         </div>
       </div>
 
-      {/* 2. MAIN CONTENT */}
       <div className="p-5 pt-0 flex-1 flex flex-col">
-        {/* Logo Overlap */}
         <div className="flex justify-between items-end -mt-8 mb-3 relative z-10">
           <div className="w-16 h-16 rounded-2xl rounded-full overflow-hidden bg-background-card border border-background-card shadow-sm">
             {restaurant.logoUrl ? (
@@ -101,7 +99,6 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({
             )}
           </div>
 
-          {/* Price Tag */}
           <div className="mb-1">
             <AnatomyText.Label className="px-2 py-1 bg-gray-50 dark:bg-gray-900 rounded-lg border border-border">
               {getPriceSymbol(restaurant.priceRange)}
@@ -109,7 +106,6 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({
           </div>
         </div>
 
-        {/* Name & Address */}
         <div className="mb-4 space-y-1">
           <AnatomyText.H3 className="line-clamp-1" title={restaurant.name}>
             {restaurant.name}
@@ -123,28 +119,23 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({
           </div>
         </div>
 
-        {/* 3. OWNER INFO */}
         {restaurant.user && (
           <div className="mb-5 p-2.5 rounded-xl bg-gray-50 dark:bg-gray-900/50 border border-border flex items-center gap-3">
-            {/* Avatar Container */}
             <div className="w-8 h-8 rounded-full bg-background-card flex items-center justify-center shadow-sm border border-border overflow-hidden shrink-0">
-              {/* Check if URL exists */}
               {restaurant.user.profileImageUrl ? (
                 <img
                   src={restaurant.user.profileImageUrl}
                   alt={restaurant.user.firstName}
-                  className="w-full h-full object-cover" // Forces image to fill circle
+                  className="w-full h-full object-cover" 
                 />
               ) : (
-                // Fallback Icon (Centered via parent flex)
                 <User className="w-4 h-4 text-text-muted" />
               )}
             </div>
 
-            {/* Text Info */}
             <div className="min-w-0 flex flex-col">
               <AnatomyText.Label className="text-[10px] leading-none mb-0.5">
-                Owner
+                {t('restaurants.owner')}
               </AnatomyText.Label>
               <AnatomyText.Body className="text-xs font-bold !text-text-main truncate leading-tight">
                 {restaurant.user.firstName} {restaurant.user.lastName}
@@ -153,10 +144,8 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({
           </div>
         )}
 
-        {/* Spacer */}
         <div className="mt-auto"></div>
 
-        {/* 4. ACTIONS */}
         <div className="grid grid-cols-2 gap-3 pt-2 border-t border-border">
           <AnatomyButton
             variant="secondary"
@@ -166,7 +155,7 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({
               onEdit();
             }}
           >
-            <Edit className="w-3.5 h-3.5 mr-2" /> Edit
+            <Edit className="w-3.5 h-3.5 mr-2" /> {t('common.edit')}
           </AnatomyButton>
 
           <AnatomyButton
@@ -176,7 +165,7 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({
               onEnterDashboard();
             }}
           >
-            Dashboard <ExternalLink className="w-3.5 h-3.5 ml-2" />
+            {t('common.dashboard')} <ExternalLink className="w-3.5 h-3.5 ml-2" />
           </AnatomyButton>
         </div>
       </div>

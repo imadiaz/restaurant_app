@@ -4,6 +4,7 @@ import { useLayoutStore } from '../../store/layout.store';
 import { useAuthStore } from '../../store/auth.store';
 import ThemeToggle from '../common/ThemeToggle';
 import { getUserDisplayName } from '../../data/models/user/utils/user.utils';
+import { useTranslation } from 'react-i18next';
 
 
 interface HeaderProps {
@@ -11,16 +12,15 @@ interface HeaderProps {
 }
 
 const Header: React.FC<HeaderProps> = ({ onMobileMenuClick }) => {
+  const { t } = useTranslation();
   const user = useAuthStore((state) => state.user);
   const { toggleSidebar, isSidebarCollapsed } = useLayoutStore();
 
   return (
     <header className="h-16 bg-background-card border-b border-border flex items-center justify-between px-6 sticky top-0 z-30 transition-colors duration-300">
       
-      {/* LEFT SIDE: Toggle Buttons */}
       <div className="flex items-center gap-4">
         
-        {/* MOBILE Toggle (Visible only on Mobile) */}
         <button 
           onClick={onMobileMenuClick} 
           className="md:hidden p-2 hover:bg-background rounded-lg text-text-muted transition-colors"
@@ -28,7 +28,6 @@ const Header: React.FC<HeaderProps> = ({ onMobileMenuClick }) => {
           <Menu className="w-6 h-6" />
         </button>
 
-        {/* DESKTOP Toggle (Visible only on Desktop) */}
         <button 
           onClick={toggleSidebar} 
           className="hidden md:block p-2 hover:bg-background rounded-lg text-text-muted hover:text-text-main transition-colors"
@@ -36,20 +35,12 @@ const Header: React.FC<HeaderProps> = ({ onMobileMenuClick }) => {
         >
           {isSidebarCollapsed ? <Menu className="w-6 h-6" /> : <PanelLeft className="w-6 h-6" />}
         </button>
-
-        {/* Logo Text for Mobile Header */}
-        <div className="md:hidden font-bold text-lg text-text-main">
-           Uber<span className="text-primary">Eats</span>
-        </div>
       </div>
 
-      {/* RIGHT SIDE */}
       <div className="flex items-center gap-6 ml-auto">
         
-        {/* Theme Toggle Button */}
         <ThemeToggle />
 
-        {/* Notifications & Info */}
         <div className="flex items-center gap-4 border-r border-border pr-6">
           <button className="relative p-2 text-text-muted hover:bg-background hover:text-text-main rounded-full transition-colors">
             <Bell className="w-5 h-5" />
@@ -61,17 +52,15 @@ const Header: React.FC<HeaderProps> = ({ onMobileMenuClick }) => {
           </button>
         </div>
 
-        {/* User Profile */}
         <div className="flex items-center gap-3 cursor-pointer p-2 -mr-2 hover:bg-background rounded-xl transition-colors">
           <div className="w-8 h-8 rounded-full overflow-hidden border border-border bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
              {user?.profileImageUrl ? (
                <img 
                  src={user.profileImageUrl} 
-                 alt={user.username || "User"}
+                 alt={user.username || t('users.user')}
                  className="w-full h-full object-cover" 
                />
              ) : (
-               /* Fallback Icon if no image */
                <User className="w-4 h-4 text-text-muted" />
              )}
           </div>
@@ -79,9 +68,8 @@ const Header: React.FC<HeaderProps> = ({ onMobileMenuClick }) => {
             <p className="text-sm font-semibold text-text-main leading-none">
               {getUserDisplayName(user) || 'Admin'}
             </p>
-            {/* Optional Role Subtext */}
             <p className="text-xs text-text-muted mt-0.5 capitalize">
-              {user?.role.name?.replace('_', ' ') || 'User'}
+              {user?.role.name?.replace('_', ' ') || t('users.user')}
             </p>
           </div>
         </div>

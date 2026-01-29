@@ -10,9 +10,11 @@ import type { MenuSection } from '../../data/models/menu/menu.section';
 import { useAppNavigation } from '../../hooks/navigation/use.app.navigation';
 import { useMenuSections } from '../../hooks/restaurants/use.menu.section';
 import { Routes } from '../../config/routes';
+import { useTranslation } from 'react-i18next';
 
 
 const MenuSectionsPage: React.FC = () => {
+  const {t} = useTranslation();
   const { sections, isLoading, updateStatus } = useMenuSections();
   const { navigateTo } = useAppNavigation();
   const [searchQuery, setSearchQuery] = useState('');
@@ -27,11 +29,11 @@ const MenuSectionsPage: React.FC = () => {
 
   return (
     <BasePageLayout
-      title="Menu Sections"
-      subtitle="Organize your menu categories (e.g. Starters, Drinks)"
+      title={t('menuSections.menuSections')}
+      subtitle={t('menuSections.description')}
       headerActions={
         <AnatomyButton onClick={() => navigateTo(Routes.MenuSectionsAdd)}>
-          <Plus className="w-5 h-5 mr-2" /> Add Section
+          <Plus className="w-5 h-5 mr-2" />  {t('menuSections.add')}
         </AnatomyButton>
       }
       isLoading={isLoading}
@@ -41,11 +43,11 @@ const MenuSectionsPage: React.FC = () => {
             <AnatomySearchBar 
               value={searchQuery} 
               onChange={e => setSearchQuery(e.target.value)} 
-              placeholder="Search sections by name..." 
+              placeholder={t('common.search')} 
             />
          </div>
       }
-      emptyLabel="No sections found. Create one to get started."
+      emptyLabel={t('menuSections.empty')} 
       emptyIcon={FolderOpen}
     >
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pb-20">
@@ -72,10 +74,11 @@ interface MenuSectionCardProps {
 const MenuSectionCard: React.FC<MenuSectionCardProps> = ({ 
   section, onEdit, onStatusChange 
 }) => {
+    const {t} = useTranslation();
+
   return (
     <div className="bg-background-card rounded-3xl p-5 border border-border shadow-sm hover:shadow-md transition-all group flex flex-col h-full">
        
-       {/* HEADER: Icon & Name */}
        <div className="flex items-start gap-4 mb-4">
           <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary shrink-0">
              <NotebookPen className="w-6 h-6" />
@@ -85,40 +88,35 @@ const MenuSectionCard: React.FC<MenuSectionCardProps> = ({
                 {section.name}
              </AnatomyText.H3>
              
-             {/* Use AnatomyTag for Order info */}
              <AnatomyTag variant="default">
                 <ArrowUpDown className="w-3 h-3 mr-1" />
-                Order: {section.sortOrder}
+                {t('order.order')}: {section.sortOrder}
              </AnatomyTag>
           </div>
        </div>
 
-       {/* BODY: Quick Status Select */}
        <div className="mt-auto space-y-4">
           
           <div className="pt-4 border-t border-border">
-             {/* Using AnatomySelect for Quick Action */}
-             {/* We wrap it to give it a smaller label feel inside the card */}
              <AnatomySelect
-                label="Visibility Status"
+                label={t('menuSections.visibility_status')}
                 value={section.status}
                 onChange={(e) => onStatusChange(e.target.value)}
                 className="mb-0" 
              >
-                <option value="active">Activa</option>
-                <option value="inactive">Inactiva</option>
-                <option value="suspended">Suspendida</option>
+                 <option value="active">{t('common.status_active')}</option>
+                  <option value="inactive">{t('common.status_inactive')}</option>
+                  <option value="suspended">{t('common.status_suspended')}</option>
              </AnatomySelect>
           </div>
 
-          {/* Actions */}
           <AnatomyButton 
             variant="secondary" 
             fullWidth
             onClick={onEdit} 
             className="text-xs"
           >
-             <Edit className="w-4 h-4 mr-2" /> Edit
+             <Edit className="w-4 h-4 mr-2" /> {t('common.edit')}
           </AnatomyButton>
        </div>
     </div>

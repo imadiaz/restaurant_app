@@ -26,10 +26,12 @@ import { useAppNavigation } from "../../hooks/navigation/use.app.navigation";
 import { useAuthStore } from "../../store/auth.store";
 import { useRestaurants } from "../../hooks/restaurants/use.restaurant";
 import { isSuperAdmin } from "../../data/models/user/utils/user.utils";
+import { useTranslation } from "react-i18next";
 
 
 
 const UserFormPage: React.FC = () => {
+  const {t} = useTranslation();
   const {goBack} = useAppNavigation();
   const { id } = useParams<{ id: string }>();
   const isEditMode = Boolean(id);
@@ -63,7 +65,6 @@ const hasLoadedData = useRef(false);
       const loadUser = async () => {
         try {
           const user = await getUserById(id);
-          console.log("User found ", user);
           if (user) {
             setFirstName(user.firstName);
             setLastName(user.lastName);
@@ -86,24 +87,24 @@ const hasLoadedData = useRef(false);
 
   const handleSave = async () => {
     if (!firstName || !lastName || !phone || !username) {
-      addToast("Please fill in required fields (Name, Phone, Username)", "error");
+      addToast(t('users.fields_validation'), "error");
       return;
     }
 
     if (roleId === undefined) {
-      addToast("You must select a role", "error");
+      addToast(t('users.validation_role'), "error");
       return;
     }
 
     if (phone.length < 10) {
-      addToast("Phone number must be at least 10 digits", "error");
+      addToast(t('users.validation_phone'), "error");
       return;
     }
 
     if (!isEditMode || (isEditMode && password.length > 0)) {
        const passwordRegex = /((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/;
        if (!passwordRegex.test(password)) {
-         addToast("Password must contain Uppercase, Lowercase, Number, and Symbol", "error");
+         addToast(t('users.validation_password'), "error");
          return;
        }
     }
@@ -157,12 +158,11 @@ const hasLoadedData = useRef(false);
       goBack();
     } catch (error) {
       console.error("Error saving user:", error);
-      addToast(isEditMode ? "Failed to update user" : "Failed to create user", "error");
     }
   };
 
-  const pageTitle = isEditMode ? "Edit User" : "Add New User";
-  const pageSubtitle = isEditMode ? `Update details for ${firstName} ${lastName}` : "Create account credentials";
+  const pageTitle = isEditMode ? t('users.edit') : t('users.add');
+  const pageSubtitle = isEditMode ? `${t('users.update_details_for')} ${firstName} ${lastName}` : t('users.create_account');
   const isLoading = isCreating || isUploading || isUpdating;
 
   return (
@@ -173,7 +173,7 @@ const hasLoadedData = useRef(false);
       headerActions={
         <div className="flex gap-3">
           <AnatomyButton onClick={handleSave} disabled={isLoading}>
-            {isLoading ? "Saving..." : isEditMode ? "Save Changes" : "Create Account"}
+            {isLoading ? t('common.loading'): isEditMode ? t('common.update') : t('common.save')}
           </AnatomyButton>
         </div>
       }
@@ -181,26 +181,24 @@ const hasLoadedData = useRef(false);
     >
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         
-        {/* LEFT COLUMN: FORM DATA */}
         <div className="lg:col-span-2 space-y-6">
           
-          {/* 1. Personal Information */}
           <div className="bg-background-card p-6 rounded-3xl shadow-sm border border-border space-y-6">
             <div className="flex items-center gap-2 mb-2">
               <UserIcon className="w-5 h-5 text-text-muted" />
-              <AnatomyText.H3 className="mb-0">Personal Information</AnatomyText.H3>
+              <AnatomyText.H3 className="mb-0">{t('users.personal_information')}</AnatomyText.H3>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <AnatomyTextField
-                label="First Name"
+                label={t('users.first_name')}
                 placeholder="e.g. Juan"
                 value={firstName}
                 onChange={(e) => setFirstName(e.target.value)}
                 required
               />
               <AnatomyTextField
-                label="Last Name"
+                label={t('users.last_name')}
                 placeholder="e.g. Pérez"
                 value={lastName}
                 onChange={(e) => setLastName(e.target.value)}
@@ -208,7 +206,7 @@ const hasLoadedData = useRef(false);
               />
 
               <AnatomyTextField
-                label="Username"
+                label={t('forms.username')}
                 placeholder="e.g. juan.perez"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
@@ -217,7 +215,7 @@ const hasLoadedData = useRef(false);
               />
 
               <AnatomyTextField
-                label="Phone Number"
+                label={t('users.phone_number')}
                 placeholder="+52 55 1234 5678"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
@@ -230,7 +228,7 @@ const hasLoadedData = useRef(false);
                 <div className="flex items-center gap-2 mb-2">
                   <Mail className="w-4 h-4 text-text-muted" />
                   <AnatomyText.Label className="mb-0">
-                    Email Address (Optional)
+                    {t('users.email_address')}
                   </AnatomyText.Label>
                 </div>
                 <AnatomyTextField
@@ -243,11 +241,10 @@ const hasLoadedData = useRef(false);
             </div>
           </div>
 
-          {/* 2. Role & Security */}
           <div className="bg-background-card p-6 rounded-3xl shadow-sm border border-border space-y-6">
             <div className="flex items-center gap-2 mb-2">
               <Shield className="w-5 h-5 text-text-muted" />
-              <AnatomyText.H3 className="mb-0">Role & Security</AnatomyText.H3>
+              <AnatomyText.H3 className="mb-0">{t('users.role_and_security')}</AnatomyText.H3>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">     
@@ -256,18 +253,18 @@ const hasLoadedData = useRef(false);
              <div className="space-y-4 mt-6 md:col-span-2">
                 <div className="flex items-center gap-2">
                    <Store className="w-5 h-5 text-text-muted" />
-                   <h3 className="font-semibold">Asignar Restaurante</h3>
+                   <h3 className="font-semibold">{t('users.assigne_restaurant')}</h3>
                 </div>
 
                 {loadingRestaurants ? (
-                  <p className="text-sm text-gray-500">Cargando restaurantes...</p>
+                  <p className="text-sm text-gray-500">{t('loading')}</p>
                 ) : (
                   <AnatomySelect 
                     className="w-full p-3 border rounded-lg bg-background"
                     value={selectedRestaurantId}
                     onChange={(e) => setSelectedRestaurantId(e.target.value)}
                   >
-                    <option value="">-- Selecciona un Restaurante --</option>
+                    <option value="">-- {t('users.select_restaurant')} --</option>
                     {restaurants.map(rest => (
                       <option key={rest.id} value={rest.id}>
                         {rest.name} - {rest.city}
@@ -276,15 +273,14 @@ const hasLoadedData = useRef(false);
                   </AnatomySelect>
                 )}
                 <p className="text-xs text-gray-500">
-                  Este usuario solo tendrá acceso a los datos de este local.
+                  {t('users.role_description')}
                 </p>
              </div>
            )}
 
-              {/* Role Select */}
               <div>
                  <AnatomyRolesSelect
-                    label="Assign Role"
+                    label={t('users.assigne_role')}
                     value={roleId || ""}
                     onChange={(e) => setRoleId(Number(e.target.value))}
                     showAllOption={false}
@@ -293,38 +289,37 @@ const hasLoadedData = useRef(false);
                  />
               </div>
 
-              {/* Status Select (New) */}
               {isEditMode && <div>
                   <div className="flex items-center gap-2 mb-2">
                       <Activity className="w-4 h-4 text-text-muted" />
-                      <AnatomyText.Label className="mb-0">Account Status</AnatomyText.Label>
+                      <AnatomyText.Label className="mb-0">{t('common.status')}</AnatomyText.Label>
                   </div>
                   <AnatomySelect
                     value={status}
                     onChange={(e) => setStatus(e.target.value)}
                   >
-                    <option value="active">Active</option>
-                    <option value="inactive">Inactive</option>
+                    <option value="active">{t('common.status_active')}</option>
+                    <option value="inactive">{t('common.status_inactive')}</option>
+                    <option value="suspended">{t('common.status_suspended')}</option>
                   </AnatomySelect>
               </div>}
 
-              {/* Password Field */}
               <div className="md:col-span-2">
                 <div className="flex items-center gap-2 mb-2">
                   <Lock className="w-4 h-4 text-text-muted" />
                   <AnatomyText.Label className="mb-0">
-                    {isEditMode ? "Change Password" : "Password"}
+                    {isEditMode ? t('forms.change_password') : t('forms.password')}
                   </AnatomyText.Label>
                 </div>
                 <AnatomyTextFieldPassword
-                  placeholder={isEditMode ? "Leave blank to keep current password" : "Pass1234!"}
+                  placeholder={isEditMode ? t('forms.password_description'): "Pass1234!"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  required={!isEditMode} // Required only on create
+                  required={!isEditMode} 
                 />
                 {!isEditMode && (
                   <AnatomyText.Small className="text-xs text-text-muted mt-1 block">
-                    Must contain Upper, Lower, Number & Symbol.
+                    {t('users.validation_password')}
                   </AnatomyText.Small>
                 )}
               </div>
@@ -332,7 +327,6 @@ const hasLoadedData = useRef(false);
           </div>
         </div>
 
-        {/* RIGHT COLUMN: IMAGE UPLOAD */}
         <div className="space-y-6">
           <ImageUploadInput
              onFileSelect={(file) => {
