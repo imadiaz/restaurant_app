@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { scheduleService, type CreateScheduleItemDto } from '../../service/schedule.service';
+import { scheduleService, type CreateOverrideDto, type CreateScheduleItemDto } from '../../service/schedule.service';
 import { useAppStore } from '../../store/app.store';
 import { useErrorHandler } from '../use.error.handler';
 import { useToastStore } from '../../store/toast.store';
@@ -8,7 +8,6 @@ import { useToastStore } from '../../store/toast.store';
 
 export type SchedulesByDay = Record<number, CreateScheduleItemDto[]>;
 
-// Default empty week structure
 const generateEmptyWeek = (): SchedulesByDay => {
   const week: SchedulesByDay = {};
   for (let i = 0; i <= 6; i++) week[i] = [];
@@ -21,13 +20,12 @@ export const useSchedules = () => {
   const { handleError } = useErrorHandler();
   const addToast = useToastStore((state) => state.addToast);
 
-  // Local state manages DTOs (write model)
   const [localSchedules, setLocalSchedules] = useState<SchedulesByDay>(generateEmptyWeek());
   const [isDirty, setIsDirty] = useState(false);
 
   const queryKey = ['schedules', activeRestaurant?.id];
+  const overridesKey = ['schedules-overrides', activeRestaurant?.id];
 
-  // --- 1. FETCH ---
   const { data: serverData, isLoading } = useQuery({
     queryKey,
     queryFn: () => {
@@ -73,6 +71,41 @@ export const useSchedules = () => {
     },
     onError: handleError
   });
+
+  const { data: overrides = [], isLoading: isLoadingOverrides } = useQuery({
+    queryKey: overridesKey,
+    queryFn: () => {
+        console.log("🚀 Fetching overrides for restaurant:", activeRestaurant?.id);
+       if (!activeRestaurant?.id) return [];
+       return scheduleService.getOverrides(activeRestaurant.id);
+    },
+    enabled: !!activeRestaurant?.id,
+  });
+
+  const createOverrideMutation = useMutation({
+    mutationFn: (data: CreateOverrideDto) => {
+       if (!activeRestaurant?.id) throw new Error("No restaurant");
+       return scheduleService.createOverride(activeRestaurant.id, data);
+    },
+    onSuccess: () => {
+       queryClient.invalidateQueries({ queryKey: overridesKey });
+       addToast('Exception added successfully', 'success');
+    },
+    onError: handleError
+  });
+
+  const deleteOverrideMutation = useMutation({
+    mutationFn: (overrideId: string) => {
+       if (!activeRestaurant?.id) throw new Error("No restaurant");
+       return scheduleService.deleteOverride(activeRestaurant.id, overrideId);
+    },
+    onSuccess: () => {
+       queryClient.invalidateQueries({ queryKey: overridesKey });
+       addToast('Exception removed', 'success');
+    },
+    onError: handleError
+  });
+
 
   const addSlot = useCallback((dayOfWeek: number) => {
     setLocalSchedules((prev) => {
@@ -125,20 +158,23 @@ export const useSchedules = () => {
   }, []);
 
   return {
-    // Data
     groupedSchedules: localSchedules,
     isLoading,
     isSaving: saveMutation.isPending,
     isDirty,
 
-    // Actions
+    overrides,
+    isLoadingOverrides,
+    createOverride: createOverrideMutation.mutateAsync,
+    deleteOverride: deleteOverrideMutation.mutateAsync,
+    isCreatingOverride: createOverrideMutation.isPending,
+
     addSlot,
     removeSlot,
     updateSlot,
     copyDayToAll,
     saveChanges: saveMutation.mutateAsync,
     
-    // Utilities
     days: [0, 1, 2, 3, 4, 5, 6]
   };
 };

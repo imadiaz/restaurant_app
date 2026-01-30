@@ -40,7 +40,8 @@
     "multi":"Multi",
     "today":"Today",
     "to":"to",
-    "copy_all":"Copy all"
+    "copy_all":"Copy all",
+    "date":"Date"
   },
   "login": {
     "login": "Login",
@@ -199,6 +200,21 @@
     },
     "weakly_hours":"Weakly hours",
     "no_shifts_configured":"No shifts configured",
-    "schedules_help_text":"Set your opening and closing times for each day. You can add multiple shifts (e.g. Lunch 13:00-16:00 and Dinner 20:00-23:00)."
+    "schedules_help_text":"Set your opening and closing times for each day. You can add multiple shifts (e.g. Lunch 13:00-16:00 and Dinner 20:00-23:00).",
+    "open_until":"Open until",
+    "closed_today":"Closed today",
+    "add_exception":"Add an exception",
+    "special_dates_and_holidays":"Special Dates & Holidays",
+    "special_dates_and_holidays_empty":"No special schedules configured. The standard weekly hours will apply.",
+    "special_schedule":"Special Schedule",
+    "setup_events":"Configure holidays or special events.",
+    "validation_past_date":"Cannot select a date in the past.",
+    "close_all_day":"Closed All Day",
+    "special_hours":"Special Hours",
+    "reason":"Reason",
+    "set_new_hours":"Set New Hours",
+    "validation_hours_later":"Must be later than now",
+    "validation_hours_after":"Must be after Open Time",
+    "validate_fields":"Your date / time is invalid check it again"
   }
 }

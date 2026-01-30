@@ -51,7 +51,7 @@ const BasePageLayout = ({
         {isLoading ? (
           <div className="h-full flex flex-col items-center justify-center text-text-muted animate-in fade-in">
             <Loader2 className="w-10 h-10 animate-spin mb-4 text-primary" />
-            <p className="font-medium">{t('loading_data')}</p>
+            <p className="font-medium">{t('common.loading_data')}</p>
           </div>
         ) : isEmpty ? (
           <div className="flex flex-col items-center justify-center h-64 bg-background-card rounded-3xl border border-dashed border-border animate-in fade-in zoom-in-95">

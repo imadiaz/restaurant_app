@@ -67,7 +67,7 @@ export const useProducts = () => {
       productService.toggleAvailability(id, isAvailable),
     onSuccess: (_, variables) => {
       const status = variables.isAvailable ? 'Available' : 'Sold Out';
-      addToast(`Product marked as ${status}`, 'info');
+      addToast(`Product marked as ${status}`, 'success');
       queryClient.invalidateQueries({ queryKey });
     },
     onError: handleError,
@@ -78,7 +78,7 @@ export const useProducts = () => {
       productService.toggleAvailabilityModifierGroup(id, isAvailable),
     onSuccess: (_, variables) => {
       const status = variables.isAvailable ? 'Available' : 'Disabled';
-      addToast(`Product marked as ${status}`, 'info');
+      addToast(`Product marked as ${status}`, 'success');
       queryClient.invalidateQueries({ queryKey });
     },
     onError: handleError,
@@ -89,7 +89,7 @@ export const useProducts = () => {
       productService.toggleAvailabilityModifierOption(id, isAvailable),
     onSuccess: (_, variables) => {
       const status = variables.isAvailable ? 'Available' : 'Sold Out';
-      addToast(`Product marked as ${status}`, 'info');
+      addToast(`Product marked as ${status}`, 'success');
       queryClient.invalidateQueries({ queryKey });
     },
     onError: handleError,
