@@ -19,6 +19,8 @@ export const useAuthStore = create<AuthState>()(
       },
       logout: () => {
         set({ user: null, isAuthenticated: false });
+        localStorage.removeItem('app-context-storage');
+        useAuthStore.persist.clearStorage();
       },
     }),
     {

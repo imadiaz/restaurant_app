@@ -2,15 +2,22 @@ import { useState } from 'react';
 import { useErrorHandler } from '../use.error.handler';
 import { imagesService } from '../../service/images.service';
 
+export const FILES_PATHS = {
+  RestaurantUsers: (restaurantId: string) => `restaurants/${restaurantId}/users`,
+  RestaurantsLogo: `general/restaurants/images/logo`,
+  RestaurantsBanner: `general/restaurants/images/banners`,
+  Products:(restaurantId: string) => `restaurants/${restaurantId}/products`,
+  Drivers:(restaurantId: string) =>`restaurants/${restaurantId}/drivers/`
+} as const;
 
 export const useImagesUpload = () => {
   const [isUploading, setIsUploading] = useState(false);
   const { handleError } = useErrorHandler();
 
-  const upload = async (file: File): Promise<string | null> => {
+  const uploadFile = async (file: File, path: string): Promise<string | null> => {
     setIsUploading(true);
     try {
-      const url = await imagesService.uploadImage(file);
+      const url = await imagesService.upload(file, path);
       return url;
     } catch (error) {
       handleError(error);
@@ -20,18 +27,7 @@ export const useImagesUpload = () => {
     }
   };
 
-  const uploadRestaurant = async (file: File): Promise<string | null> => {
-    setIsUploading(true);
-    try {
-      const url = await imagesService.uploadRestaurantImage(file);
-      return url;
-    } catch (error) {
-      handleError(error);
-      return null;
-    } finally {
-      setIsUploading(false);
-    }
-  };
 
-  return { upload, isUploading, uploadRestaurant };
+
+  return { uploadFile, isUploading };
 };

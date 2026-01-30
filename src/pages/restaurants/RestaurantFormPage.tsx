@@ -10,7 +10,7 @@ import AnatomyText from "../../components/anatomy/AnatomyText";
 import AnatomyTextField from "../../components/anatomy/AnatomyTextField";
 import BasePageLayout from "../../components/layout/BaseLayout";
 import type { PriceRange } from "../../data/models/restaurant/restaurant";
-import { useImagesUpload } from "../../hooks/images/use.images.upload";
+import { FILES_PATHS, useImagesUpload } from "../../hooks/images/use.images.upload";
 import { useAppNavigation } from "../../hooks/navigation/use.app.navigation";
 import { useRestaurants } from "../../hooks/restaurants/use.restaurant";
 import { useUsers } from "../../hooks/users/use.users";
@@ -39,7 +39,7 @@ const RestaurantFormPage: React.FC = () => {
   } = useRestaurants();
   
   const { users: allUsers, isLoading: isLoadingUsers } = useUsers();
-  const { uploadRestaurant, isUploading } = useImagesUpload();
+  const { uploadFile, isUploading } = useImagesUpload();
   const addToast = useToastStore((state) => state.addToast);
 
   const filteredUsers = allUsers.filter((value) => value.role.name == ROLES.ADMIN)
@@ -142,7 +142,7 @@ const RestaurantFormPage: React.FC = () => {
     let finalHeroUrl = heroPreview || "";
 
     if (logoFile != null && !isLogoUploaded) {
-      const url = await uploadRestaurant(logoFile);
+      const url = await uploadFile(logoFile, FILES_PATHS.RestaurantsLogo);
       console.log("URL LOGO", url);
       if (url) {
         finalLogoUrl = url;
@@ -152,7 +152,7 @@ const RestaurantFormPage: React.FC = () => {
     }
     
     if (heroFile != null && !isBannerUploaded) {
-      const url = await uploadRestaurant(heroFile);
+      const url = await uploadFile(heroFile, FILES_PATHS.RestaurantsBanner);
       console.log("URL BANNER", url);
       if (url) {
         finalHeroUrl = url;
@@ -374,9 +374,7 @@ const RestaurantFormPage: React.FC = () => {
                   if(file) { 
                     setLogoFile(file); 
                     setLogoPreview(URL.createObjectURL(file)); 
-                    if(isEditMode) {
-                      setIsLogoUploaded(false);
-                    }
+                     setIsLogoUploaded(false);
                   }
                }}/>
              </div>
@@ -399,9 +397,7 @@ const RestaurantFormPage: React.FC = () => {
                   if(file) { 
                     setHeroFile(file); 
                     setHeroPreview(URL.createObjectURL(file)); 
-                    if(isEditMode) {
-                      setIsBannerUploaded(false);
-                    }
+                    setIsBannerUploaded(false);
                   }
                }}/>
              </div>

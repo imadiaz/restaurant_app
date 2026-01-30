@@ -23,7 +23,7 @@ import AnatomyTextArea from "../../components/anatomy/AnatomyTextArea";
 import AnatomyTextField from "../../components/anatomy/AnatomyTextField";
 import { ImageUploadInput } from "../../components/common/ImageUploadInput";
 import BasePageLayout from "../../components/layout/BaseLayout";
-import { useImagesUpload } from "../../hooks/images/use.images.upload";
+import { FILES_PATHS, useImagesUpload } from "../../hooks/images/use.images.upload";
 import { useAppNavigation } from "../../hooks/navigation/use.app.navigation";
 import { useProducts } from "../../hooks/products/use.products";
 import { useMenuSections } from "../../hooks/restaurants/use.menu.section";
@@ -57,7 +57,7 @@ const ProductFormPage: React.FC = () => {
     isUpdating
   } = useProducts();
   const { sections } = useMenuSections();
-  const { upload, isUploading } = useImagesUpload();
+  const { uploadFile, isUploading } = useImagesUpload();
 
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
@@ -203,7 +203,7 @@ const ProductFormPage: React.FC = () => {
 
     let finalUrl = imagePreview || "";
     if (imageFile && !isImageUploaded) {
-      const url = await upload(imageFile);
+      const url = await uploadFile(imageFile,FILES_PATHS.Products(activeRestaurant.id));
       if (url) {
         finalUrl = url;
         setImagePreview(url);
@@ -517,7 +517,6 @@ const ProductFormPage: React.FC = () => {
             initialPreview={imagePreview}
             onFileSelect={(f) => {
               setImageFile(f);
-              setImagePreview(null);
               setIsImageUploaded(false);
             }}
           />

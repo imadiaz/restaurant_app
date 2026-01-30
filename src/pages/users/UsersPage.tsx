@@ -68,7 +68,6 @@ const UsersPage: React.FC = () => {
             onChange={(e) => setRoleFilter(e.target.value)}
             showAllOption={true}
             valueMode="name"
-            className="!bg-background !border-border text-text-main"
           />
           </div>
         </>

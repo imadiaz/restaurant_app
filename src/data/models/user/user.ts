@@ -15,4 +15,5 @@ export interface User {
   restaurantId?: string;
   restaurant?: Restaurant;
   token?: string; 
+  refreshToken?: string;
 }

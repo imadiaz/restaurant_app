@@ -41,7 +41,9 @@
     "today":"Today",
     "to":"to",
     "copy_all":"Copy all",
-    "date":"Date"
+    "date":"Date",
+    "online":"Online",
+    "offline":"Offline"
   },
   "login": {
     "login": "Login",
@@ -215,6 +217,17 @@
     "set_new_hours":"Set New Hours",
     "validation_hours_later":"Must be later than now",
     "validation_hours_after":"Must be after Open Time",
-    "validate_fields":"Your date / time is invalid check it again"
+    "validate_fields":"Your date / time is invalid check it again",
+    "currently_closed":"Currently closed"
+  },
+  "drivers": {
+    "title": "Drivers",
+    "subtitle": "Delivery team management",
+    "add": "Add Driver",
+    "edit": "Edit Driver",
+    "no_drivers": "No drivers found.",
+    "search_placeholder": "Search by name, email or phone...",
+    "phone":"Phone number (This is required to login in the app)",
+    "status":"Status of the driver"
   }
 }

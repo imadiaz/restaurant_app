@@ -7,38 +7,20 @@ interface ImagesResponse {
 }
 
 export const imagesService = {
-  async uploadImage(file: File): Promise<string> {
-    const formData = new FormData();
-    formData.append('file', file);
+  async upload(file: File, folderPath: string): Promise<string> {
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('path', folderPath); 
+  const response = await axiosClient.post<any, ApiResponse<ImagesResponse>>(
+    '/images/upload/file',
+    formData, 
+    {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    }
+  );
 
-    const response = await axiosClient.post<any, ApiResponse<ImagesResponse>>(
-      '/images/upload/user-file', 
-      formData, 
-      {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      }
-    );
-
-    return response.data.url;
-  },
-
-  async uploadRestaurantImage(file: File): Promise<string> {
-    const formData = new FormData();
-    formData.append('file', file);
-
-    const response = await axiosClient.post<any, ApiResponse<ImagesResponse>>(
-      '/images/upload/restaurant-file', 
-      formData, 
-      {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      }
-    );
-
-    return response.data.url;
-  }
-
+  return response.data.url;
+}
 };

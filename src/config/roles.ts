@@ -1,51 +1,63 @@
-import { 
-   ShoppingBag, Coffee, Users, 
-   Building2, Shield, 
+import {
+  ShoppingBag,
+  Coffee,
+  Users,
+  Building2,
+  Shield,
   Calendar,
   Menu,
-  Album
-} from 'lucide-react';
-import { Routes } from './routes';
+  Album,
+  Truck,
+  Motorbike,
+} from "lucide-react";
+import { Routes } from "./routes";
 
 // 1. DEFINE ROLES (Prevent typos)
 export const ROLES = {
-  SUPER_ADMIN: 'super_admin',
-  ADMIN: 'restaurant_admin',
-  MANAGER: 'restaurant_manager',
+  SUPER_ADMIN: "super_admin",
+  ADMIN: "restaurant_admin",
+  MANAGER: "restaurant_manager",
 } as const;
- 
 
-export type UserRole = typeof ROLES[keyof typeof ROLES];
+export type UserRole = (typeof ROLES)[keyof typeof ROLES];
 
 // 2. DEFINE MENU ITEMS (Centralized)
 const MENUS = {
   GLOBAL: [
-    { label: 'Restaurants', path: `/admin${Routes.Restaurants}`, icon: Building2 },
-    { label: 'All Users', path: `/admin${Routes.Users}`, icon: Shield },
+    {
+      label: "Restaurants",
+      path: `/admin${Routes.Restaurants}`,
+      icon: Building2,
+    },
+    { label: "All Users", path: `/admin${Routes.Users}`, icon: Shield },
   ],
   RESTAURANT: [
     //{ label: 'Orders', path: '/dashboard/orders', icon: ShoppingBag },
-    { label: 'Menu Sections', path: '/dashboard/menu-sections', icon: Album },
-    { label: 'Products', path: '/dashboard/products', icon: Coffee },
-    { label: 'Team', path: `/dashboard${Routes.Users}`, icon: Users },
-    { label: 'Schedule', path: '/dashboard/schedule', icon: Calendar },
-  ]
+    { label: "Products", path: "/dashboard/products", icon: Coffee },
+    { label: "Schedule", path: "/dashboard/schedule", icon: Calendar },
+    { label: "Team", path: `/dashboard${Routes.Users}`, icon: Users },
+    { label: "Drivers", path: `/dashboard${Routes.Drivers}`, icon: Motorbike },
+    { label: "Menu Sections", path: "/dashboard/menu-sections", icon: Album },
+  ],
 };
 
 // 3. ROLE CONFIGURATION
 // This maps every role to their "Home Page" and "Menu Type"
-export const ROLE_CONFIG: Record<UserRole, { defaultRoute: string; menuType: 'GLOBAL' | 'RESTAURANT' }> = {
-  [ROLES.SUPER_ADMIN]: { 
-    defaultRoute: '/admin/restaurants', 
-    menuType: 'GLOBAL' 
+export const ROLE_CONFIG: Record<
+  UserRole,
+  { defaultRoute: string; menuType: "GLOBAL" | "RESTAURANT" }
+> = {
+  [ROLES.SUPER_ADMIN]: {
+    defaultRoute: "/admin/restaurants",
+    menuType: "GLOBAL",
   },
-  [ROLES.ADMIN]: { 
-    defaultRoute: '/dashboard/orders', 
-    menuType: 'RESTAURANT' 
+  [ROLES.ADMIN]: {
+    defaultRoute: "/dashboard/orders",
+    menuType: "RESTAURANT",
   },
-  [ROLES.MANAGER]: { 
-    defaultRoute: '/dashboard/orders', 
-    menuType: 'RESTAURANT' 
+  [ROLES.MANAGER]: {
+    defaultRoute: "/dashboard/orders",
+    menuType: "RESTAURANT",
   },
 };
 
@@ -55,7 +67,7 @@ export const getMenuForRole = (role: UserRole, isImpersonating: boolean) => {
   if (role === ROLES.SUPER_ADMIN && isImpersonating) {
     return MENUS.RESTAURANT;
   }
-  
+
   // Otherwise, look up the menu type in config
   const config = ROLE_CONFIG[role];
   return MENUS[config.menuType];

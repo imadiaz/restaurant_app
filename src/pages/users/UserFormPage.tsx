@@ -18,7 +18,7 @@ import AnatomyTextField from "../../components/anatomy/AnatomyTextField";
 import AnatomyTextFieldPassword from "../../components/anatomy/AnatomyTextFieldPassword";
 import { ImageUploadInput } from "../../components/common/ImageUploadInput";
 import BasePageLayout from "../../components/layout/BaseLayout";
-import { useImagesUpload } from "../../hooks/images/use.images.upload";
+import { FILES_PATHS, useImagesUpload } from "../../hooks/images/use.images.upload";
 import { useUsers } from "../../hooks/users/use.users";
 import type { UpdateUserDto, CreateUserDto } from "../../service/user.service";
 import { useToastStore } from "../../store/toast.store";
@@ -27,6 +27,7 @@ import { useAuthStore } from "../../store/auth.store";
 import { useRestaurants } from "../../hooks/restaurants/use.restaurant";
 import { isSuperAdmin } from "../../data/models/user/utils/user.utils";
 import { useTranslation } from "react-i18next";
+import { useAppStore } from "../../store/app.store";
 
 
 
@@ -37,7 +38,7 @@ const UserFormPage: React.FC = () => {
   const isEditMode = Boolean(id);
   const { createUser, updateUser, getUserById, isCreating, isUpdating, isLoading: isLoadingUser } = useUsers();
   const { restaurants, isLoading: loadingRestaurants } = useRestaurants();
-  const { upload, isUploading } = useImagesUpload();
+  const { uploadFile, isUploading } = useImagesUpload();
   const addToast = useToastStore((state) => state.addToast);
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -50,9 +51,12 @@ const UserFormPage: React.FC = () => {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const currentUser = useAuthStore(state => state.user);
+  const { activeRestaurant } = useAppStore((state) => state);
   const [selectedRestaurantId, setSelectedRestaurantId] = useState<string>(
-    !isSuperAdmin(currentUser) ? currentUser?.restaurant?.id || '' : ''
+     activeRestaurant?.id || ''
   );
+    const [isImageUploaded,setIsImageUploaded] = useState(false);
+  
 
   
 const hasLoadedData = useRef(false);
@@ -74,6 +78,9 @@ const hasLoadedData = useRef(false);
             setRoleId(user.role?.id);
             setStatus(user.status || "active");
             setImagePreview(user.profileImageUrl || null);
+            if(user.profileImageUrl) {
+              setIsImageUploaded(true);
+            }
             setSelectedRestaurantId(user.restaurantId || "");
             hasLoadedData.current = true;
           }
@@ -111,11 +118,12 @@ const hasLoadedData = useRef(false);
 
     let finalImageUrl = imagePreview || "";
 
-    if (imageFile && imageFile.size > 0 && imagePreview == null) {
-      const uploadedUrl = await upload(imageFile);
+    if (imageFile && imageFile.size > 0 && !isImageUploaded) {
+      const uploadedUrl = await uploadFile(imageFile, FILES_PATHS.RestaurantUsers(selectedRestaurantId));
       if (uploadedUrl) {
         finalImageUrl = uploadedUrl;
         setImagePreview(finalImageUrl);
+        setIsImageUploaded(true);
       } 
     } else if (!finalImageUrl && !isEditMode) {
       finalImageUrl = `https://ui-avatars.com/api/?name=${firstName}+${lastName}&background=random`;
@@ -331,7 +339,7 @@ const hasLoadedData = useRef(false);
           <ImageUploadInput
              onFileSelect={(file) => {
                 setImageFile(file);
-                setImagePreview(null);
+                setIsImageUploaded(false);
              }}
              initialPreview={imagePreview}
           />

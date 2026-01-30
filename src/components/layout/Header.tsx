@@ -13,7 +13,7 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ onMobileMenuClick }) => {
   const { t } = useTranslation();
-  const user = useAuthStore((state) => state.user);
+  const currentUser = useAuthStore(state => state.user);
   const { toggleSidebar, isSidebarCollapsed } = useLayoutStore();
 
   return (
@@ -54,10 +54,10 @@ const Header: React.FC<HeaderProps> = ({ onMobileMenuClick }) => {
 
         <div className="flex items-center gap-3 cursor-pointer p-2 -mr-2 hover:bg-background rounded-xl transition-colors">
           <div className="w-8 h-8 rounded-full overflow-hidden border border-border bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
-             {user?.profileImageUrl ? (
+             {currentUser?.profileImageUrl ? (
                <img 
-                 src={user.profileImageUrl} 
-                 alt={user.username || t('users.user')}
+                 src={currentUser.profileImageUrl} 
+                 alt={currentUser.username || t('users.user')}
                  className="w-full h-full object-cover" 
                />
              ) : (
@@ -66,10 +66,10 @@ const Header: React.FC<HeaderProps> = ({ onMobileMenuClick }) => {
           </div>
           <div className="hidden sm:block text-right">
             <p className="text-sm font-semibold text-text-main leading-none">
-              {getUserDisplayName(user) || 'Admin'}
+              {getUserDisplayName(currentUser) || 'Admin'}
             </p>
             <p className="text-xs text-text-muted mt-0.5 capitalize">
-              {user?.role.name?.replace('_', ' ') || t('users.user')}
+              {currentUser?.role.name?.replace('_', ' ') || t('users.user')}
             </p>
           </div>
         </div>

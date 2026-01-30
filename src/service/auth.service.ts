@@ -7,6 +7,7 @@ import axiosClient from "./api/axiosClient";
 interface LoginResponsePayload {
   access_token: string;
   user: User
+  refresh_token: string;
 }
 
 export const authService = {
@@ -16,7 +17,7 @@ export const authService = {
       credentials
     );
 
-    const { user, access_token } = response.data;
+    const { user, access_token, refresh_token } = response.data;
     
     const mappedUser: User = {
       id: user.id,
@@ -27,9 +28,11 @@ export const authService = {
       phone: user.phone,
       role: user.role,
       token: access_token,
+      refreshToken: refresh_token,
       status: user.status,
       restaurantId: user.restaurantId,
-      restaurant: user.restaurant
+      restaurant: user.restaurant,
+      profileImageUrl: user.profileImageUrl
     };
 
     return mappedUser;

@@ -1,4 +1,5 @@
 
+import type { ApiResponse } from "../data/models/api/api.types";
 import type { Product } from "../data/models/products/product";
 import axiosClient from "./api/axiosClient";
 
@@ -33,36 +34,36 @@ export interface CreateProductDto {
 
 export const productService = {
   async getAllByRestaurant(restaurantId: string) {
-    const res = await axiosClient.get<Product[]>(`/products/restaurant/${restaurantId}`);
+    const res = await axiosClient.get<any, ApiResponse<Product[]>>(`/products/restaurant/${restaurantId}`);
     return res.data;
   },
   async getById(id: string) {
-    const res = await axiosClient.get<Product>(`/products/${id}`);
+    const res = await axiosClient.get<any, ApiResponse<Product>>(`/products/${id}`);
     return res.data;
   },
   async create(data: CreateProductDto) {
-    const res = await axiosClient.post<Product>('/products', data);
+    const res = await axiosClient.post<any, ApiResponse<Product>>('/products', data);
     return res.data;
   },
   async update(id: string, data: Partial<CreateProductDto>) {
-    const res = await axiosClient.patch<Product>(`/products/${id}`, data);
+    const res = await axiosClient.patch<any, ApiResponse<Product>>(`/products/${id}`, data);
     return res.data;
   },
   async toggleAvailability(id: string, isAvailable: boolean) {
     const status = isAvailable ? 'active' : 'inactive';
-    const res = await axiosClient.patch(`/products/${id}/status`, { status });
+    const res = await axiosClient.patch<any, ApiResponse<any>>(`/products/${id}/status`, { status });
     return res.data;
   },
 
   async toggleAvailabilityModifierGroup(id: string, isAvailable: boolean) {
     const status = isAvailable ? 'active' : 'inactive';
-    const res = await axiosClient.patch(`/products/modifier/${id}/status`, { status });
+    const res = await axiosClient.patch<any,ApiResponse<any>>(`/products/modifier/${id}/status`, { status });
     return res.data;
   },
 
   async toggleAvailabilityModifierOption(id: string, isAvailable: boolean) {
     const status = isAvailable ? 'active' : 'inactive';
-    const res = await axiosClient.patch(`/products/option/${id}/status`, { status });
+    const res = await axiosClient.patch<any, ApiResponse<any>>(`/products/option/${id}/status`, { status });
     return res.data;
   }
 };

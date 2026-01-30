@@ -31,38 +31,50 @@ const SchedulesPage: React.FC = () => {
   const todayIndex = getDay(new Date());
 
   const currentStatus = useMemo(() => {
-    const todaysSlots = groupedSchedules[todayIndex] || [];
-    if (todaysSlots.length === 0)
-      return {
-        isOpen: false,
-        text: t("schedules.closed_today") || "Closed Today",
-      };
+  const todaysSlots = groupedSchedules[todayIndex] || [];
+  if (todaysSlots.length === 0)
+    return {
+      isOpen: false,
+      text: t("schedules.currently_closed") || "Closed Today",
+    };
 
-    const now = new Date();
-    const normalizeTime = (timeStr: string) => timeStr.slice(0, 5);
+  const now = new Date();
+  const normalizeTime = (timeStr: string) => timeStr.slice(0, 5);
 
-    const isOpenNow = todaysSlots.some((slot) => {
+  const isOpenNow = todaysSlots.some((slot) => {
+    const start = parse(normalizeTime(slot.openTime), "HH:mm", now);
+    let end = parse(normalizeTime(slot.closeTime), "HH:mm", now);
+
+    // ✅ FIX: If end time is 00:00 or earlier than start, it means the next day
+    // For the "Current Status" check, we treat 00:00 as the very end of today
+    if (normalizeTime(slot.closeTime) === "00:00" || end <= start) {
+      end = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59);
+    }
+
+    return isWithinInterval(now, { start, end });
+  });
+
+  if (isOpenNow) {
+    const currentSlot = todaysSlots.find((slot) => {
       const start = parse(normalizeTime(slot.openTime), "HH:mm", now);
-      const end = parse(normalizeTime(slot.closeTime), "HH:mm", now);
-
+      let end = parse(normalizeTime(slot.closeTime), "HH:mm", now);
+      
+      if (normalizeTime(slot.closeTime) === "00:00" || end <= start) {
+        end = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59);
+      }
       return isWithinInterval(now, { start, end });
     });
 
-    if (isOpenNow) {
-      const currentSlot = todaysSlots.find((slot) => {
-        const start = parse(normalizeTime(slot.openTime), "HH:mm", now);
-        const end = parse(normalizeTime(slot.closeTime), "HH:mm", now);
-        return isWithinInterval(now, { start, end });
-      });
+    const closingDisplay = currentSlot ? normalizeTime(currentSlot.closeTime) : "";
+    
+    // If it's 00:00, you might want to show "Midnight" or "24:00"
+    const displayTime = closingDisplay === "00:00" ? "24:00" : closingDisplay;
 
-      const closingDisplay = currentSlot
-        ? normalizeTime(currentSlot.closeTime)
-        : "";
-      return { isOpen: true, text: `${t("schedules.open_until")} ${closingDisplay}` };
-    }
+    return { isOpen: true, text: `${t("schedules.open_until")} ${displayTime}` };
+  }
 
-    return { isOpen: false, text: t("schedules.closed_today") };
-  }, [groupedSchedules, todayIndex, t]);
+  return { isOpen: false, text: t("schedules.currently_closed") || "Currently Closed" };
+}, [groupedSchedules, todayIndex, t]);
 
 
   const handleSaveOverride = async (data: ScheduleOverrideDto) => {
