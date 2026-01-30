@@ -37,7 +37,10 @@
     "editing": "Editing",
     "pro_tips": "Pro tips",
     "single":"Single",
-    "multi":"Multi"
+    "multi":"Multi",
+    "today":"Today",
+    "to":"to",
+    "copy_all":"Copy all"
   },
   "login": {
     "login": "Login",
@@ -177,5 +180,25 @@
     "multi_opt_help":"Customer picks more than 1 option.",
     "max_help":"Max items allowed",
     "extra_price":"Extra price"
+  },
+  "schedules": {
+    "title": "Opening Hours",
+    "subtitle": "Configure your restaurant's weekly availability",
+    "copy_to_all": "Copy to all days",
+    "add_hours": "Add Hours",
+    "closed": "Closed",
+    "open": "Open",
+    "days": {
+      "0": "Sunday",
+      "1": "Monday",
+      "2": "Tuesday",
+      "3": "Wednesday",
+      "4": "Thursday",
+      "5": "Friday",
+      "6": "Saturday"
+    },
+    "weakly_hours":"Weakly hours",
+    "no_shifts_configured":"No shifts configured",
+    "schedules_help_text":"Set your opening and closing times for each day. You can add multiple shifts (e.g. Lunch 13:00-16:00 and Dinner 20:00-23:00)."
   }
 }

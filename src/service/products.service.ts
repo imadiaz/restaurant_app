@@ -52,5 +52,17 @@ export const productService = {
     const status = isAvailable ? 'active' : 'inactive';
     const res = await axiosClient.patch(`/products/${id}/status`, { status });
     return res.data;
+  },
+
+  async toggleAvailabilityModifierGroup(id: string, isAvailable: boolean) {
+    const status = isAvailable ? 'active' : 'inactive';
+    const res = await axiosClient.patch(`/products/modifier/${id}/status`, { status });
+    return res.data;
+  },
+
+  async toggleAvailabilityModifierOption(id: string, isAvailable: boolean) {
+    const status = isAvailable ? 'active' : 'inactive';
+    const res = await axiosClient.patch(`/products/option/${id}/status`, { status });
+    return res.data;
   }
 };

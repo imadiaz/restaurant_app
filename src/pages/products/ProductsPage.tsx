@@ -1,30 +1,28 @@
-// Inside src/pages/ProductsPage.tsx
 import AnatomyButton from '../../components/anatomy/AnatomyButton';
-import AnatomyText from '../../components/anatomy/AnatomyText';
 import { useMemo, useState } from 'react';
 import AnatomySearchBar from '../../components/anatomy/AnatomySearchBar';
-import { CheckCircle, Edit, Eye, Filter, ImageOff, Plus, SlidersHorizontal, Utensils, XCircle } from 'lucide-react';
+import { Plus, Utensils, } from 'lucide-react';
 import AnatomySelect from '../../components/anatomy/AnatomySelect';
 import { useTranslation } from 'react-i18next';
-import AnatomyTag from '../../components/anatomy/AnatomyTag';
 import BasePageLayout from '../../components/layout/BaseLayout';
 import { useAppNavigation } from '../../hooks/navigation/use.app.navigation';
 import { useMenuSections } from '../../hooks/restaurants/use.menu.section';
 import { useProducts } from '../../hooks/products/use.products';
-import AnatomySwitcher from '../../components/anatomy/AnatomySwitcher';
 import ProductCard from './components/ProductCard';
 import { Routes } from '../../config/routes';
+import ProductDetailModal from './ProductDetailModal';
 
 
 const ProductsPage: React.FC = () => {
   const { t } = useTranslation();
   const { navigateTo } = useAppNavigation();
-  const { products, isLoading, toggleAvailability, isUpdaingStatus } = useProducts();
+  const { products, isLoading, toggleAvailability, isUpdaingStatus, toggleAvailabilityModifierGroupMutation, toggleAvailabilityModifierOptionMutation } = useProducts();
   const { sections } = useMenuSections();
-
+  const [selectedProductId, setSelectedProductId] = useState<string | null>(null);
+  const isModalOpen = Boolean(selectedProductId);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
-
+  const [updatingProductId, setUpdatingProductId] = useState<string | null>(null);
   const filteredProducts = useMemo(() => {
     return products.filter((p) => {
       const matchesSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase());
@@ -34,14 +32,31 @@ const ProductsPage: React.FC = () => {
     });
   }, [products, searchQuery, selectedCategory]);
 
+  const selectedProduct = useMemo(() => 
+    products.find(p => p.id === selectedProductId) || null, 
+  [products, selectedProductId]);
+
   const handleToggleVisibility = async(value: boolean, id: string) => {
-   await toggleAvailability({ id: id, isAvailable: value })
+   setUpdatingProductId(id);
+    try {
+      await toggleAvailability({ id, isAvailable: value });
+    } finally {
+      setUpdatingProductId(null);
+    }
+  }
+
+  const handleToggleVisibilityModifierGroup = async(value: boolean, id: string) => {
+   await toggleAvailabilityModifierGroupMutation({ id: id, isAvailable: value })
+  }
+
+  const handleToggleVisibilityModifierOption = async(value: boolean, id: string) => {
+   await toggleAvailabilityModifierOptionMutation({ id: id, isAvailable: value })
   }
 
   return (
     <BasePageLayout
       title={t('products.products')}
-      subtitle={t('products.description')}
+      subtitle={t('products.descriptions')}
       headerActions={
         <AnatomyButton onClick={() => navigateTo(Routes.ProudctAdd)}>
           <Plus className="w-5 h-5 mr-2" /> {t('products.add')}
@@ -81,10 +96,31 @@ const ProductsPage: React.FC = () => {
             product={product}
             onEdit={() => navigateTo(Routes.ProudctEdit(product.id))}
             onToggleAvailability={(value: boolean) => handleToggleVisibility(value, product.id)}
-            onViewDetails={() => {}}
-            isLoading={isUpdaingStatus}
+            onViewDetails={() => setSelectedProductId(product.id)}
+            isLoading={updatingProductId === product.id}
           />
         ))}
+
+
+    <ProductDetailModal
+        isOpen={isModalOpen}
+        onClose={() => setSelectedProductId(null)}
+        product={selectedProduct}
+        onEdit={() => navigateTo(Routes.ProudctEdit(selectedProduct?.id ?? ""))}
+        onToggleProductStatus={(id, value) => {
+          setSelectedProductId(null);
+          handleToggleVisibility(value, id)
+        }}
+        
+        onToggleGroupStatus={(_, groupId, isActive) => {
+           handleToggleVisibilityModifierGroup(isActive, groupId)
+        }}
+        
+        onToggleOptionStatus={(_, __, optId, isActive) => {
+           handleToggleVisibilityModifierOption(isActive, optId)
+        }}
+      />
+
       </div>
     </BasePageLayout>
   );

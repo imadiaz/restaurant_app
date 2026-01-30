@@ -84,8 +84,9 @@ const ProductCard: React.FC<ProductCardProps> = ({
           <div className="mt-auto space-y-4">
              
              <div className="bg-gray-50 dark:bg-gray-900/50 p-1 rounded-xl border border-border/50">
-                {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {!isLoading && <AnatomySwitcher
+                <AnatomySwitcher
+                  isLoading={isLoading}
+                  disabled={isLoading}
                    value={product.isAvailable ? "true" : "false"}
                    onChange={(val) => onToggleAvailability(val === "true")}
                    options={[
@@ -100,7 +101,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
                         icon: <XCircle className="w-3.5 h-3.5" /> 
                       }
                    ]}
-                />}
+                />
              </div>
 
              <div className="grid grid-cols-2 gap-3 pt-2 border-t border-border">

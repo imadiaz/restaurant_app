@@ -73,6 +73,28 @@ export const useProducts = () => {
     onError: handleError,
   });
 
+  const toggleAvailabilityModifierGroupMutation = useMutation({
+    mutationFn: ({ id, isAvailable }: { id: string; isAvailable: boolean }) => 
+      productService.toggleAvailabilityModifierGroup(id, isAvailable),
+    onSuccess: (_, variables) => {
+      const status = variables.isAvailable ? 'Available' : 'Disabled';
+      addToast(`Product marked as ${status}`, 'info');
+      queryClient.invalidateQueries({ queryKey });
+    },
+    onError: handleError,
+  });
+
+  const toggleAvailabilityModifierOptionMutation = useMutation({
+    mutationFn: ({ id, isAvailable }: { id: string; isAvailable: boolean }) => 
+      productService.toggleAvailabilityModifierOption(id, isAvailable),
+    onSuccess: (_, variables) => {
+      const status = variables.isAvailable ? 'Available' : 'Sold Out';
+      addToast(`Product marked as ${status}`, 'info');
+      queryClient.invalidateQueries({ queryKey });
+    },
+    onError: handleError,
+  });
+
   return {
     // Data
     products,
@@ -84,10 +106,12 @@ export const useProducts = () => {
     createProduct: createMutation.mutateAsync,
     updateProduct: updateMutation.mutateAsync,
     toggleAvailability: toggleAvailabilityMutation.mutateAsync,
+    toggleAvailabilityModifierGroupMutation: toggleAvailabilityModifierGroupMutation.mutateAsync,
+    toggleAvailabilityModifierOptionMutation: toggleAvailabilityModifierOptionMutation.mutateAsync,
 
     // States
     isCreating: createMutation.isPending,
     isUpdating: updateMutation.isPending,
-    isUpdaingStatus: toggleAvailabilityMutation.isPaused
+    isUpdaingStatus: toggleAvailabilityMutation.isPending
   };
 };

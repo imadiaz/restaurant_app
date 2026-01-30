@@ -14,13 +14,14 @@ import RootRedirect from './routes/RootRedirect';
 import { ROLES } from './config/roles';
 import GuestGuard from './routes/GuestGuard';
 import UnauthorizedPage from './pages/error/UnauthorizedPage';
-import SchedulePage from './pages/schedule/SchedulePage';
+import SchedulePage from './pages/schedule/SchedulesPage';
 import ThemeManager from './components/managers/ThemeManager';
 import UserFormPage from './pages/users/UserFormPage';
 import RestaurantFormPage from './pages/restaurants/RestaurantFormPage';
 import MenuSectionsPage from './pages/menuSections/MenuSectionPage';
 import MenuSectionFormPage from './pages/menuSections/MenuSectionFormPage';
 import ProductFormPage from './pages/products/ProductFormPage';
+import ScheduleFormPage from './pages/schedule/ScheduleFormPage';
 
 function App() {
 
@@ -68,6 +69,7 @@ function App() {
             <Route path="products/add" element={<ProductFormPage />} />
             <Route path="products/edit/:id" element={<ProductFormPage />} />
             <Route path="schedule" element={<SchedulePage />} />
+            <Route path="schedule/add" element={<ScheduleFormPage />} />
 
           </Route>
         </Route>
