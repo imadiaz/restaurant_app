@@ -7,30 +7,31 @@ export interface CreateModifierOption {
   id?: string; 
   name: string;
   price: number;
-  isAvailable: boolean;
+  isAvailable?: boolean; 
+  maxQuantity?: number;
+  productId?: string;
 }
 
 export interface CreateModifierGroup {
   id?: string;
   name: string;
-  minSelected: number;
-  maxSelected: number;
-  isRequired: boolean;
+  minSelection: number; 
+  maxSelection: number; 
+  isRequired: boolean; 
   options: CreateModifierOption[];
 }
 
 export interface CreateProductDto {
   name: string;
-  description: string;
+  description?: string; 
   price: number;
-  imageUrl: string;
+  imageUrl?: string; 
   restaurantId: string;
-  prepTimeMin?: number,
-  prepTimeMax?: number,
+  prepTimeMin?: number;
+  prepTimeMax?: number;
   menuSectionIds: string[];
   modifierGroups: CreateModifierGroup[];
 }
-
 
 export const productService = {
   async getAllByRestaurant(restaurantId: string) {

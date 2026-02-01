@@ -185,7 +185,11 @@
     "multi_opt_help":"Customer picks more than 1 option.",
     "max_help":"Max items allowed",
     "extra_price":"Extra price",
-    "select_categories":"Select a category"
+    "select_categories":"Select a category",
+    "max_quantity":"Max quantity",
+    "add_text_option":"Add text option",
+    "add_product_option":"Add existing product",
+    "select_product":"Select a product"
   },
   "schedules": {
     "title": "Opening Hours",
