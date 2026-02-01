@@ -225,6 +225,7 @@
   },
   "drivers": {
     "title": "Drivers",
+    "driver":"Driver",
     "subtitle": "Delivery team management",
     "add": "Add Driver",
     "edit": "Edit Driver",
@@ -296,6 +297,10 @@
       "mark_delivered": "Mark Delivered"
     },
     "estimated_time":"Estimated preparation time",
-    "assign_driver":"Assign a driver"
+    "assign_driver":"Assign a driver",
+    "status_history":"Status history",
+    "status_label":"Status",
+    "times":"Times",
+    "history_user":"User who changed"
   }
 }

@@ -12,6 +12,10 @@ import {
   User,
   Bike,
   Check,
+  Phone,
+  ChevronUp,
+  ChevronDown,
+  History,
 } from "lucide-react";
 import AnatomyText from "../../components/anatomy/AnatomyText";
 import AnatomyButton from "../../components/anatomy/AnatomyButton";
@@ -33,7 +37,11 @@ interface OrderDetailModalProps {
   order: Order | null;
   isOpen: boolean;
   onClose: () => void;
-  onStatusChange: (newStatus: OrderStatusType, timeInMinutes?: number, driverId?: string) => void;
+  onStatusChange: (
+    newStatus: OrderStatusType,
+    timeInMinutes?: number,
+    driverId?: string,
+  ) => void;
 }
 
 const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
@@ -44,14 +52,31 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
 }) => {
   const { t } = useTranslation();
   const { activeRestaurant } = useAppStore((state) => state);
-  const [showPrepTime, setShowPrepTime] = useState(false);
-  const [prepTime, setPrepTime] = useState<number>(activeRestaurant?.averagePrepTimeMin ?? 15);
   const { drivers } = useDrivers();
+
+  // Local State
+  const [showPrepTime, setShowPrepTime] = useState(false);
+  const [prepTime, setPrepTime] = useState<number>(15);
   const [selectedDriverId, setSelectedDriverId] = useState<string>("");
+  const [isHistoryOpen, setIsHistoryOpen] = useState(false); // Collapsible state
+
+  // Effects to reset state
+  useEffect(() => {
+    if (isOpen && order) {
+      setShowPrepTime(false);
+      setPrepTime(activeRestaurant?.averagePrepTimeMin ?? 15);
+      setSelectedDriverId(order.driverId || "");
+      setIsHistoryOpen(false);
+    }
+  }, [isOpen, order, activeRestaurant]);
+
   if (!isOpen || !order) return null;
+
   const handleBackdropClick = (e: React.MouseEvent) => {
     if (e.target === e.currentTarget) onClose();
   };
+
+  // --- HELPERS ---
 
   const getStatusVariant = (status: OrderStatusType) => {
     switch (status) {
@@ -77,13 +102,6 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
   const formattedAddress = order.deliveryAddress
     ? `${order.deliveryAddress.streetAddress}, ${order.deliveryAddress.colony}, ${order.deliveryAddress.city}`
     : t("orders.pickup_at_restaurant");
-
-  const orderTime = (): string => {
-    if (order.statusHistory && order.statusHistory.length > 0) {
-      return order.statusHistory[0].localTime;
-    }
-    return format(new Date(order.createdAt), "d MMM, h:mm a");
-  };
 
   const handleStartCooking = () => {
     onStatusChange(OrderStatus.PREPARING, prepTime ?? undefined);
@@ -114,7 +132,7 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
             </div>
             <AnatomyText.Small className="font-medium flex items-center gap-2 text-text-muted">
               <Clock className="w-4 h-4" />
-              {orderTime()}
+              {format(new Date(order.createdAt), "d MMM, h:mm a")}
             </AnatomyText.Small>
           </div>
 
@@ -191,9 +209,7 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
               </div>
             </div>
 
-            {/* RIGHT COLUMN: DETAILS */}
             <div className="w-full lg:w-96 bg-gray-50 dark:bg-gray-900/30 p-8 space-y-8 h-full border-t lg:border-t-0 border-border">
-              {/* Customer Info */}
               <div className="space-y-4">
                 <AnatomyText.Label className="uppercase tracking-wider text-xs font-bold text-text-muted">
                   {t("orders.customer_details")}
@@ -224,9 +240,19 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
                         ? t("orders.delivery_address")
                         : t("orders.pickup_point")}
                     </AnatomyText.Body>
-                    <AnatomyText.Small className="text-text-muted text-xs leading-relaxed max-w-[200px]">
+
+                    <a
+                      href={`https://www.google.com/maps/search/?api=1&query=${order.deliveryAddress?.lat},${order.deliveryAddress?.lng}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={(e) => e.stopPropagation()}
+                      className="flex items-start text-text-muted text-xs  hover:text-primary transition-colors group/address mt-1"
+                    >
+                      <MapPin className="w-3.5 h-3.5 mr-2 mt-0.5 shrink-0 group-hover/address:text-primary transition-colors" />
+                      <AnatomyText.Small className="text-text-muted text-xs group-hover/address:text-primary leading-relaxed max-w-[200px]">
                       {formattedAddress}
                     </AnatomyText.Small>
+                    </a>
                     {order.deliveryAddress?.details && (
                       <AnatomyText.Small className="text-primary mt-1 font-medium">
                         {""} {order.deliveryAddress.details}
@@ -253,11 +279,41 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
                     )}
                   </div>
                 </div>
+                {order.driverSnapshot && (
+                  <div className="mt-3 flex items-center gap-3 bg-white dark:bg-gray-800 p-3 rounded-xl border border-border/60 shadow-sm">
+                    <div className="w-9 h-9 rounded-full bg-gray-200 dark:bg-gray-700 overflow-hidden shrink-0 border border-border flex items-center justify-center">
+                      {order.driverSnapshot.photoUrl ? (
+                        <img
+                          src={order.driverSnapshot.photoUrl}
+                          alt={order.driverSnapshot.fullName}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <Bike className="w-5 h-5 text-gray-400" />
+                      )}
+                    </div>
+
+                    <div className="flex-1 min-w-0">
+                      <AnatomyText.Label className="text-[10px] text-text-muted uppercase font-bold tracking-wider mb-0.5">
+                        {t("drivers.driver")}
+                      </AnatomyText.Label>
+                      <AnatomyText.Body className="text-xs font-bold text-text-main truncate leading-tight">
+                        {order.driverSnapshot.fullName}
+                      </AnatomyText.Body>
+                      <a
+                        href={`tel:${order.driverSnapshot.phone}`}
+                        className="flex items-center text-[10px] text-primary hover:underline mt-0.5"
+                      >
+                        <Phone className="w-3 h-3 mr-1" />
+                        {order.driverSnapshot.phone}
+                      </a>
+                    </div>
+                  </div>
+                )}
               </div>
 
               <div className="border-t border-border"></div>
 
-              {/* Global Note */}
               {(order.restaurantNote || order.deliveryNote) && (
                 <div className="bg-yellow-100 dark:bg-yellow-900/20 p-4 rounded-xl border border-yellow-200 dark:border-yellow-800/50">
                   <div className="flex items-center gap-2 text-yellow-800 dark:text-yellow-400 mb-1">
@@ -281,7 +337,6 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
                 </div>
               )}
 
-              {/* Summary */}
               <div className="space-y-2">
                 <AnatomyText.Label className="uppercase tracking-wider text-xs font-bold text-text-muted">
                   {t("orders.payment_summary")}
@@ -295,7 +350,6 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
                     ${Number(order.subtotal).toFixed(2)}
                   </AnatomyText.Small>
                 </div>
-
                 <div className="flex justify-between">
                   <AnatomyText.Small className="text-text-muted">
                     {t("orders.delivery_fee")}
@@ -304,7 +358,6 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
                     ${Number(order.deliveryFee).toFixed(2)}
                   </AnatomyText.Small>
                 </div>
-
                 {Number(order.tip) > 0 && (
                   <div className="flex justify-between">
                     <AnatomyText.Small className="text-text-muted">
@@ -325,10 +378,73 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
                   </AnatomyText.Body>
                 </div>
               </div>
+
+              {order.statusHistory && order.statusHistory.length > 0 && (
+                <div className="mt-6 border-t border-border pt-4">
+                  <button
+                    onClick={() => setIsHistoryOpen(!isHistoryOpen)}
+                    className="flex items-center justify-between w-full text-left group"
+                  >
+                    <div className="flex items-center gap-2 text-text-muted group-hover:text-primary transition-colors">
+                      <History className="w-4 h-4" />
+                      <AnatomyText.Label className="font-bold text-xs uppercase cursor-pointer">
+                        {t("orders.status_history")}
+                      </AnatomyText.Label>
+                    </div>
+                    {isHistoryOpen ? (
+                      <ChevronUp className="w-4 h-4 text-text-muted" />
+                    ) : (
+                      <ChevronDown className="w-4 h-4 text-text-muted" />
+                    )}
+                  </button>
+
+                  {isHistoryOpen && (
+                    <div className="mt-3 bg-white dark:bg-gray-800 rounded-xl border border-border overflow-hidden animate-in slide-in-from-top-2">
+                      <table className="w-full text-xs">
+                        <thead className="bg-gray-50 dark:bg-gray-700/50 text-text-muted font-medium">
+                          <tr>
+                            <th className="px-3 py-2 text-left">
+                              {t("orders.status_label")}
+                            </th>
+                            <th className="px-3 py-2 text-left">
+                              {t("orders.history_user")}
+                            </th>
+                            <th className="px-3 py-2 text-right">
+                              {t("orders.times")}
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-border">
+                          {order.statusHistory.map((entry, i) => (
+                            <tr
+                              key={i}
+                              className="hover:bg-gray-50 dark:hover:bg-gray-800/50"
+                            >
+                              <td className="px-3 py-2">
+                                <AnatomyTag
+                                  variant={getStatusVariant(entry.status)}
+                                  className="scale-90 origin-left"
+                                >
+                                  {entry.status}
+                                </AnatomyTag>
+                              </td>
+                              <td>{entry.changedBy.fullName}</td>
+                              <td className="px-3 py-2 text-right text-text-muted">
+                                {format(new Date(entry.timestamp), "h:mm a")}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           </div>
         </div>
 
+        {/* --- FOOTER ACTIONS --- */}
         <div className="p-6 border-t border-border bg-background-card flex justify-between items-center z-10">
           <AnatomyButton variant="secondary" onClick={() => window.print()}>
             <Printer className="w-4 h-4 mr-2" />
@@ -336,126 +452,98 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
           </AnatomyButton>
 
           <div className="flex gap-3">
-            {order.status === OrderStatus.PENDING && (
-                showPrepTime ? (
-                  <div className="flex items-center gap-3 animate-in slide-in-from-right-5 duration-200">
-                     <span className="text-sm font-medium text-text-muted">
-                        {t('orders.estimated_time')}:
-                     </span>
-                     
-                     <div className="flex bg-gray-100 dark:bg-gray-800 rounded-lg p-1 gap-1">
-                        {[15, 20, 25, 30, 45].map(min => (
-                           <button
-                             key={min}
-                             onClick={() => setPrepTime(min)}
-                             className={`
-                               px-3 py-1 text-xs font-bold rounded-md transition-all
-                               ${prepTime === min 
-                                 ? 'bg-white dark:bg-gray-700 text-primary shadow-sm' 
-                                 : 'text-text-muted hover:text-text-main'}
-                             `}
-                           >
-                             {min}m
-                           </button>
-                        ))}
-                     </div>
+            {/* PENDING -> PREPARING */}
+            {order.status === OrderStatus.PENDING &&
+              (showPrepTime ? (
+                <div className="flex items-center gap-3 animate-in slide-in-from-right-5 duration-200">
+                  <span className="text-sm font-medium text-text-muted">
+                    {t("orders.estimated_time")}:
+                  </span>
 
-                     <div className="relative w-20">
-                        <input 
-                           type="number" 
-                           value={prepTime}
-                           onChange={(e) => setPrepTime(Number(e.target.value))}
-                           className="w-full pl-2 pr-6 py-1.5 text-sm font-bold border border-border rounded-lg bg-background text-center focus:ring-2 ring-primary outline-none"
-                        />
-                        <span className="absolute right-2 top-1.5 text-xs text-text-muted">m</span>
-                     </div>
-
-                     <AnatomyButton 
-                        onClick={handleStartCooking}
-                        className="bg-orange-500 hover:bg-orange-600 text-white border-transparent"
-                     >
-                        <Check className="w-4 h-4 mr-2" /> {t('common.confirm')}
-                     </AnatomyButton>
-
-                     <button 
-                        onClick={() => setShowPrepTime(false)}
-                        className="p-2 text-text-muted hover:text-red-500 transition-colors"
-                     >
-                        <X className="w-5 h-5" />
-                     </button>
+                  <div className="flex bg-gray-100 dark:bg-gray-800 rounded-lg p-1 gap-1">
+                    {[15, 20, 30, 45].map((min) => (
+                      <button
+                        key={min}
+                        onClick={() => setPrepTime(min)}
+                        className={`px-3 py-1 text-xs font-bold rounded-md transition-all ${prepTime === min ? "bg-white dark:bg-gray-700 text-primary shadow-sm" : "text-text-muted hover:text-text-main"}`}
+                      >
+                        {min}m
+                      </button>
+                    ))}
                   </div>
-                ) : (
-                  <AnatomyButton 
-                      onClick={() => setShowPrepTime(true)} 
-                      className="bg-orange-500 hover:bg-orange-600 text-white border-transparent"
-                  >
-                    <ChefHat className="w-4 h-4 mr-2" /> {t('orders.actions.start_cooking')}
-                  </AnatomyButton>
-                )
-             )}
 
-            {(order.status === OrderStatus.PREPARING || order.status === OrderStatus.CONFIRMED) && (
-                order.type === OrderType.DELIVERY ? (
-                  <div className="flex items-center align-center gap-2 animate-in fade-in">
-                     <div className="w-50">
-                       <AnatomySelect
-                          value={selectedDriverId}
-                          onChange={(e) => setSelectedDriverId(e.target.value)}                        
-                       >
-                        <option value="">{t('drivers.select_driver')}</option>
-                          {drivers.map((d) => (
-                             <option key={d.id} value={d.id}>
-                               {d.firstName} {d.lastName}
-                             </option>
-                          ))}
-                       </AnatomySelect>
-                     </div>
-                     <AnatomyButton 
-                        onClick={() => handleReady()} 
-                        className="bg-blue-600 hover:bg-blue-700 text-white border-transparent"
-                         disabled={!selectedDriverId} 
-                     >
-                        <ShoppingBag className="w-4 h-4 mr-2" /> {t('orders.actions.mark_ready')}
-                     </AnatomyButton>
+                  <div className="relative w-20">
+                    <input
+                      type="number"
+                      value={prepTime}
+                      onChange={(e) => setPrepTime(Number(e.target.value))}
+                      className="w-full pl-2 pr-6 py-1.5 text-sm font-bold border border-border rounded-lg bg-background text-center focus:ring-2 ring-primary outline-none"
+                    />
+                    <span className="absolute right-2 top-1.5 text-xs text-text-muted">
+                      m
+                    </span>
                   </div>
-                ) : (
-                  <AnatomyButton 
-                      onClick={() => onStatusChange(OrderStatus.READY)} 
-                      className="bg-blue-600 hover:bg-blue-700 text-white border-transparent"
-                  >
-                    <ShoppingBag className="w-4 h-4 mr-2" /> {t('orders.actions.mark_ready')}
-                  </AnatomyButton>
-                )
-             )}
 
-            {/* {order.status === OrderStatus.READY &&
-              (order.type === OrderType.DELIVERY ? (
-                <AnatomyButton
-                  onClick={() => onStatusChange(OrderStatus.ON_WAY)}
-                  className="bg-blue-600 hover:bg-blue-700 text-white border-transparent"
-                >
-                  <Bike className="w-4 h-4 mr-2" />{" "}
-                  {t("orders.actions.send_driver")}
-                </AnatomyButton>
+                  <AnatomyButton
+                    onClick={handleStartCooking}
+                    className="bg-orange-500 hover:bg-orange-600 text-white border-transparent"
+                  >
+                    <Check className="w-4 h-4 mr-2" /> {t("common.confirm")}
+                  </AnatomyButton>
+                  <button
+                    onClick={() => setShowPrepTime(false)}
+                    className="p-2 text-text-muted hover:text-red-500 transition-colors"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
               ) : (
                 <AnatomyButton
-                  onClick={() => onStatusChange(OrderStatus.DELIVERED)}
-                  className="bg-green-600 hover:bg-green-700 text-white border-transparent"
+                  onClick={() => setShowPrepTime(true)}
+                  className="bg-orange-500 hover:bg-orange-600 text-white border-transparent"
                 >
-                  <CheckCircle className="w-4 h-4 mr-2" />{" "}
-                  {t("orders.actions.complete_order")}
+                  <ChefHat className="w-4 h-4 mr-2" />{" "}
+                  {t("orders.actions.start_cooking")}
                 </AnatomyButton>
               ))}
 
-            {order.status === OrderStatus.ON_WAY && (
-              <AnatomyButton
-                onClick={() => onStatusChange(OrderStatus.DELIVERED)}
-                className="bg-green-600 hover:bg-green-700 text-white border-transparent"
-              >
-                <CheckCircle className="w-4 h-4 mr-2" />{" "}
-                {t("orders.actions.mark_delivered")}
-              </AnatomyButton>
-            )} */}
+            {/* PREPARING -> READY */}
+            {(order.status === OrderStatus.PREPARING ||
+              order.status === OrderStatus.CONFIRMED) &&
+              (order.type === OrderType.DELIVERY ? (
+                <div className="flex items-center align-center gap-2 animate-in fade-in">
+                  <div className="w-48">
+                    <AnatomySelect
+                      value={selectedDriverId}
+                      onChange={(e) => setSelectedDriverId(e.target.value)}
+                      className="h-10 text-sm"
+                    >
+                      <option value="">{t("drivers.select_driver")}</option>
+                      {drivers.map((d) => (
+                        <option key={d.id} value={d.id}>
+                          {d.firstName} {d.lastName}
+                        </option>
+                      ))}
+                    </AnatomySelect>
+                  </div>
+                  <AnatomyButton
+                    onClick={() => handleReady()}
+                    className="bg-blue-600 hover:bg-blue-700 text-white border-transparent"
+                    disabled={!selectedDriverId}
+                  >
+                    <ShoppingBag className="w-4 h-4 mr-2" />{" "}
+                    {t("orders.actions.mark_ready")}
+                  </AnatomyButton>
+                </div>
+              ) : (
+                <AnatomyButton
+                  onClick={() => onStatusChange(OrderStatus.READY)}
+                  className="bg-blue-600 hover:bg-blue-700 text-white border-transparent"
+                >
+                  <ShoppingBag className="w-4 h-4 mr-2" />{" "}
+                  {t("orders.actions.mark_ready")}
+                </AnatomyButton>
+              ))}
           </div>
         </div>
       </div>
