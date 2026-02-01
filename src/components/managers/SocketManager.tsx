@@ -1,33 +1,52 @@
 import React, { useEffect, useRef } from 'react';
 import { useSocketStore } from '../../store/socket.store';
+import { useAppStore } from '../../store/app.store';
+import { useQueryClient } from '@tanstack/react-query';
+import type { Order } from '../../service/order.service';
 
-// You can use a free sound URL or import a local mp3
+
 const NOTIFICATION_SOUND = "https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3";
 
 const SocketManager: React.FC = () => {
   const { connect, disconnect } = useSocketStore();
+  const { activeRestaurant } = useAppStore(); 
+  const queryClient = useQueryClient();
+  
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
-    // 1. Connect on mount
-    connect();
+    if (activeRestaurant?.id) {
+      connect(activeRestaurant.id, (updatedOrder: Order) => {
+        console.log("⚡ Socket Update: Modifying cache directly for order", updatedOrder.id);
+        const queryKey = ['orders', activeRestaurant.id, 'all'];
+        queryClient.setQueryData<Order[]>(queryKey, (oldOrders) => {
+          if (!oldOrders) return [updatedOrder];
+          const exists = oldOrders.find(o => o.id === updatedOrder.id);
+          if (exists) {
+            return oldOrders.map(o => o.id === updatedOrder.id ? updatedOrder : o);
+          } else {
+            return [updatedOrder, ...oldOrders];
+          }
+        });
+      });
+    }
 
-    // 2. Setup Sound Listener
+    return () => {
+      disconnect();
+    };
+  }, [connect, disconnect, activeRestaurant?.id, queryClient]);
+
+  useEffect(() => {
     const handlePlaySound = () => {
       if (audioRef.current) {
         audioRef.current.currentTime = 0;
-        audioRef.current.play().catch(e => console.log("Audio play failed (user interaction needed first)", e));
+        audioRef.current.play().catch(e => console.warn("Audio play blocked:", e));
       }
     };
 
     window.addEventListener('play-order-sound', handlePlaySound);
-
-    // 3. Cleanup on unmount
-    return () => {
-      disconnect();
-      window.removeEventListener('play-order-sound', handlePlaySound);
-    };
-  }, [connect, disconnect]);
+    return () => window.removeEventListener('play-order-sound', handlePlaySound);
+  }, []);
 
   return (
     <audio ref={audioRef} src={NOTIFICATION_SOUND} hidden />

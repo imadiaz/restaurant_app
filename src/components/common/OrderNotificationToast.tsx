@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { X, ShoppingBag, ArrowRight } from 'lucide-react';
-import type { OrderDetail } from '../../pages/orders/OrderDetailModal';
 import AnatomyText from '../anatomy/AnatomyText';
+import type { Order } from '../../service/order.service';
 
 
 interface OrderNotificationToastProps {
-  order: OrderDetail;
+  order: Order;
   onClose: () => void;
 }
 
@@ -53,18 +53,18 @@ const OrderNotificationToast: React.FC<OrderNotificationToastProps> = ({ order, 
         {/* Mini Item Summary */}
         <div className="bg-gray-50 rounded-lg p-3 mb-3 border border-gray-100">
            <div className="space-y-1">
-             {order.items.slice(0, 2).map((item, idx) => (
+             {order.products.slice(0, 2).map((item, idx) => (
                <div key={idx} className="flex justify-between text-sm">
-                 <span className="text-gray-600 font-medium">{item.qty}x {item.name}</span>
+                 <span className="text-gray-600 font-medium">{item.quantity}x {item.name}</span>
                </div>
              ))}
-             {order.items.length > 2 && (
-               <p className="text-xs text-gray-400 italic">+ {order.items.length - 2} more items...</p>
+             {order.products.length > 2 && (
+               <p className="text-xs text-gray-400 italic">+ {order.products.length - 2} more items...</p>
              )}
            </div>
            <div className="border-t border-gray-200 mt-2 pt-2 flex justify-between items-center">
              <span className="text-xs font-bold text-gray-400">TOTAL</span>
-             <span className="text-sm font-bold text-green-600">${order.total.toFixed(2)}</span>
+             <span className="text-sm font-bold text-green-600">${order.totalAmount.toFixed(2)}</span>
            </div>
         </div>
 

@@ -1,6 +1,6 @@
 import React from 'react';
 
-type TagVariant = 'default' | 'primary' | 'success' | 'warning' | 'error';
+export type TagVariant = 'default' | 'primary' | 'success' | 'warning' | 'error';
 
 interface AnatomyTagProps extends React.HTMLAttributes<HTMLSpanElement> {
   children: React.ReactNode;

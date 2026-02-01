@@ -2,94 +2,93 @@ import { create } from 'zustand';
 import { useToastStore } from './toast.store';
 import OrderNotificationToast from '../components/common/OrderNotificationToast';
 import React from 'react';
+import type { Order } from '../service/order.service';
+import { io, Socket } from 'socket.io-client';
 
 interface SocketState {
+  socket: Socket | null;
   isConnected: boolean;
-  connect: () => void;
+connect: (restaurantId: string, onOrderUpdate?: (order: Order) => void) => void;
   disconnect: () => void;
 }
 
-// --- MOCK DATA GENERATOR ---
-// Generates a random order to simulate incoming WebSocket data
-const generateMockOrder = () => {
-  const id = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
-  const items = [
-    { name: 'Cheese Burger', qty: 1, price: 12.00, modifiers: [{ name: 'Extra Cheese', price: 1 }] },
-    { name: 'Fries', qty: 1, price: 5.00 }
-  ];
-  
+export const useSocketStore = create<SocketState>((set, get) => {
   return {
-    id: `#${id}`,
-    customer: { 
-      name: ['Alex Johnson', 'Sam Smith', 'Jordan Lee'][Math.floor(Math.random() * 3)], 
-      phone: '555-0199', 
-      email: 'customer@example.com' 
-    },
-    status: 'new' as const,
-    date: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-    address: '123 Fake St, New York, NY',
-    paymentMethod: 'Credit Card',
-    orderNote: Math.random() > 0.7 ? 'Please ring doorbell' : undefined,
-    subtotal: 17.00,
-    tax: 1.36,
-    deliveryFee: 2.00,
-    total: 20.36,
-    items: items
-  };
-};
-
-export const useSocketStore = create<SocketState>((set) => {
-  let socket: WebSocket | null = null;
-  let mockInterval: any = null;
-
-  return {
+    socket: null,
     isConnected: false,
 
-    connect: () => {
-      // Prevent multiple connections
-      if (mockInterval) return;
+    connect: (restaurantId: string, onDataUpdate) => {
+      const { socket } = get();
+      if (socket?.connected) return;
 
-      console.log("🔌 Socket Connecting (Mock Mode)...");
-      set({ isConnected: true });
+      console.log("🔌 Initializing Socket Connection...");
 
-      // --- MOCK SIMULATION ---
-      // Simulates receiving a "NEW_ORDER" event every 30 seconds
-      mockInterval = setInterval(() => {
-        const newOrder = generateMockOrder();
-        
-        // 1. Add to Order Store (Global State)
-        //useOrderStore.getState().addOrder(newOrder);
+      const storage = localStorage.getItem('auth-storage');
+      let token = '';
+      if (storage) {
+        const parsed = JSON.parse(storage);
+        token = parsed.state?.user?.token || '';
+      }
 
-        // 2. Play Sound
-        // We dispatch a custom event that SocketManager.tsx listens for
+      const newSocket = io(import.meta.env.VITE_API_URL || 'http://localhost:3000', {
+        auth: { token },
+        transports: ['websocket'],
+        autoConnect: true,
+      });
+
+      newSocket.on('connect', () => {
+        console.log(`✅ Connected to WebSocket. ID: ${newSocket.id}`);
+        set({ isConnected: true });
+        console.log(`joining room: restaurant_${restaurantId}`);
+        newSocket.emit('joinRestaurantRoom', restaurantId);
+      });
+
+      newSocket.on('disconnect', () => {
+        console.log('❌ Disconnected from WebSocket');
+        set({ isConnected: false });
+      });
+
+      newSocket.on('newOrder', (orderData: Order) => {
+        console.log("🔔 New Order Received:", orderData);
         window.dispatchEvent(new Event('play-order-sound'));
-
-        // 3. Trigger Custom Notification
-        // We generate a unique ID so we can close this specific toast programmatically
-        const toastId = `order-${newOrder.id}-${Date.now()}`;
+        const toastId = `order-${orderData.id}-${Date.now()}`;
         
         useToastStore.getState().addCustomToast(
-          React.createElement(OrderNotificationToast, {
-            order: newOrder,
-            onClose: () => useToastStore.getState().removeToast(toastId)
-          }),
-         12000000
+           React.createElement(OrderNotificationToast, {
+             order: orderData,
+             onClose: () => useToastStore.getState().removeToast(toastId)
+           }),
+           10000
         );
 
-      }, 12000000);
+        if (onDataUpdate) {
+           onDataUpdate(orderData);
+        }
+      });
+
+      newSocket.on('orderUpdate', (orderData: Order) => {
+        console.log("🔄 Order Update:", orderData);
+        let message = `Order #${orderData.id.slice(0, 5)} updated to ${orderData.status}`;
+        
+        if (orderData.status === 'ON_WAY') {
+            message = `Driver picked up Order #${orderData.id.slice(0, 5)}`;
+        } else if (orderData.status === 'DELIVERED') {
+            message = `✅ Order #${orderData.id.slice(0, 5)} has been Delivered!`;
+        }
+
+        useToastStore.getState().addToast(message, 'info');
+        if (onDataUpdate) onDataUpdate(orderData);
+      });
+
+      set({ socket: newSocket });
     },
 
     disconnect: () => {
+      const { socket } = get();
       if (socket) {
-        socket.close();
-        socket = null;
+        socket.disconnect();
+        set({ socket: null, isConnected: false });
       }
-      if (mockInterval) {
-        clearInterval(mockInterval);
-        mockInterval = null;
-      }
-      set({ isConnected: false });
-      console.log("🔌 Socket Disconnected");
     }
   };
 });

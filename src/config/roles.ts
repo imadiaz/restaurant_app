@@ -32,7 +32,7 @@ const MENUS = {
     { label: "All Users", path: `/admin${Routes.Users}`, icon: Shield },
   ],
   RESTAURANT: [
-    //{ label: 'Orders', path: '/dashboard/orders', icon: ShoppingBag },
+    { label: 'Orders', path: '/dashboard/orders', icon: ShoppingBag },
     { label: "Products", path: "/dashboard/products", icon: Coffee },
     { label: "Schedule", path: "/dashboard/schedule", icon: Calendar },
     { label: "Team", path: `/dashboard${Routes.Users}`, icon: Users },

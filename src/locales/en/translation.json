@@ -43,7 +43,9 @@
     "copy_all":"Copy all",
     "date":"Date",
     "online":"Online",
-    "offline":"Offline"
+    "offline":"Offline",
+    "print_receipt":"Print Receipt",
+    "confirm":"Confirm"
   },
   "login": {
     "login": "Login",
@@ -182,7 +184,8 @@
     "single_opt_help":"Customer picks exactly 1 option.",
     "multi_opt_help":"Customer picks more than 1 option.",
     "max_help":"Max items allowed",
-    "extra_price":"Extra price"
+    "extra_price":"Extra price",
+    "select_categories":"Select a category"
   },
   "schedules": {
     "title": "Opening Hours",
@@ -228,6 +231,71 @@
     "no_drivers": "No drivers found.",
     "search_placeholder": "Search by name, email or phone...",
     "phone":"Phone number (This is required to login in the app)",
-    "status":"Status of the driver"
+    "status":"Status of the driver",
+    "select_driver":"Select a driver"
+  },
+  "orders": {
+    "title": "Orders",
+    "subtitle": "Manage and track incoming restaurant orders",
+    "search_placeholder": "Search by ID or Customer Name...",
+    "empty_list": "No orders found matching your criteria.",
+    "move_status_to": "Move Status To:",
+    "empty_list_description":"Try selecting a different tab or check back later for new orders.",
+    "items_count": "Items",
+    "items_ordered": "Items Ordered",
+    "tabs": {
+      "all": "All Orders (Actives)",
+      "new": "New",
+      "cooking": "Cooking",
+      "ready": "Ready",
+      "active": "Active",
+      "completed": "Completed"
+    },
+    "status": {
+      "pending": "New",
+      "new": "New",
+      "confirmed": "Confirmed",
+      "preparing": "Cooking",
+      "cooking": "Cooking",
+      "ready": "Ready",
+      "on_way": "On Way",
+      "delivered": "Delivered",
+      "cancelled": "Cancelled"
+    },
+    "type": {
+      "delivery": "Delivery",
+      "pickup": "Pickup"
+    },
+    "created_success": "Order created successfully",
+    "status_updated": "Order status updated",
+    "driver_assigned": "Driver assigned successfully",
+    "order": "Order",
+    "items": "Items",
+    "print_receipt": "Print Receipt",
+    "pickup_at_restaurant": "Pickup at Restaurant",
+    "pickup_point": "Pickup Point",
+    "delivery_address": "Delivery Address",
+    "no_phone": "No phone provided",
+    "guest": "Guest",
+    "customer_details":"Customer details",
+    "payment_method": "Payment Method",
+    "change_for": "Change for",
+    "instructions": "Special Instructions",
+    "payment_summary": "Payment Summary",
+    "kitchen":"Kitchen",
+    "delivery":"Delivery",
+    "subtotal": "Subtotal",
+    "delivery_fee": "Delivery Fee",
+    "tip": "Tip",
+    "total": "Total",
+    "actions": {
+      "start_cooking": "Start Cooking",
+      "mark_ready": "Mark Ready",
+      "send_driver": "Request Driver",
+      "complete_order": "Complete Order",
+      "mark_delivered": "Mark Delivered"
+    },
+    "estimated_time":"Estimated preparation time",
+    "assign_driver":"Assign a driver"
   }
 }
