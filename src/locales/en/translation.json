@@ -189,7 +189,11 @@
     "max_quantity":"Max quantity",
     "add_text_option":"Add text option",
     "add_product_option":"Add existing product",
-    "select_product":"Select a product"
+    "select_product":"Select a product",
+    "product_already_added":"The product has been already added",
+    "linked_group":"General modifier group",
+    "select_from_library":"Select from existing groups",
+    "add_modifier":"Add modifier group"
   },
   "schedules": {
     "title": "Opening Hours",

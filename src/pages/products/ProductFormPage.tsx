@@ -11,12 +11,11 @@ import {
   Trash2,
   CircleDot,
   CheckSquare,
-  Clock,
-  Download,
   Lock,
   Package,
   PackageSearch,
   Type,
+  BookSearch,
 } from "lucide-react";
 import React, { useState, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
@@ -47,6 +46,7 @@ import { useToastStore } from "../../store/toast.store";
 import AnatomyMultiSelect from "../../components/anatomy/AnatomyMultiSelect";
 import { useModifiers } from "../../hooks/modifiers/use.modifiers";
 import ProductPickerModal from "./components/ProductPickerModal";
+import type { Product } from "../../data/models/products/product";
 
 const ProductFormPage: React.FC = () => {
   const { t } = useTranslation();
@@ -270,29 +270,37 @@ const ProductFormPage: React.FC = () => {
     setModifierGroups(newGroups);
   };
 
-  // B. Trigger Product Modal
   const openProductPicker = (groupIdx: number) => {
     if (isGroupLinked(modifierGroups[groupIdx])) return;
     setActiveGroupIndex(groupIdx);
     setProductPickerOpen(true);
   };
 
-  // C. Handle Product Selection from Modal
-  const handleProductSelect = (product: any) => {
+  const handleProductSelect = (product: Product) => {
     if (activeGroupIndex === null) return;
 
     const newGroups = [...modifierGroups];
     const group = { ...newGroups[activeGroupIndex] };
 
+    const alreadyExists = group.options.some(
+      (opt) => opt.productId === product.id,
+    );
+
+    if (alreadyExists) {
+      addToast(t("products.product_already_added"), "warning");
+      return;
+    }
+
     group.options = [
       ...group.options,
       {
         id: `new-opt-${Date.now()}`,
-        name: product.name, // Pre-fill name
-        price: 0, // Default price
+        name: product.name,
+        price: product.price ?? 0,
         maxQuantity: 1,
         isAvailable: true,
-        productId: product.id, // Link Product ID
+        productId: product.id,
+        imageUrl: product.imageUrl,
       },
     ];
 
@@ -329,7 +337,6 @@ const ProductFormPage: React.FC = () => {
     setModifierGroups(newGroups);
   };
 
-  // --- Save Logic ---
   const handleSave = async () => {
     if (!name || !price || menuSectionIds.length === 0) {
       addToast(t("Name, Price, Category are required"), "error");
@@ -361,11 +368,12 @@ const ProductFormPage: React.FC = () => {
         minSelection: Number(g.minSelection),
         maxSelection: Number(g.maxSelection),
         options: g.options.map((o: any) => ({
-          ...o,
           id: o.id?.startsWith("new-") ? undefined : o.id,
+          name: o.name,
           price: Number(o.price),
           maxQuantity: Number(o.maxQuantity || 1),
-          productId: o.productId, // Include productId in payload
+          isAvailable: o.isAvailable,
+          productId: o.productId,
         })),
       };
     });
@@ -384,12 +392,12 @@ const ProductFormPage: React.FC = () => {
 
     try {
       console.log(payload);
-      // if (isEditMode && id) {
-      //   await updateProduct({ id, data: payload });
-      // } else {
-      //   await createProduct(payload);
-      // }
-      // goBack();
+      if (isEditMode && id) {
+        await updateProduct({ id, data: payload });
+      } else {
+        await createProduct(payload);
+      }
+      goBack();
     } catch (e) {
       console.error(e);
     }
@@ -468,8 +476,7 @@ const ProductFormPage: React.FC = () => {
 
           {/* 2. Modifiers Section */}
           <div className="space-y-6">
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-              <div>
+            <div className="flex flex-col sm:flex-row gap-2">
                 <AnatomyText.H3>{t("products.modifiers")}</AnatomyText.H3>
                 <AnatomyText.Small className="text-text-muted">
                   {t("products.modifiers_help_text", {
@@ -477,16 +484,16 @@ const ProductFormPage: React.FC = () => {
                   })}
                 </AnatomyText.Small>
               </div>
-
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+              
               <div className="flex gap-2">
-                {/* Library Import Logic */}
                 {availableModifiers.length > 0 && (
                   <div className="flex gap-2">
-                    <div className="w-48">
+                    <div className="w-56">
                       <AnatomySelect
                         value={selectedLibraryId}
                         onChange={(e) => setSelectedLibraryId(e.target.value)}
-                        className="h-10 text-xs w-full"
+                        className="w-full"
                       >
                         <option value="">
                           {t("products.select_from_library")}
@@ -499,12 +506,12 @@ const ProductFormPage: React.FC = () => {
                       </AnatomySelect>
                     </div>
                     <AnatomyButton
-                      variant="secondary"
+                      variant="primary"
                       onClick={addGroupFromLibrary}
                       disabled={!selectedLibraryId}
-                      className="h-10 w-10 p-0 flex items-center justify-center"
+                      
                     >
-                      <Download className="w-4 h-4" />
+                      <BookSearch className="w-4 h-4" /> {t('products.add_modifier')}
                     </AnatomyButton>
                   </div>
                 )}
@@ -543,7 +550,6 @@ const ProductFormPage: React.FC = () => {
                               {...provided.draggableProps}
                               className={`bg-background-card p-5 rounded-2xl border ${isLinked ? "border-primary/40 bg-primary/5" : "border-border"} relative group transition-all`}
                             >
-                              {/* Drag Handle & Badge */}
                               {isLinked && (
                                 <div className="absolute top-0 right-14 bg-primary/20 text-primary text-[10px] font-bold px-3 py-1 rounded-b-md flex items-center gap-1 z-10">
                                   <Lock className="w-3 h-3" />{" "}
@@ -557,7 +563,6 @@ const ProductFormPage: React.FC = () => {
                                 <GripVertical className="w-5 h-5" />
                               </div>
 
-                              {/* Group Settings Inputs */}
                               <div
                                 className={`pl-8 pr-8 grid grid-cols-1 gap-4 mb-4 ${isLinked ? "opacity-80" : ""}`}
                               >
@@ -678,7 +683,17 @@ const ProductFormPage: React.FC = () => {
                                               {/* Icon Indicator: Product vs Text */}
                                               <div className="text-gray-400">
                                                 {opt.productId ? (
-                                                  <Package className="w-4 h-4 text-primary" />
+                                                  opt.imageUrl ? (
+                                                    <img
+                                                      src={opt.imageUrl}
+                                                      alt={opt.name}
+                                                      className="w-8 h-8 rounded-md object-cover border border-border"
+                                                    />
+                                                  ) : (
+                                                    <div className="w-8 h-8 rounded-md bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center text-purple-600">
+                                                      <Package className="w-4 h-4" />
+                                                    </div>
+                                                  )
                                                 ) : isSingle ? (
                                                   <CircleDot className="w-4 h-4" />
                                                 ) : (

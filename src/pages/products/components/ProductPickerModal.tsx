@@ -3,13 +3,14 @@ import { useTranslation } from "react-i18next";
 import { X, Search, Package } from "lucide-react";
 import AnatomyText from "../../../components/anatomy/AnatomyText";
 import AnatomyTextField from "../../../components/anatomy/AnatomyTextField";
+import type { Product } from "../../../data/models/products/product";
 
 
 interface ProductPickerModalProps {
   isOpen: boolean;
   onClose: () => void;
-  products: any[]; // Replace 'any' with your Product type
-  onSelect: (product: any) => void;
+  products: Product[];
+  onSelect: (product: Product) => void;
 }
 
 const ProductPickerModal: React.FC<ProductPickerModalProps> = ({
