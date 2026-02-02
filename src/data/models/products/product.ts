@@ -14,7 +14,7 @@ export interface ModifierOption extends BaseEntity {
   isAvailable: boolean;
   productId?: string;
   modifierGroupId?: string;
-  // No necesitamos 'groupId' aquí a menos que lo uses explícitamente en el front
+  linkedProduct?: Product | null;
 }
 
 export interface ModifierGroup extends BaseEntity {

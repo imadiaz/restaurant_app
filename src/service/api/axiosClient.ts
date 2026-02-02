@@ -67,6 +67,7 @@ axiosClient.interceptors.response.use(
 
       try {
         const storage = localStorage.getItem("auth-storage");
+        console.log("Getting storage", storage);
         const parsed = JSON.parse(storage || "{}");
         const userRefreshToken = parsed.state?.user?.refreshToken;
         if (!userRefreshToken) {

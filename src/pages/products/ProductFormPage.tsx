@@ -390,16 +390,15 @@ const {navigateTo} = useAppNavigation();
     }
 
     const cleanedModifiers = modifierGroups.map((g) => {
-      // Linked Group -> Send ID only
       if (isGroupLinked(g)) {
         return { id: g.id };
       }
-      // Local Group -> Send Full Object
       return {
-        ...g,
         id: undefined,
         minSelected: Number(g.minSelected),
         maxSelected: Number(g.maxSelected),
+        name: g.name,
+        isRequired: g.isRequired,
         options: g.options.map((o: any) => ({
           id: o.id?.startsWith("new-") ? undefined : o.id,
           name: o.name,
@@ -423,6 +422,7 @@ const {navigateTo} = useAppNavigation();
       modifierGroups: cleanedModifiers as any,
     };
 
+    console.log(payload);
     try {
       if (isEditMode && id) {
         await updateProduct({ id, data: payload });
