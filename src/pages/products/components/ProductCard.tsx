@@ -82,8 +82,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
           </div>
 
           <div className="mt-auto space-y-4">
-             
-             <div className="bg-gray-50 dark:bg-gray-900/50 p-1 rounded-xl border border-border/50">
+             <div className="bg-gray-50 dark:bg-gray-900/50 p-1 rounded-xl">
                 <AnatomySwitcher
                   isLoading={isLoading}
                   disabled={isLoading}

@@ -9,6 +9,7 @@ import {
   Album,
   Truck,
   Motorbike,
+  Utensils,
 } from "lucide-react";
 import { Routes } from "./routes";
 
@@ -37,6 +38,7 @@ const MENUS = {
     { label: "Schedule", path: "/dashboard/schedule", icon: Calendar },
     { label: "Team", path: `/dashboard${Routes.Users}`, icon: Users },
     { label: "Drivers", path: `/dashboard${Routes.Drivers}`, icon: Motorbike },
+     { label: "Group Products", path: "/dashboard/modifiers", icon: Utensils },
     { label: "Menu Sections", path: "/dashboard/menu-sections", icon: Album },
   ],
 };

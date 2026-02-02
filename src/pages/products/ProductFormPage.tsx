@@ -16,6 +16,9 @@ import {
   PackageSearch,
   Type,
   BookSearch,
+  Pencil,
+  Copy,
+  X,
 } from "lucide-react";
 import React, { useState, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
@@ -47,6 +50,8 @@ import AnatomyMultiSelect from "../../components/anatomy/AnatomyMultiSelect";
 import { useModifiers } from "../../hooks/modifiers/use.modifiers";
 import ProductPickerModal from "./components/ProductPickerModal";
 import type { Product } from "../../data/models/products/product";
+import { Routes } from "../../config/routes";
+
 
 const ProductFormPage: React.FC = () => {
   const { t } = useTranslation();
@@ -64,13 +69,13 @@ const ProductFormPage: React.FC = () => {
     isLoading,
     isCreating,
     isUpdating,
-    products: allProducts, // Access full product list for the picker
+    products: allProducts,
   } = useProducts();
 
   const { sections } = useMenuSections();
   const { uploadFile, isUploading } = useImagesUpload();
   const { modifiers: availableModifiers } = useModifiers();
-
+const {navigateTo} = useAppNavigation();
   // --- Local State ---
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
@@ -91,6 +96,10 @@ const ProductFormPage: React.FC = () => {
   // Product Picker State
   const [productPickerOpen, setProductPickerOpen] = useState(false);
   const [activeGroupIndex, setActiveGroupIndex] = useState<number | null>(null);
+
+  // UX State for "Detach Warning"
+  // We store the index of the group currently showing the warning banner
+  const [detachWarningIdx, setDetachWarningIdx] = useState<number | null>(null);
 
   const hasLoaded = useRef(false);
 
@@ -149,6 +158,7 @@ const ProductFormPage: React.FC = () => {
 
       if (sourceGroupIdx === -1 || destGroupIdx === -1) return;
 
+      // Prevent dragging if source or dest is linked
       if (
         isGroupLinked(modifierGroups[sourceGroupIdx]) ||
         isGroupLinked(modifierGroups[destGroupIdx])
@@ -207,6 +217,30 @@ const ProductFormPage: React.FC = () => {
     const newGroups = [...modifierGroups];
     newGroups.splice(idx, 1);
     setModifierGroups(newGroups);
+    if (detachWarningIdx === idx) setDetachWarningIdx(null);
+  };
+
+  // --- DETACH LOGIC ---
+  const confirmDetachGroup = (idx: number) => {
+    const newGroups = [...modifierGroups];
+    // 1. Generate new temp ID
+    const newId = `new-group-${Date.now()}`;
+    
+    // 2. Clone object and update ID
+    newGroups[idx] = { 
+        ...newGroups[idx], 
+        id: newId,
+        // Append (Copy) to name for clarity, optional
+        name: `${newGroups[idx].name} (Copy)` 
+    };
+
+    setModifierGroups(newGroups);
+    setDetachWarningIdx(null); // Close warning
+    addToast(t("products.group_detached_success"), "success");
+  };
+
+  const cancelDetach = () => {
+    setDetachWarningIdx(null);
   };
 
   // --- Group Updates ---
@@ -226,12 +260,12 @@ const ProductFormPage: React.FC = () => {
     const newGroups = [...modifierGroups];
     const group = { ...newGroups[idx] };
     if (type === "single") {
-      group.minSelection = 1;
-      group.maxSelection = 1;
+      group.minSelected = 1;
+      group.maxSelected = 1;
       group.isRequired = true;
     } else {
-      group.minSelection = 0;
-      group.maxSelection = Math.max(group.options.length || 3, 5);
+      group.minSelected = 0;
+      group.maxSelected = Math.max(group.options.length || 3, 5);
       group.isRequired = false;
     }
     newGroups[idx] = group;
@@ -243,14 +277,13 @@ const ProductFormPage: React.FC = () => {
     const newGroups = [...modifierGroups];
     const group = { ...newGroups[idx] };
     group.isRequired = isRequired;
-    group.minSelection = isRequired ? 1 : 0;
+    group.minSelected = isRequired ? 1 : 0;
     newGroups[idx] = group;
     setModifierGroups(newGroups);
   };
 
   // --- Option Actions ---
 
-  // A. Add Text Option
   const addTextOption = (groupIdx: number) => {
     if (isGroupLinked(modifierGroups[groupIdx])) return;
     const newGroups = [...modifierGroups];
@@ -263,7 +296,7 @@ const ProductFormPage: React.FC = () => {
         price: 0,
         maxQuantity: 1,
         isAvailable: true,
-        productId: undefined, // Explicitly null for text options
+        productId: undefined, 
       },
     ];
     newGroups[groupIdx] = group;
@@ -365,8 +398,8 @@ const ProductFormPage: React.FC = () => {
       return {
         ...g,
         id: undefined,
-        minSelection: Number(g.minSelection),
-        maxSelection: Number(g.maxSelection),
+        minSelected: Number(g.minSelected),
+        maxSelected: Number(g.maxSelected),
         options: g.options.map((o: any) => ({
           id: o.id?.startsWith("new-") ? undefined : o.id,
           name: o.name,
@@ -391,7 +424,6 @@ const ProductFormPage: React.FC = () => {
     };
 
     try {
-      console.log(payload);
       if (isEditMode && id) {
         await updateProduct({ id, data: payload });
       } else {
@@ -478,12 +510,7 @@ const ProductFormPage: React.FC = () => {
           <div className="space-y-6">
             <div className="flex flex-col sm:flex-row gap-2">
                 <AnatomyText.H3>{t("products.modifiers")}</AnatomyText.H3>
-                <AnatomyText.Small className="text-text-muted">
-                  {t("products.modifiers_help_text", {
-                    defaultValue: "Customize your product",
-                  })}
-                </AnatomyText.Small>
-              </div>
+            </div>
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
               
               <div className="flex gap-2">
@@ -536,7 +563,8 @@ const ProductFormPage: React.FC = () => {
                     {modifierGroups.map((group, idx) => {
                       const isLinked = isGroupLinked(group);
                       const isSingle =
-                        group.minSelection === 1 && group.maxSelection === 1;
+                        group.minSelected === 1 && group.maxSelected === 1;
+                      const showWarning = detachWarningIdx === idx;
 
                       return (
                         <Draggable
@@ -550,12 +578,50 @@ const ProductFormPage: React.FC = () => {
                               {...provided.draggableProps}
                               className={`bg-background-card p-5 rounded-2xl border ${isLinked ? "border-primary/40 bg-primary/5" : "border-border"} relative group transition-all`}
                             >
-                              {isLinked && (
-                                <div className="absolute top-0 right-14 bg-primary/20 text-primary text-[10px] font-bold px-3 py-1 rounded-b-md flex items-center gap-1 z-10">
-                                  <Lock className="w-3 h-3" />{" "}
-                                  {t("products.linked_group")}
-                                </div>
-                              )}
+                                {isLinked && (
+                                    <>
+                                        <div className="absolute top-0 right-32 bg-primary/20 text-primary text-[10px] font-bold px-3 py-1 rounded-b-md flex items-center gap-1 z-10">
+                                            <Lock className="w-3 h-3" /> {t("products.linked_group")}
+                                        </div>
+                                        
+                                        <button 
+                                            onClick={() => setDetachWarningIdx(idx)}
+                                            className="absolute top-2 right-2  text-primary hover:text-primary-dark p-2 bg-white dark:bg-gray-800 rounded-full shadow-sm hover:shadow-md transition-all z-20 border border-primary/20"
+                                            title={t("products.edit_detach_group")}
+                                        >
+                                            <Pencil className="w-4 h-4" />
+                                        </button>
+                                    </>
+                                )}
+
+                                {showWarning && (
+                                    <div className="absolute inset-0 z-30 bg-background-card/95 backdrop-blur-sm rounded-2xl flex flex-col items-center justify-center p-6 text-center animate-in fade-in zoom-in-95 border-2 border-amber-400">
+                                        <div className="w-12 h-12 bg-amber-100 dark:bg-amber-900/30 rounded-full flex items-center justify-center mb-4 text-amber-600">
+                                            <Copy className="w-6 h-6" />
+                                        </div>
+                                        <AnatomyText.H3 className="mb-2">{t("products.detach_title")}</AnatomyText.H3>
+                                        <p className="text-sm text-text-muted mb-6 max-w-md">
+                                            {t("products.detach_description")}
+                                        </p>
+
+                                          <AnatomyButton className="mb-4 mt-4 hover" variant="secondary" onClick={() => navigateTo(Routes.Modifiers)}>
+                                                {t('modifiers.update_main_modifier')}
+                                            </AnatomyButton>
+                                        <div className="flex gap-3">
+                                            <AnatomyButton variant="ghost" onClick={cancelDetach}>
+                                                {t("common.cancel")}
+                                            </AnatomyButton>
+                                            <AnatomyButton variant="primary" onClick={() => confirmDetachGroup(idx)}>
+                                                {t("products.confirm_detach")}
+                                            </AnatomyButton>
+                                        </div>
+                                        <button onClick={cancelDetach} className="absolute top-4 right-4 text-text-muted hover:text-text-main">
+                                            <X className="w-5 h-5" />
+                                        </button>
+                                    </div>
+                                )}
+
+
                               <div
                                 {...provided.dragHandleProps}
                                 className="absolute left-4 top-6 text-text-muted cursor-grab active:cursor-grabbing hover:text-text-main"
@@ -564,7 +630,7 @@ const ProductFormPage: React.FC = () => {
                               </div>
 
                               <div
-                                className={`pl-8 pr-8 grid grid-cols-1 gap-4 mb-4 ${isLinked ? "opacity-80" : ""}`}
+                                className={`pl-8 pr-8 grid grid-cols-1 gap-4 mb-4 ${isLinked ? "opacity-70 pointer-events-none" : ""}`}
                               >
                                 <AnatomyTextField
                                   label={t("products.group_name")}
@@ -620,11 +686,11 @@ const ProductFormPage: React.FC = () => {
                                       type="number"
                                       label={t("products.max_help")}
                                       size="sm"
-                                      value={group.maxSelection}
+                                      value={group.maxSelected}
                                       onChange={(e) =>
                                         updateGroup(
                                           idx,
-                                          "maxSelection",
+                                          "maxSelected",
                                           Number(e.target.value),
                                         )
                                       }
@@ -636,7 +702,7 @@ const ProductFormPage: React.FC = () => {
 
                               <button
                                 onClick={() => removeGroup(idx)}
-                                className="absolute right-4 top-6 text-text-muted hover:text-red-500 transition-colors p-1"
+                                className="absolute top-12 right-2  text-primary hover:text-primary-dark p-2 bg-white dark:bg-gray-800 rounded-full shadow-sm hover:shadow-md transition-all z-20 border border-primary/20"
                               >
                                 <Trash2 className="w-5 h-5" />
                               </button>
@@ -651,7 +717,7 @@ const ProductFormPage: React.FC = () => {
                                   <div
                                     ref={provided.innerRef}
                                     {...provided.droppableProps}
-                                    className="bg-gray-50 dark:bg-gray-900/50 p-4 rounded-xl space-y-2 ml-8 border border-border/50"
+                                    className={`bg-gray-50 dark:bg-gray-900/50 p-4 rounded-xl space-y-2 ml-8 border border-border/50 ${isLinked ? 'opacity-70 pointer-events-none' : ''}`}
                                   >
                                     <AnatomyText.Label className="mb-2 block text-xs">
                                       {t("products.options_list")}

@@ -23,11 +23,15 @@ import ProductFormPage from "./pages/products/ProductFormPage";
 import ScheduleFormPage from "./pages/schedule/ScheduleFormPage";
 import DriversPage from "./pages/drivers/DriversPage";
 import DriverFormPage from "./pages/drivers/DriverFormPage";
+import ModifiersPage from "./pages/modifiers/ModifiersPage";
+import ModifierFormPage from "./pages/modifiers/ModifierFormPage";
+import { ConfirmProvider } from "./components/common/ConfirmProdiver";
 
 function App() {
   return (
     <BrowserRouter>
       <ToastProvider />
+      <ConfirmProvider />
       <ThemeManager />
       <SocketManager />
 
@@ -84,6 +88,10 @@ function App() {
             <Route path="drivers" element={<DriversPage />} />
             <Route path="drivers/add" element={<DriverFormPage />} />
             <Route path="drivers/edit/:id" element={<DriverFormPage />} />
+
+            <Route path="modifiers" element={<ModifiersPage />} />
+            <Route path="modifiers/add" element={<ModifierFormPage />} />
+            <Route path="modifiers/edit/:id" element={<ModifierFormPage />} />
           </Route>
         </Route>
 

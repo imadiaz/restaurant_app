@@ -12,11 +12,13 @@ export interface ModifierOption extends BaseEntity {
   price: number;
   maxQuantity?: number; // Opcional
   isAvailable: boolean;
+  productId?: string;
+  modifierGroupId?: string;
   // No necesitamos 'groupId' aquí a menos que lo uses explícitamente en el front
 }
 
 export interface ModifierGroup extends BaseEntity {
-  name: string;
+ name: string;
   minSelected: number;
   maxSelected: number;
   isRequired: boolean;

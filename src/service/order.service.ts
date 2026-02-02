@@ -1,3 +1,4 @@
+import type { ApiResponse } from "../data/models/api/api.types";
 import axiosClient from "./api/axiosClient";
 
 export const OrderStatus = {
@@ -153,25 +154,25 @@ export const orderService = {
   // 1. Get List by Restaurant
   async getByRestaurant(restaurantId: string, status?: typeof OrderStatus[keyof typeof OrderStatus]): Promise<Order[]> {
     const params = status ? { status } : {};
-    const res = await axiosClient.get<Order[]>(`/orders/restaurant/${restaurantId}`, { params });
+    const res = await axiosClient.get<any, ApiResponse<Order[]>>(`/orders/restaurant/${restaurantId}`, { params });
     return res.data;
   },
 
   // 2. Get Details
   async getOne(id: string): Promise<Order> {
-    const res = await axiosClient.get<Order>(`/orders/${id}`);
+    const res = await axiosClient.get<any, ApiResponse<Order>>(`/orders/${id}`);
     return res.data;
   },
 
   // 3. Update Status (Restaurant Flow)
   async updateStatus(id: string, data: UpdateOrderStatusDto): Promise<Order> {
-    const res = await axiosClient.patch<Order>(`/orders/${id}/status`, data);
+    const res = await axiosClient.patch<any, ApiResponse<Order>>(`/orders/${id}/status`, data);
     return res.data;
   },
 
   // 4. Assign Driver
   async assignDriver(data: AssignDriverDto): Promise<Order> {
-    const res = await axiosClient.patch<Order>(`/orders/${data.orderId}/assign-driver`, { 
+    const res = await axiosClient.patch<any, ApiResponse<Order>>(`/orders/${data.orderId}/assign-driver`, { 
       driverId: data.driverId,
       status: data.status 
     });
@@ -180,7 +181,7 @@ export const orderService = {
 
   // 5. Get Driver Location
   async getTracking(id: string): Promise<{ lat: number; lng: number }> {
-    const res = await axiosClient.get<{ lat: number; lng: number }>(`/orders/${id}/tracking`);
+    const res = await axiosClient.get<any, ApiResponse<{ lat: number; lng: number }>>(`/orders/${id}/tracking`);
     return res.data;
   }
 };

@@ -16,8 +16,8 @@ export interface CreateModifierOption {
 export interface CreateModifierGroup {
   id?: string;
   name: string;
-  minSelection: number; 
-  maxSelection: number; 
+  minSelected: number; 
+  maxSelected: number; 
   isRequired: boolean; 
   options: CreateModifierOption[];
 }
@@ -56,16 +56,4 @@ export const productService = {
     const res = await axiosClient.patch<any, ApiResponse<any>>(`/products/${id}/status`, { status });
     return res.data;
   },
-
-  async toggleAvailabilityModifierGroup(id: string, isAvailable: boolean) {
-    const status = isAvailable ? 'active' : 'inactive';
-    const res = await axiosClient.patch<any,ApiResponse<any>>(`/modifiers/group/${id}/status`, { status });
-    return res.data;
-  },
-
-  async toggleAvailabilityModifierOption(id: string, isAvailable: boolean) {
-    const status = isAvailable ? 'active' : 'inactive';
-    const res = await axiosClient.patch<any, ApiResponse<any>>(`/modifiers/option/${id}/status`, { status });
-    return res.data;
-  }
 };

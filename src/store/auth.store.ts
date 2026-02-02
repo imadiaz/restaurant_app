@@ -6,6 +6,7 @@ interface AuthState {
   user: User | null;
   isAuthenticated: boolean;
   setCredentials: (user: User) => void;
+  updateTokens: (token: string, refreshToken: string) => void;
   logout: () => void;
 }
 
@@ -17,11 +18,19 @@ export const useAuthStore = create<AuthState>()(
       setCredentials: (user) => {
         set({ user, isAuthenticated: true });
       },
+       updateTokens: (token, refreshToken) => {
+        set((state) => ({
+          user: state.user
+            ? { ...state.user, token, refreshToken }
+            : null,
+        }));
+      },
       logout: () => {
         set({ user: null, isAuthenticated: false });
         localStorage.removeItem('app-context-storage');
         useAuthStore.persist.clearStorage();
       },
+      
     }),
     {
       name: 'auth-storage',

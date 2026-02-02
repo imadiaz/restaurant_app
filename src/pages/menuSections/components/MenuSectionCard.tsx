@@ -1,6 +1,5 @@
 import { NotebookPen, ArrowUpDown, Edit } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import AnatomyButton from "../../../components/anatomy/AnatomyButton";
 import AnatomySelect from "../../../components/anatomy/AnatomySelect";
 import AnatomyTag from "../../../components/anatomy/AnatomyTag";
 import AnatomyText from "../../../components/anatomy/AnatomyText";

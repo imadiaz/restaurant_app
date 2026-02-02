@@ -16,4 +16,7 @@ export const Routes = {
   Drivers: '/drivers',
   DriversAdd: '/drivers/add',
   DriversEdit: (id: string) => `/drivers/edit/${id}`,
+  Modifiers: '/modifiers',
+  ModifiersAdd: '/modifiers/add',
+  ModifiersEdit: (id: string) => `/modifiers/edit/${id}`,
 };
