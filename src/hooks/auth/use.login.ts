@@ -17,14 +17,15 @@ export const useLogin = () => {
 
   const mutation = useMutation({
     mutationFn: authService.login,
-    onSuccess: (user) => {
+    onSuccess: (data) => {
+      const {user} = data;
       const isAdmin = isSuperAdmin(user);
       const hasRestaurant = !!user.restaurant;
       if (!isAdmin && !hasRestaurant) {
           addToast('Tu usuario no tiene un restaurante asignado. Contacta a tu administrador.', 'error');
         return; 
       }
-        setCredentials(user); 
+        setCredentials(user, data.access_token, data.refresh_token); 
       if (hasRestaurant) {
         setActiveRestaurant(user.restaurant);
       } else {

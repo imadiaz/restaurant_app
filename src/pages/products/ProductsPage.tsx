@@ -12,11 +12,13 @@ import ProductCard from "./components/ProductCard";
 import { Routes } from "../../config/routes";
 import ProductDetailModal from "./ProductDetailModal";
 import { useConfirm } from "../../hooks/use.confirm.modal";
+import { useModifiers } from "../../hooks/modifiers/use.modifiers";
 
 const ProductsPage: React.FC = () => {
   const { t } = useTranslation();
   const { navigateTo } = useAppNavigation();
   const { products, isLoading, toggleAvailability } = useProducts();
+  const {toggleOptionStatusMutation} = useModifiers();
   const { sections } = useMenuSections();
   const [selectedProductId, setSelectedProductId] = useState<string | null>(
     null,
@@ -53,6 +55,10 @@ const ProductsPage: React.FC = () => {
       setUpdatingProductId(null);
     }
   };
+
+  const handleToggleOptionVisibility = async (optionId: string, status: string) => {
+    await toggleOptionStatusMutation({id: optionId, status});
+  }
 
   return (
     <BasePageLayout
@@ -121,6 +127,18 @@ const ProductsPage: React.FC = () => {
           onEdit={() =>
             navigateTo(Routes.ProudctEdit(selectedProduct?.id ?? ""))
           }
+          onToggleOptionStatus={async (optionId, status) => {
+            setSelectedProductId(null);
+            confirm({
+                title: t("confirm_modal.update_status"),
+                message: t("confirm_modal.update_status_description"),
+                variant: "warning",
+                confirmText: t("confirm_modal.confirm"),
+                onConfirm: async () => {
+                  handleToggleOptionVisibility(optionId, status);
+                },
+              });
+          }}
         />
       </div>
     </BasePageLayout>

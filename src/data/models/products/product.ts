@@ -13,8 +13,8 @@ export interface ModifierOption extends BaseEntity {
   maxQuantity?: number; // Opcional
   isAvailable: boolean;
   productId?: string;
-  modifierGroupId?: string;
   linkedProduct?: Product | null;
+  displayOrder: number;
 }
 
 export interface ModifierGroup extends BaseEntity {

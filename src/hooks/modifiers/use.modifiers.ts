@@ -83,6 +83,17 @@ export const useModifiers = () => {
     onError: handleError,
   });
 
+  const toggleOptionStatusMutation = useMutation({
+    mutationFn: ({ id, status }: { id: string; status: string }) =>
+      modifierService.toggleOptionStatus(id, status),
+    onSuccess: (_, vars) => {
+      addToast(`Option ${vars.status}`, 'info');
+      queryClient.invalidateQueries({ queryKey });
+      queryClient.invalidateQueries({ queryKey: ['products'] });
+    },
+    onError: handleError,
+  });
+
   return {
     modifiers,
     isLoading,
@@ -91,6 +102,7 @@ export const useModifiers = () => {
     updateGroup: updateGroupMutation.mutateAsync,
     deleteGroup: deleteGroupMutation.mutateAsync,
     toggleStatus: toggleStatusMutation.mutateAsync,
+    toggleOptionStatusMutation: toggleOptionStatusMutation.mutateAsync,
     isCreating: createGroupMutation.isPending,
     isUpdating: updateGroupMutation.isPending,
     isDeleting: deleteGroupMutation.isPending,

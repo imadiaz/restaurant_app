@@ -14,12 +14,18 @@ import AnatomyText from "../../components/anatomy/AnatomyText";
 import type { Product } from "../../data/models/products/product";
 import { STATUS } from "../../config/status.config";
 import AnatomyCardActions from "../../components/anatomy/AnatomyCardActions";
+import { useState } from "react";
+import AnatomySwitcher from "../../components/anatomy/AnatomySwitcher";
 
 interface ProductDetailModalProps {
   isOpen: boolean;
   onClose: () => void;
   product: Product | null;
   onEdit: (id: string) => void;
+  onToggleOptionStatus?: (
+    optionId: string,
+    newStatus: "active" | "inactive",
+  ) => Promise<void>;
 }
 
 const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
@@ -27,8 +33,10 @@ const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
   onClose,
   product,
   onEdit,
+  onToggleOptionStatus,
 }) => {
   const { t } = useTranslation();
+  const [togglingId, setTogglingId] = useState<string | null>(null);
 
   if (!isOpen || !product) return null;
 
@@ -37,6 +45,31 @@ const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
       style: "currency",
       currency: "USD",
     }).format(amount);
+
+  const handleStatusChange = async (optionId: string, newValue: string) => {
+    if (!onToggleOptionStatus) return;
+    setTogglingId(optionId);
+    try {
+      await onToggleOptionStatus(optionId, newValue as "active" | "inactive");
+    } catch (error) {
+      console.error("Failed to toggle status", error);
+    } finally {
+      setTogglingId(null);
+    }
+  };
+
+  const availabilityOptions = [
+    {
+      value: STATUS.active,
+      label: t("products.available"), 
+      icon: <CheckCircle className="w-3.5 h-3.5" />,
+    },
+    {
+      value: STATUS.inactive,
+      label: t("products.sold_out"),
+      icon: <XCircle className="w-3.5 h-3.5" />,
+    },
+  ];
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
@@ -109,9 +142,7 @@ const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
           </div>
         </div>
 
-        {/* --- CONTENT SCROLL AREA --- */}
         <div className="flex-1 overflow-y-auto p-6 sm:p-8 space-y-8">
-          {/* INFO GRID */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             <div className="space-y-4">
               <AnatomyText.Label>{t("common.description")}</AnatomyText.Label>
@@ -157,7 +188,6 @@ const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
             </div>
           </div>
 
-          {/* MODIFIERS SECTION */}
           {product.modifierGroups && product.modifierGroups.length > 0 && (
             <div className="space-y-6">
               <div className="flex items-center gap-2 pb-2 border-b border-border">
@@ -170,31 +200,28 @@ const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
               <div className="grid gap-6">
                 {product.modifierGroups.map((group) => {
                   const isGroupActive = group.status === STATUS.active;
-                  
+
                   return (
                     <div
                       key={group.id}
-                      className={`bg-background-card border border-border rounded-2xl overflow-hidden ${!isGroupActive ? 'opacity-75 grayscale-[0.5]' : ''}`}
+                      className={`bg-background-card border border-border rounded-2xl overflow-hidden ${!isGroupActive ? "opacity-75 grayscale-[0.5]" : ""}`}
                     >
-                      {/* GROUP HEADER */}
                       <div className="bg-gray-100/80 dark:bg-gray-800 p-4 flex flex-wrap items-center justify-between gap-3">
                         <div>
                           <div className="flex items-center gap-2">
                             <AnatomyText.H3 className="mb-0">
-                                {group.name}
+                              {group.name}
                             </AnatomyText.H3>
                             {!isGroupActive && (
-                                <span className="text-[10px] font-bold uppercase tracking-wider bg-gray-200 dark:bg-gray-700 px-2 py-0.5 rounded text-gray-500">
-                                    {t("common.inactive")}
-                                </span>
+                              <span className="text-[10px] font-bold uppercase tracking-wider bg-gray-200 dark:bg-gray-700 px-2 py-0.5 rounded text-gray-500">
+                                {t("common.inactive")}
+                              </span>
                             )}
                           </div>
-                          
+
                           <div className="text-xs text-text-muted flex gap-2 mt-1">
                             <AnatomyTag
-                              variant={
-                                group.isRequired ? "warning" : "default"
-                              }
+                              variant={group.isRequired ? "warning" : "default"}
                               className="h-5 text-[10px]"
                             >
                               {group.isRequired
@@ -209,17 +236,15 @@ const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
                         </div>
                       </div>
 
-                      {/* GROUP OPTIONS (Read Only) */}
                       <div className="divide-y divide-border/60">
                         {group.options.map((opt) => (
                           <div
                             key={opt.id}
-                            className="p-3 pl-4 flex items-center justify-between"
+                            className="p-3 pl-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
                           >
                             <div className="flex items-center gap-3">
-                                {/* Visual Status Dot */}
                               <div
-                                className={`w-2 h-2 rounded-full shrink-0 ${
+                                className={`w-1.5 h-1.5 rounded-full shrink-0 transition-colors duration-300 ${
                                   opt.isAvailable
                                     ? "bg-green-500 shadow-[0_0_6px_rgba(34,197,94,0.4)]"
                                     : "bg-red-300"
@@ -227,9 +252,9 @@ const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
                               />
                               <div>
                                 <div
-                                  className={`text-sm font-medium ${
+                                  className={`text-sm font-medium transition-colors ${
                                     !opt.isAvailable
-                                      ? "text-gray-400 line-through"
+                                      ? "text-gray-400"
                                       : "text-text-main"
                                   }`}
                                 >
@@ -242,13 +267,25 @@ const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
                                 )}
                               </div>
                             </div>
-                            
-                            {/* Static status text for options */}
-                            {!opt.isAvailable && (
-                                <span className="text-[10px] text-red-400 font-medium">
-                                    {t("products.sold_out")}
-                                </span>
-                            )}
+
+                            <div className="shrink-0 w-full sm:w-auto min-w-[180px]">
+                              <AnatomySwitcher
+                                options={availabilityOptions}
+                                value={
+                                  opt.isAvailable
+                                    ? STATUS.active
+                                    : STATUS.inactive
+                                }
+                                onChange={(newValue) =>
+                                  handleStatusChange(opt.id, newValue)
+                                }
+                                isLoading={togglingId === opt.id}
+                                disabled={
+                                  togglingId !== null && togglingId !== opt.id
+                                }
+                                className="w-full"
+                              />
+                            </div>
                           </div>
                         ))}
                       </div>
@@ -260,6 +297,7 @@ const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
           )}
         </div>
 
+        {/* --- FOOTER ACTIONS --- */}
         <AnatomyCardActions
           secondary={{
             label: t("common.close"),

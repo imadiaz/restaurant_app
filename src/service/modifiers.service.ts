@@ -36,8 +36,7 @@ export const modifierService = {
     return res.data;
   },
 
-  async toggleOptionStatus(id: string, isAvailable: boolean) {
-    const status = isAvailable ? 'active' : 'inactive';
+  async toggleOptionStatus(id: string, status: string) {
     const res = await axiosClient.patch<any, ApiResponse<CreateModifierOption>>(
       `/modifiers/option/${id}/status`,
       { status }

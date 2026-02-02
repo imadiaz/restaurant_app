@@ -1,12 +1,16 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import type { User } from "../data/models/user/user";
+import { decodeExp } from "../config/auth.config";
 
 interface AuthState {
   user: User | null;
+  accessToken: string | null;
+  refreshToken: string | null;
+  accessTokenExp: number | null;
   isAuthenticated: boolean;
-  setCredentials: (user: User) => void;
-  updateTokens: (token: string, refreshToken: string) => void;
+  setCredentials: (user: User,accessToken: string, refreshToken: string) => void;
+  updateTokens: (accessToken: string, refreshToken: string) => void;
   logout: () => void;
 }
 
@@ -14,23 +18,40 @@ export const useAuthStore = create<AuthState>()(
   persist(
     (set) => ({
       user: null,
+      accessToken: null,
+      refreshToken: null,
+      accessTokenExp: null,
       isAuthenticated: false,
-      setCredentials: (user) => {
-        set({ user, isAuthenticated: true });
+
+      setCredentials: (user, accessToken, refreshToken) => {
+        set({
+          user,
+          accessToken,
+          refreshToken,
+          accessTokenExp: decodeExp(accessToken),
+          isAuthenticated: true,
+        });
       },
-       updateTokens: (token, refreshToken) => {
-        set((state) => ({
-          user: state.user
-            ? { ...state.user, token, refreshToken }
-            : null,
-        }));
+
+      updateTokens: (accessToken, refreshToken) => {
+        set({
+          accessToken,
+          refreshToken,
+          accessTokenExp: decodeExp(accessToken),
+          isAuthenticated: true,
+        });
       },
+
       logout: () => {
-        set({ user: null, isAuthenticated: false });
-        localStorage.removeItem('app-context-storage');
+        set({
+          user: null,
+          accessToken: null,
+          refreshToken: null,
+          accessTokenExp: null,
+          isAuthenticated: false,
+        });
         useAuthStore.persist.clearStorage();
       },
-      
     }),
     {
       name: 'auth-storage',
