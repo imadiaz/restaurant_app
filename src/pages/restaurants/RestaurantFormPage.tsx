@@ -2,7 +2,8 @@ import React, { useState, useEffect, useRef } from "react";
 import {  useParams } from "react-router-dom";
 import {
   Building2, MapPin, FileText, Phone, 
-  ImageIcon, Save, Globe
+  ImageIcon, Save, Globe,
+  Mail
 } from "lucide-react";
 import AnatomyButton from "../../components/anatomy/AnatomyButton";
 import AnatomySelect from "../../components/anatomy/AnatomySelect";
@@ -56,6 +57,7 @@ const RestaurantFormPage: React.FC = () => {
   const [streetAddress, setStreetAddress] = useState("");
   const [colony, setColony] = useState("");
   const [city, setCity] = useState("");
+  const [email, setEmail] = useState("");
   const [stateGeo, setStateGeo] = useState(""); 
   const [zipCode, setZipCode] = useState("");
   const [lat, setLat] = useState<number>(0);
@@ -95,7 +97,7 @@ const RestaurantFormPage: React.FC = () => {
           setLat(Number(data.lat));
           setLng(Number(data.lng));
           setStatus(data.status);
-
+          setEmail(data.email || "");
           if (data.logoUrl) {
             setLogoPreview(data.logoUrl);
             setIsLogoUploaded(true);
@@ -123,7 +125,7 @@ const RestaurantFormPage: React.FC = () => {
   };
 
   const handleSave = async () => {
-    if (!name || !userId || !streetAddress || !zipCode || !city || !description) {
+    if (!name || !userId || !streetAddress || !zipCode || !city || !description || !email) {
       addToast(t('restaurants.fields_validation'), "error");
       return;
     }
@@ -176,6 +178,7 @@ const RestaurantFormPage: React.FC = () => {
         logoUrl: finalLogoUrl,
         heroImageUrl: finalHeroUrl,
         isOpen: true,
+        email
       };
 
       if (isEditMode && id) {
@@ -345,7 +348,9 @@ const RestaurantFormPage: React.FC = () => {
                <AnatomyTextField label={t('restaurants.rfc')} value={rfc} onChange={e => setRfc(e.target.value)} placeholder="XAXX010101000" minLength={10} maxLength={15} />
                <AnatomyTextField label={t('restaurants.legal_name')} value={legalName} onChange={e => setLegalName(e.target.value)} />
                <AnatomyTextField label={t('restaurants.public_phone')} value={publicPhone} onChange={e => setPublicPhone(e.target.value)} icon={<Phone className="w-4 h-4"/>} />
-               <AnatomyTextField label={t('restaurants.private_phone')}value={privatePhone} onChange={e => setPrivatePhone(e.target.value)} icon={<Phone className="w-4 h-4"/>} />
+               <AnatomyTextField label={t('restaurants.private_phone')} value={privatePhone} onChange={e => setPrivatePhone(e.target.value)} icon={<Phone className="w-4 h-4"/>} />
+                <AnatomyTextField label={t('restaurants.email')} value={email} onChange={e => setEmail(e.target.value)} placeholder="example@example.com" icon={<Mail className="w-4 h-4"/>} />
+
             </div>
            </div>
 
@@ -406,9 +411,9 @@ const RestaurantFormPage: React.FC = () => {
           {isEditMode && (
              <div className="bg-background-card p-6 rounded-3xl shadow-sm border border-border">
                 <AnatomySelect label={t('common.status')} value={status} onChange={e => setStatus(e.target.value)}>
-                   <option value="active">{t('status.status_active')}</option>
-                   <option value="inactive">{t('status.status_inactive')}</option>
-                   <option value="suspended">{t('status.status_suspended')}</option>
+                   <option value="active">{t('common.status_active')}</option>
+                   <option value="inactive">{t('common.status_inactive')}</option>
+                   <option value="suspended">{t('common.status_suspended')}</option>
                 </AnatomySelect>
              </div>
           )}

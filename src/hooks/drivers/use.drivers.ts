@@ -3,13 +3,11 @@ import { driverService, type CreateDriverDto, type Driver} from '../../service/d
 import { useAppStore } from '../../store/app.store';
 import { useToastStore } from '../../store/toast.store';
 import { useErrorHandler } from '../use.error.handler';
-import { useTranslation } from 'react-i18next';
 import { isSuperAdmin } from '../../data/models/user/utils/user.utils';
 import { useAuthStore } from '../../store/auth.store';
 
 
 export const useDrivers = (restaurantIdOverride?: string) => {
-  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const { handleError } = useErrorHandler();
   const addToast = useToastStore((state) => state.addToast);

@@ -5,9 +5,7 @@ import {
   Building2,
   Shield,
   Calendar,
-  Menu,
   Album,
-  Truck,
   Motorbike,
   Utensils,
 } from "lucide-react";

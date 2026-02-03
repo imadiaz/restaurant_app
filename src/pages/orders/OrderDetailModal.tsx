@@ -5,7 +5,6 @@ import {
   CreditCard,
   StickyNote,
   Printer,
-  CheckCircle,
   Clock,
   ChefHat,
   ShoppingBag,
@@ -516,7 +515,7 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
                     <AnatomySelect
                       value={selectedDriverId}
                       onChange={(e) => setSelectedDriverId(e.target.value)}
-                      className="h-10 text-sm"
+                      className="text-sm"
                     >
                       <option value="">{t("drivers.select_driver")}</option>
                       {drivers.map((d) => (

@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 import React, { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import AnatomyButton from "../../components/anatomy/AnatomyButton";
 import AnatomyCheckbox from "../../components/anatomy/AnatomyCheckBox";
 import AnatomySwitcher from "../../components/anatomy/AnatomySwitcher";

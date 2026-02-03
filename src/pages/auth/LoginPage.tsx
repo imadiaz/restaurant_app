@@ -1,7 +1,7 @@
 import { User, Lock } from 'lucide-react';
 import AnatomyTextField from '../../components/anatomy/AnatomyTextField';
 import AnatomyButton from '../../components/anatomy/AnatomyButton';
-import { useState, useTransition } from 'react';
+import { useState } from 'react';
 import AnatomyText from '../../components/anatomy/AnatomyText';
 import { useLogin } from '../../hooks/auth/use.login';
 import AnatomyTextFieldPassword from '../../components/anatomy/AnatomyTextFieldPassword';

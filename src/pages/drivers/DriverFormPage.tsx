@@ -8,24 +8,19 @@ import {
   Lock,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
-
-// Anatomy Components
 import AnatomyButton from "../../components/anatomy/AnatomyButton";
 import AnatomyText from "../../components/anatomy/AnatomyText";
 import AnatomyTextField from "../../components/anatomy/AnatomyTextField";
 import AnatomyTextFieldPassword from "../../components/anatomy/AnatomyTextFieldPassword";
 import { ImageUploadInput } from "../../components/common/ImageUploadInput";
 import BasePageLayout from "../../components/layout/BaseLayout";
-
-// Hooks & Services
 import { FILES_PATHS, useImagesUpload } from "../../hooks/images/use.images.upload";
 import { useDrivers } from "../../hooks/drivers/use.drivers"; // ✅ Switched hook
 import { useAppNavigation } from "../../hooks/navigation/use.app.navigation";
-import { useAuthStore } from "../../store/auth.store";
 import { useToastStore } from "../../store/toast.store";
 import type { CreateDriverDto } from "../../service/drivers.service";
-import { isSuperAdmin } from "../../data/models/user/utils/user.utils";
 import { useAppStore } from "../../store/app.store";
+import { formatMxPhone, stripMxPrefix } from "../../utils/format.phone.utils";
 
 const DriverFormPage: React.FC = () => {
   const { t } = useTranslation();
@@ -44,8 +39,7 @@ const DriverFormPage: React.FC = () => {
 
   const { uploadFile, isUploading } = useImagesUpload();
   const addToast = useToastStore((state) => state.addToast);
-  const currentUser = useAuthStore((state) => state.user);
-    const { activeRestaurant } = useAppStore();
+  const { activeRestaurant } = useAppStore();
   const [isImageUploaded,setIsImageUploaded] = useState(false);
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -74,7 +68,7 @@ const DriverFormPage: React.FC = () => {
             setFirstName(driver.firstName); 
             setLastName(driver.lastName);
             setEmail(driver.user?.email || ""); 
-            setPhone(driver.phone);
+            setPhone(stripMxPrefix(driver.phone));
             setImagePreview(driver.profileImageUrl || driver.user?.profileImageUrl || null);
             if(driver.profileImageUrl || driver.user.profileImageUrl) {
               setIsImageUploaded(true);
@@ -126,7 +120,7 @@ const DriverFormPage: React.FC = () => {
         firstName,
         lastName,
         email,
-        phone,
+        phone: formatMxPhone(phone),
         profileImageUrl: finalImageUrl,
         restaurantId: selectedRestaurantId,
         ...(password ? { password } : {}),
@@ -194,7 +188,8 @@ const DriverFormPage: React.FC = () => {
 
               <AnatomyTextField
                 label={t('drivers.phone')}
-                placeholder="+52 55 1234 5678"
+                prefix="+52"
+                placeholder="55 1234 5678"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
                 icon={<Phone className="w-4 h-4 text-text-muted" />}
@@ -202,7 +197,9 @@ const DriverFormPage: React.FC = () => {
                 maxLength={15}
               />
 
-              <AnatomyTextField
+              
+            </div>
+            <AnatomyTextField
                 type="email"
                 label={t('users.email')}
                 placeholder="driver@email.com"
@@ -211,7 +208,6 @@ const DriverFormPage: React.FC = () => {
                 icon={<Mail className="w-4 h-4 text-text-muted" />}
                 required
               />
-            </div>
           </div>
 
           <div className="bg-background-card p-6 rounded-3xl shadow-sm border border-border space-y-6">

@@ -26,6 +26,8 @@ import DriverFormPage from "./pages/drivers/DriverFormPage";
 import ModifiersPage from "./pages/modifiers/ModifiersPage";
 import ModifierFormPage from "./pages/modifiers/ModifierFormPage";
 import { ConfirmProvider } from "./components/common/ConfirmProdiver";
+import { PaymentRefreshPage } from "./pages/payments/PaymentRefreshPage";
+import PaymentSuccessPage from "./pages/payments/PaymentSuccessPage";
 
 function App() {
   return (
@@ -36,6 +38,8 @@ function App() {
       <SocketManager />
 
       <Routes>
+        <Route path="/payments/onboarding/success/:id" element={<PaymentSuccessPage />} />
+        <Route path="/payments/onboarding/refresh/:id" element={<PaymentRefreshPage />} />
         <Route path="/" element={<RootRedirect />} />
         <Route path="/unauthorized" element={<UnauthorizedPage />} />
 

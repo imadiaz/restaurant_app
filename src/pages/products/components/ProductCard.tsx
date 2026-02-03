@@ -1,4 +1,4 @@
-import { ImageOff, CheckCircle, XCircle, Eye, Edit, ExternalLink, Loader2 } from "lucide-react";
+import { ImageOff, CheckCircle, XCircle, Edit, ExternalLink } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import AnatomyButton from "../../../components/anatomy/AnatomyButton";
 import AnatomySwitcher from "../../../components/anatomy/AnatomySwitcher";

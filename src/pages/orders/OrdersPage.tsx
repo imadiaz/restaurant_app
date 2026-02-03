@@ -33,7 +33,7 @@ const OrdersPage: React.FC = () => {
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const { orders, isLoading, updateStatus, isUpdating, assignDriver, isAssigning } = useOrders();
+  const { orders, isLoading, updateStatus, assignDriver } = useOrders();
 
   const { counts, filteredOrders } = useMemo(() => {
      const newCounts: Record<string, number> = { all: 0 };
@@ -81,7 +81,7 @@ const OrdersPage: React.FC = () => {
       subtitle={t('orders.subtitle')}
       isLoading={isLoading}
       renderControls={
-        <div className="w-full md:w-96">
+        <div className="w-full md:w-full">
             <AnatomySearchBar
                 placeholder={t('orders.search_placeholder')}
                 value={searchQuery}
@@ -125,9 +125,6 @@ const OrdersPage: React.FC = () => {
                   key={order.id} 
                   order={order}
                   onClick={() => handleCardClick(order)} 
-                  onStatusChange={handleStatusUpdate}
-                  isUpdating={isUpdating || isAssigning}
-                  t={t}
                 /> 
               ))}
            </div>

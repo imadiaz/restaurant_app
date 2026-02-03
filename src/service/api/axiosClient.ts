@@ -1,10 +1,8 @@
-import axios, {
-  AxiosError,
-  type InternalAxiosRequestConfig,
-} from "axios";
+import axios, { AxiosError, type InternalAxiosRequestConfig } from "axios";
 import {
   AppError,
   type ApiErrorResponse,
+  type ApiResponse,
 } from "../../data/models/api/api.types";
 import { useAuthStore } from "../../store/auth.store";
 import { isAccessTokenExpired } from "../../config/auth.config";
@@ -31,11 +29,13 @@ const processQueue = (error: any, token: string | null = null) => {
   failedQueue = [];
 };
 
-
 /* ------------------------------------------------------------------ */
 /* Centralized refresh function                                         */
 /* ------------------------------------------------------------------ */
-
+interface TokenResponse {
+  accessToken: string;
+  refreshToken: string;
+}
 const refreshTokens = async (): Promise<string> => {
   if (isRefreshing) {
     return new Promise((resolve, reject) => {
@@ -47,36 +47,34 @@ const refreshTokens = async (): Promise<string> => {
 
   try {
     const { refreshToken } = useAuthStore.getState();
-
+    console.log("Token llego aqui 1");
     if (!refreshToken) {
       throw new Error("No refresh token available");
     }
-
-    const response = await axios.post(
+    console.log("Token llego aqui 2");
+    const response = await axios.post<any, ApiResponse<TokenResponse>>(
       `${import.meta.env.VITE_API_URL}/auth/refresh`,
       null,
       {
         headers: {
           Authorization: `Bearer ${refreshToken}`,
         },
-      }
+      },
     );
-    console.log("Response",response.data);
-    const {
-      accessToken: newAccessToken,
-      refreshToken: newRefreshToken,
-    } = response.data;
-
-    useAuthStore
-      .getState()
-      .updateTokens(newAccessToken, newRefreshToken);
-    console.log('Refreshing token before to expired')
+    console.log("Token llego aqui 3", response);
+    console.log("Token llego aqui 3.1", response.data);
+    const { accessToken: newAccessToken, refreshToken: newRefreshToken } =
+      response.data;
+    console.log("Access token", newAccessToken);
+    console.log("Refresh token", newRefreshToken);
+    useAuthStore.getState().updateTokens(newAccessToken, newRefreshToken);
+    console.log("Refreshing token before to expired");
     processQueue(null, newAccessToken);
     return newAccessToken;
   } catch (error) {
-    console.log('Error refreshing token before', error);
+    console.log("Error refreshing token before", error);
     processQueue(error, null);
-   // useAuthStore.getState().logout();
+    // useAuthStore.getState().logout();
     throw error;
   } finally {
     isRefreshing = false;
@@ -99,25 +97,22 @@ const axiosClient = axios.create({
 /* Request interceptor (proactive refresh)                              */
 /* ------------------------------------------------------------------ */
 
-axiosClient.interceptors.request.use(
-  async (config) => {
-    const { accessToken, refreshToken } = useAuthStore.getState();
+axiosClient.interceptors.request.use(async (config) => {
+  const { accessToken, refreshToken } = useAuthStore.getState();
 
-    if (!accessToken || !refreshToken) {
-      return config;
-    }
-
-    if (isAccessTokenExpired()) {
-      const newAccessToken = await refreshTokens();
-      config.headers.Authorization = `Bearer ${newAccessToken}`;
-      return config;
-    }
-
-    config.headers.Authorization = `Bearer ${accessToken}`;
+  if (!accessToken || !refreshToken) {
     return config;
-  },
-  Promise.reject
-);
+  }
+
+  if (isAccessTokenExpired()) {
+    const newAccessToken = await refreshTokens();
+    config.headers.Authorization = `Bearer ${newAccessToken}`;
+    return config;
+  }
+
+  config.headers.Authorization = `Bearer ${accessToken}`;
+  return config;
+}, Promise.reject);
 
 /* ------------------------------------------------------------------ */
 /* Response interceptor (fallback safety)                               */
@@ -130,10 +125,7 @@ axiosClient.interceptors.response.use(
       _retry?: boolean;
     };
 
-    if (
-      error.response?.status === 401 &&
-      !originalRequest?._retry
-    ) {
+    if (error.response?.status === 401 && !originalRequest?._retry) {
       originalRequest._retry = true;
 
       try {
@@ -172,15 +164,9 @@ axiosClient.interceptors.response.use(
     }
 
     return Promise.reject(
-      new AppError(
-        errorMessage,
-        statusCode,
-        errorCode,
-        validationErrors
-      )
+      new AppError(errorMessage, statusCode, errorCode, validationErrors),
     );
-  }
+  },
 );
 
 export default axiosClient;
-

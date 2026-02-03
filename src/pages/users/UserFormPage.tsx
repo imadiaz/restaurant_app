@@ -28,6 +28,7 @@ import { useRestaurants } from "../../hooks/restaurants/use.restaurant";
 import { isSuperAdmin } from "../../data/models/user/utils/user.utils";
 import { useTranslation } from "react-i18next";
 import { useAppStore } from "../../store/app.store";
+import { formatMxPhone, stripMxPrefix } from "../../utils/format.phone.utils";
 
 
 
@@ -74,7 +75,7 @@ const hasLoadedData = useRef(false);
             setLastName(user.lastName);
             setUsername(user.username);
             setEmail(user.email || "");
-            setPhone(user.phone);
+            setPhone(stripMxPrefix(user.phone));
             setRoleId(user.role?.id);
             setStatus(user.status || "active");
             setImagePreview(user.profileImageUrl || null);
@@ -136,7 +137,7 @@ const hasLoadedData = useRef(false);
           lastName,
           username,
           email,
-          phone,
+          phone: formatMxPhone(phone),
           roleId,
           status,
           profileImageUrl: finalImageUrl,
@@ -154,7 +155,7 @@ const hasLoadedData = useRef(false);
           lastName,
           username,
           email,
-          phone,
+          phone: formatMxPhone(phone),
           password,
           roleId,
           profileImageUrl: finalImageUrl,
@@ -224,7 +225,8 @@ const hasLoadedData = useRef(false);
 
               <AnatomyTextField
                 label={t('users.phone_number')}
-                placeholder="+52 55 1234 5678"
+                prefix="+52"
+                placeholder="55 1234 5678"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
                 icon={<Phone className="w-4 h-4 text-text-muted" />}

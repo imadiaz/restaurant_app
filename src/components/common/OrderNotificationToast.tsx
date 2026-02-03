@@ -42,7 +42,7 @@ const OrderNotificationToast: React.FC<OrderNotificationToastProps> = ({ order, 
             </div>
             <div>
               <p className="text-xs font-bold text-gray-400 uppercase tracking-wide">New Order Received</p>
-              <AnatomyText.H3 className="text-sm leading-none">{order.id}</AnatomyText.H3>
+              <AnatomyText.H3 className="text-sm leading-none">{order.clientSnapshot?.firstName}{order.clientSnapshot?.lastName}</AnatomyText.H3>
             </div>
           </div>
           <button onClick={(e) => { e.stopPropagation(); onClose(); }} className="text-gray-300 hover:text-gray-500">

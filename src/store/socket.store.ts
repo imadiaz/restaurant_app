@@ -73,7 +73,7 @@ export const useSocketStore = create<SocketState>((set, get) => {
         if (orderData.status === 'ON_WAY') {
             message = `Driver picked up Order #${orderData.id.slice(0, 5)}`;
         } else if (orderData.status === 'DELIVERED') {
-            message = `✅ Order #${orderData.id.slice(0, 5)} has been Delivered!`;
+            message = `Order #${orderData.id.slice(0, 5)} has been Delivered!`;
         }
 
         useToastStore.getState().addToast(message, 'info');

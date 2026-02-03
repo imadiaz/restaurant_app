@@ -45,7 +45,10 @@
     "online": "Online",
     "offline": "Offline",
     "print_receipt": "Print Receipt",
-    "confirm": "Confirm"
+    "confirm": "Confirm",
+    "copied_to_clipboard": "Copied to clipboard",
+    "go_dashboard": "Go to Dashboard",
+    "return_home": "Return Home"
   },
   "login": {
     "login": "Login",
@@ -65,8 +68,9 @@
   "restaurants": {
     "restaurant": "Restaurant",
     "restaurants": "Restaurants",
+    "email": "Email address",
     "add": "Add New Restaurant",
-    "fields_validation": "Please fill in required fields (Name, Responsible, Address, Zip, City, Description)",
+    "fields_validation": "Please fill in required fields (Name, Responsible, Address, Zip, City, Description, Email)",
     "validation_select_location": "Please select a location on the map",
     "validation_rfc": "Invalid format for RFC",
     "new": "New restaurant",
@@ -214,8 +218,8 @@
     "error_option_name": "All options must have a name",
     "error_option_price": "Price for '{{name}}' cannot be negative",
     "error_option_qty": "Max Quantity for '{{name}}' must be at least 1",
-    "empty_list":"No modifiers yet.",
-    "update_main_modifier":"Edit main modifier for all the products"
+    "empty_list": "No modifiers yet.",
+    "update_main_modifier": "Edit main modifier for all the products"
   },
   "schedules": {
     "title": "Opening Hours",
@@ -266,6 +270,7 @@
     "select_driver": "Select a driver"
   },
   "orders": {
+    "id": "Order ID",
     "title": "Orders",
     "subtitle": "Manage and track incoming restaurant orders",
     "search_placeholder": "Search by ID or Customer Name...",
@@ -334,14 +339,29 @@
     "history_user": "User who changed"
   },
   "confirm_modal": {
-    "change_status_group":"Change status group",
-    "change_status_group_description":"Do you want to update the status? You'll affect all the products with this modifier group.",
-    "confirm":"Yes, confirm",
-    "delete_group":"Delete group",
-    "delete_group_description":"Do you want to delete the group? The group will be removed for all the products linked to this group.",
-    "update_modifier":"Edit modifier",
-    "update_modifier_description":"Do you want to edit the modifier group? You'll affect all the products with this modifier group including the new or removed options.",
-    "update_status":"Edit status",
-    "update_status_description":"Do you want to edit the status? You'll affect all the products linked to this."
+    "change_status_group": "Change status group",
+    "change_status_group_description": "Do you want to update the status? You'll affect all the products with this modifier group.",
+    "confirm": "Yes, confirm",
+    "delete_group": "Delete group",
+    "delete_group_description": "Do you want to delete the group? The group will be removed for all the products linked to this group.",
+    "update_modifier": "Edit modifier",
+    "update_modifier_description": "Do you want to edit the modifier group? You'll affect all the products with this modifier group including the new or removed options.",
+    "update_status": "Edit status",
+    "update_status_description": "Do you want to edit the status? You'll affect all the products linked to this."
+  },
+  "payments": {
+    "verifying_stripe": "Verifying Stripe Status...",
+    "moment_please": "This will just take a moment",
+    "setup_complete": "All Set!",
+    "ready_desc": "Your restaurant is now verified to receive card payments and payouts directly via Stripe.",
+    "almost_ready": "Almost Ready",
+    "pending_desc": "We need a bit more information to verify your identity. Please complete the Stripe onboarding process.",
+    "error_desc": "We're still working on the verification we'll send you an email when is done.",
+    "continue_setup": "Complete Setup",
+    "session_expired": "Session Expired",
+    "expired_desc": "For your security, Stripe links expire after a few minutes of inactivity. You can generate a new link below to continue where you left off.",
+    "secure_connection": "Secure Connection 256-bit",
+    "generating_link": "Generating secure link...",
+    "try_again": "Resume Setup"
   }
 }

@@ -1,6 +1,5 @@
 import React from "react";
 import { MapPin, Store, Edit, ExternalLink, User } from "lucide-react";
-import AnatomyButton from "../../../components/anatomy/AnatomyButton";
 import AnatomyText from "../../../components/anatomy/AnatomyText";
 import type {
   Restaurant,

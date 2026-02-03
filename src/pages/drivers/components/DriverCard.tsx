@@ -1,4 +1,4 @@
-import { Car, Phone, MapPin, Edit, ExternalLink, Mail } from "lucide-react";
+import { Phone, Edit, ExternalLink, Mail } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import AnatomyCardActions from "../../../components/anatomy/AnatomyCardActions";
 import AnatomyText from "../../../components/anatomy/AnatomyText";

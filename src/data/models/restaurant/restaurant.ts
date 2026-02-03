@@ -17,6 +17,7 @@ export interface Restaurant {
   user?: User;
   name: string;
   description?: string;
+  email?: string;
   logoUrl?: string;
   heroImageUrl?: string;
   priceRange: PriceRange;

@@ -1,10 +1,9 @@
-import { getDay, isWithinInterval, parseISO } from "date-fns";
-import { Edit, CheckCircle, XCircle, Calendar, Clock, Trash2, CalendarX } from "lucide-react";
+import { getDay, isWithinInterval } from "date-fns";
+import { Edit, CheckCircle, XCircle, Calendar, } from "lucide-react";
 import { parse, format } from "date-fns";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import AnatomyButton from "../../components/anatomy/AnatomyButton";
-import AnatomyTag from "../../components/anatomy/AnatomyTag";
 import AnatomyText from "../../components/anatomy/AnatomyText";
 import BasePageLayout from "../../components/layout/BaseLayout";
 import { useAppNavigation } from "../../hooks/navigation/use.app.navigation";
