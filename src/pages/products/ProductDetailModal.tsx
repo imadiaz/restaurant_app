@@ -7,6 +7,7 @@ import {
   Clock,
   AlertCircle,
   ExternalLink,
+  Package,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import AnatomyTag from "../../components/anatomy/AnatomyTag";
@@ -61,7 +62,7 @@ const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
   const availabilityOptions = [
     {
       value: STATUS.active,
-      label: t("products.available"), 
+      label: t("products.available"),
       icon: <CheckCircle className="w-3.5 h-3.5" />,
     },
     {
@@ -243,13 +244,23 @@ const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
                             className="p-3 pl-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
                           >
                             <div className="flex items-center gap-3">
-                              <div
-                                className={`w-1.5 h-1.5 rounded-full shrink-0 transition-colors duration-300 ${
-                                  opt.isAvailable
-                                    ? "bg-green-500 shadow-[0_0_6px_rgba(34,197,94,0.4)]"
-                                    : "bg-red-300"
-                                }`}
-                              />
+                              <div className="text-gray-400">
+                                {opt?.linkedProduct?.imageUrl ? (
+                                  <img
+                                    src={opt?.linkedProduct?.imageUrl}
+                                    alt={opt.name}
+                                    className="w-8 h-8 rounded-md object-cover border border-border"
+                                  />
+                                ) : (
+                                  <div
+                                    className={`w-1.5 h-1.5 rounded-full shrink-0 transition-colors duration-300 ${
+                                      opt.isAvailable
+                                        ? "bg-green-500 shadow-[0_0_6px_rgba(34,197,94,0.4)]"
+                                        : "bg-red-300"
+                                    }`}
+                                  />
+                                )}
+                              </div>
                               <div>
                                 <div
                                   className={`text-sm font-medium transition-colors ${

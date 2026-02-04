@@ -7,10 +7,12 @@ import { useLogin } from '../../hooks/auth/use.login';
 import AnatomyTextFieldPassword from '../../components/anatomy/AnatomyTextFieldPassword';
 import LanguageSwitcher from '../../components/common/LanguageSwitcher';
 import { useTranslation } from 'react-i18next';
+import { useDeviceInfo } from '../../hooks/device/use.device';
 
 
 const LoginPage: React.FC = () => {
   const { login, isLoading } = useLogin(); 
+  const deviceInfo = useDeviceInfo();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const { t } = useTranslation();
@@ -20,8 +22,21 @@ const LoginPage: React.FC = () => {
     e.preventDefault();
     console.log(username);
     console.log(password);
+    const model = deviceInfo?.device.model 
+      ? `${deviceInfo.device.vendor || ''} ${deviceInfo.device.model}`.trim()
+      : `${deviceInfo?.browser.name} on ${deviceInfo?.os.name}`;
 
-    login({ username, password });
+    const payload = {
+      username,
+      password,
+      osName: deviceInfo?.os.name || 'Unknown',
+      osVersion: deviceInfo?.os.version || 'Unknown',
+      deviceModel: model || 'Unknown',
+      appVersion: import.meta.env.VITE_APP_VERSION || '1.0.0',
+      buildNumber: import.meta.env.VITE_BUILD_NUMBER || '1',
+    };
+
+    login(payload);
   };
 
   return (

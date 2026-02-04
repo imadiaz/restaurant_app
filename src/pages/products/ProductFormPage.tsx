@@ -86,7 +86,7 @@ const {navigateTo} = useAppNavigation();
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [isImageUploaded, setIsImageUploaded] = useState<Boolean>(false);
-
+  const [requirePrepTime, setRequirePrepTime] = useState<boolean>(true);
   // Modifiers State
   const [modifierGroups, setModifierGroups] = useState<CreateModifierGroup[]>(
     [],
@@ -490,7 +490,14 @@ const {navigateTo} = useAppNavigation();
                 onChange={(e) => setPrice(e.target.value)}
               />
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <AnatomyCheckbox label="Require preparation time?" checked={requirePrepTime} onChange={(value) => {
+                setRequirePrepTime(value);
+                setPrepMin(value ? 10 : 0);
+                setPrepMax(value ? 15: 0)
+              }} />
+            </div>
+            {requirePrepTime && <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <AnatomyTextField
                 label={t("products.prep_min_time")}
                 type="number"
@@ -503,7 +510,7 @@ const {navigateTo} = useAppNavigation();
                 value={prepMax}
                 onChange={(e) => setPrepMax(Number(e.target.value))}
               />
-            </div>
+            </div>}
           </div>
 
           {/* 2. Modifiers Section */}
@@ -749,9 +756,9 @@ const {navigateTo} = useAppNavigation();
                                               {/* Icon Indicator: Product vs Text */}
                                               <div className="text-gray-400">
                                                 {opt.productId ? (
-                                                  opt.imageUrl ? (
+                                                  opt.imageUrl || opt?.linkedProduct?.imageUrl ? (
                                                     <img
-                                                      src={opt.imageUrl}
+                                                      src={opt.imageUrl || opt?.linkedProduct?.imageUrl}
                                                       alt={opt.name}
                                                       className="w-8 h-8 rounded-md object-cover border border-border"
                                                     />

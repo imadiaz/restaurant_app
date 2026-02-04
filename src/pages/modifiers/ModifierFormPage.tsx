@@ -363,10 +363,8 @@ const ModifierFormPage: React.FC = () => {
                           {/* Icon or Image */}
                           <div className="flex items-center justify-center w-8 h-8 shrink-0 mr-2">
                             {opt.productId ? (
-                              // @ts-ignore
                               opt.imageUrl ? (
                                 <img
-                                  // @ts-ignore
                                   src={opt.imageUrl}
                                   alt={opt.name}
                                   className="w-8 h-8 rounded-md object-cover border border-border"

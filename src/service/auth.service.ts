@@ -18,4 +18,9 @@ export const authService = {
     );
     return response.data;
   },
+
+  async logout(): Promise<any> {
+    const response = await axiosClient.post<any, ApiResponse<LoginResponsePayload>>('/auth/logout');
+    return response.data;
+  },
 };

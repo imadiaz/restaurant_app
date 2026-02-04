@@ -7,6 +7,7 @@ import { useAppStore } from '../../store/app.store';
 import AnatomyText from '../anatomy/AnatomyText';
 import { getMenuForRole, ROLES, type UserRole } from '../../config/roles';
 import { useTranslation } from 'react-i18next';
+import { useLogout } from '../../hooks/auth/use.logout';
 
 interface SidebarProps {
   mobile?: boolean;
@@ -17,11 +18,10 @@ const Sidebar: React.FC<SidebarProps> = ({ mobile = false }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const { isSidebarCollapsed } = useLayoutStore();
-  const logout = useAuthStore((state) => state.logout);
+  const {logout, isLoading} = useLogout();
 
-  const handleLogout = () => {
-    logout();
-    navigate('/');
+  const handleLogout = async() => {
+    await logout();
   };
   
   const { activeRestaurant } = useAppStore();
@@ -99,6 +99,7 @@ const Sidebar: React.FC<SidebarProps> = ({ mobile = false }) => {
 
       <div className="p-4 border-t border-border">
         <button 
+          disabled={isLoading}
           onClick={handleLogout}
           className={`
             w-full flex items-center p-3 rounded-xl text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors
