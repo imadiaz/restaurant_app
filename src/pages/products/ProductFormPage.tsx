@@ -193,8 +193,8 @@ const {navigateTo} = useAppNavigation();
       {
         id: `new-group-${Date.now()}`,
         name: "",
-        minSelection: 0,
-        maxSelection: 1,
+        minSelected: 0,
+        maxSelected: 1,
         isRequired: false,
         options: [],
       } as any,
@@ -395,8 +395,8 @@ const {navigateTo} = useAppNavigation();
       }
       return {
         id: undefined,
-        minSelected: Number(g.minSelected),
-        maxSelected: Number(g.maxSelected),
+        minSelected: Number(g.minSelected || 0),
+        maxSelected: Number(g.maxSelected || 1),
         name: g.name,
         isRequired: g.isRequired,
         options: g.options.map((o: any) => ({

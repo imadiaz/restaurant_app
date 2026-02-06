@@ -28,6 +28,10 @@ import ModifierFormPage from "./pages/modifiers/ModifierFormPage";
 import { ConfirmProvider } from "./components/common/ConfirmProdiver";
 import { PaymentRefreshPage } from "./pages/payments/PaymentRefreshPage";
 import PaymentSuccessPage from "./pages/payments/PaymentSuccessPage";
+import CategoriesPage from "./pages/categories/CategoryPage";
+import CategoryFormPage from "./pages/categories/CategoryFormPage";
+import PromotionsPage from "./pages/promotions/PromotionPage";
+import PromotionsFormPage from "./pages/promotions/PromotionFormPage";
 
 function App() {
   return (
@@ -38,8 +42,14 @@ function App() {
       <SocketManager />
 
       <Routes>
-        <Route path="/payments/onboarding/success/:id" element={<PaymentSuccessPage />} />
-        <Route path="/payments/onboarding/refresh/:id" element={<PaymentRefreshPage />} />
+        <Route
+          path="/payments/onboarding/success/:id"
+          element={<PaymentSuccessPage />}
+        />
+        <Route
+          path="/payments/onboarding/refresh/:id"
+          element={<PaymentRefreshPage />}
+        />
         <Route path="/" element={<RootRedirect />} />
         <Route path="/unauthorized" element={<UnauthorizedPage />} />
 
@@ -58,8 +68,11 @@ function App() {
             <Route path="users" element={<UsersPage />} />
             <Route path="users/add" element={<UserFormPage />} />
             <Route path="users/edit/:id" element={<UserFormPage />} />
-            <Route path="analytics" element={<>Analytics</>} />
-            <Route path="settings" element={<>Seittings</>} />
+
+            <Route path="categories" element={<CategoriesPage />} />
+
+            <Route path="categories/add" element={<CategoryFormPage />} />
+            <Route path="categories/edit/:id" element={<CategoryFormPage />} />
           </Route>
         </Route>
 
@@ -96,6 +109,10 @@ function App() {
             <Route path="modifiers" element={<ModifiersPage />} />
             <Route path="modifiers/add" element={<ModifierFormPage />} />
             <Route path="modifiers/edit/:id" element={<ModifierFormPage />} />
+
+            <Route path="promotions" element={<PromotionsPage />} />
+            <Route path="promotions/add" element={<PromotionsFormPage />} />
+            <Route path="promotions/edit/:id" element={<PromotionsFormPage />} />
           </Route>
         </Route>
 

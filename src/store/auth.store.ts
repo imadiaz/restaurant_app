@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import type { User } from "../data/models/user/user";
 import { decodeExp } from "../config/auth.config";
+import { useSocketStore } from "./socket.store";
 
 interface AuthState {
   user: User | null;
@@ -43,6 +44,7 @@ export const useAuthStore = create<AuthState>()(
       },
 
       logout: () => {
+        useSocketStore.getState().disconnect();
         set({
           user: null,
           accessToken: null,

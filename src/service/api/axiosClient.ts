@@ -2,7 +2,6 @@ import axios, { AxiosError, type InternalAxiosRequestConfig } from "axios";
 import {
   AppError,
   type ApiErrorResponse,
-  type ApiResponse,
 } from "../../data/models/api/api.types";
 import { useAuthStore } from "../../store/auth.store";
 import { isAccessTokenExpired } from "../../config/auth.config";
@@ -47,11 +46,9 @@ const refreshTokens = async (): Promise<string> => {
 
   try {
     const { refreshToken } = useAuthStore.getState();
-    console.log("Token llego aqui 1");
     if (!refreshToken) {
       throw new Error("No refresh token available");
     }
-    console.log("Token llego aqui 2");
     const response = await axios.post<any, any>(
       `${import.meta.env.VITE_API_URL}/auth/refresh`,
       null,
@@ -61,21 +58,15 @@ const refreshTokens = async (): Promise<string> => {
         },
       },
     );
-    console.log("Token llego aqui 3", response);
-    console.log("Token llego aqui 3.1", response.data);
-    console.log("Token llego aqui 3.2", response?.data?.data);
     const { accessToken: newAccessToken, refreshToken: newRefreshToken } =
       response?.data?.data;
-    console.log("Access token", newAccessToken);
-    console.log("Refresh token", newRefreshToken);
     useAuthStore.getState().updateTokens(newAccessToken, newRefreshToken);
-    console.log("Refreshing token before to expired");
     processQueue(null, newAccessToken);
     return newAccessToken;
   } catch (error) {
     console.log("Error refreshing token before", error);
     processQueue(error, null);
-    // useAuthStore.getState().logout();
+    useAuthStore.getState().logout();
     throw error;
   } finally {
     isRefreshing = false;

@@ -8,6 +8,7 @@ import AnatomyText from '../anatomy/AnatomyText';
 import { getMenuForRole, ROLES, type UserRole } from '../../config/roles';
 import { useTranslation } from 'react-i18next';
 import { useLogout } from '../../hooks/auth/use.logout';
+import ManageCategoriesSection from '../../pages/restaurants/components/ManageCategoriesSection';
 
 interface SidebarProps {
   mobile?: boolean;
@@ -95,6 +96,10 @@ const Sidebar: React.FC<SidebarProps> = ({ mobile = false }) => {
             )}
           </button>
         ))}
+      </div>
+
+      <div>
+        <ManageCategoriesSection isSidebarCollapsed={isSidebarCollapsed} mobile={mobile}  />
       </div>
 
       <div className="p-4 border-t border-border">

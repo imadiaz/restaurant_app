@@ -1,3 +1,4 @@
+import type { Category } from "../../../service/category.service";
 import type { User } from "../user/user";
 
 export const PriceRange = {
@@ -42,4 +43,5 @@ export interface Restaurant {
   publicPhone?: string;
   privatePhone?: string;
   status: string;
+  categories?: Category[];
 }

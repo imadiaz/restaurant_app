@@ -31,8 +31,6 @@ export interface CreateRestaurantDto {
   legalName?: string;
   responsibleName?: string;
   responsiblePhone?: string;
-
-  // Configuración inicial
   commissionRate?: number;
   publicPhone?: string;
   privatePhone?: string;
@@ -40,9 +38,12 @@ export interface CreateRestaurantDto {
   isOpen?: boolean;
 }
 
-// DTO para ACTUALIZAR (Partial)
 export interface UpdateRestaurantDto extends Partial<CreateRestaurantDto> {
   status?: string;
+}
+
+export interface UpdateRestaurantCategoriesDto {
+  categoryIds: string[];
 }
 
 export const restaurantService = {
@@ -70,6 +71,14 @@ export const restaurantService = {
 
   async toggleOpenStatus(id: string, isOpen: boolean): Promise<Restaurant> {
     const response = await axiosClient.patch<any, ApiResponse<Restaurant>>(`/restaurants/${id}`, { isOpen });
+    return response.data;
+  },
+
+  async updateCategories(id: string, data: UpdateRestaurantCategoriesDto): Promise<Restaurant> {
+    const response = await axiosClient.patch<any, ApiResponse<Restaurant>>(
+      `/restaurants/${id}/categories`, 
+      data
+    );
     return response.data;
   }
 };

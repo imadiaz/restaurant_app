@@ -8,6 +8,8 @@ import {
   Album,
   Motorbike,
   Utensils,
+  ChefHat,
+  TicketPercent,
 } from "lucide-react";
 import { Routes } from "./routes";
 
@@ -29,6 +31,7 @@ const MENUS = {
       icon: Building2,
     },
     { label: "All Users", path: `/admin${Routes.Users}`, icon: Shield },
+    { label: "Restaurant categories", path: `/admin/categories`, icon: ChefHat },
   ],
   RESTAURANT: [
     { label: 'Orders', path: '/dashboard/orders', icon: ShoppingBag },
@@ -38,6 +41,7 @@ const MENUS = {
     { label: "Drivers", path: `/dashboard${Routes.Drivers}`, icon: Motorbike },
      { label: "Group Products", path: "/dashboard/modifiers", icon: Utensils },
     { label: "Menu Sections", path: "/dashboard/menu-sections", icon: Album },
+     { label: "Promotions", path: "/dashboard/promotions", icon: TicketPercent },
   ],
 };
 

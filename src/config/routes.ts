@@ -19,4 +19,8 @@ export const Routes = {
   Modifiers: '/modifiers',
   ModifiersAdd: '/modifiers/add',
   ModifiersEdit: (id: string) => `/modifiers/edit/${id}`,
+  CategoriesAdd: '/categories/add',
+  CategoriesEdit: (id: string) => `/categories/edit/${id}`,
+  PromotionsAdd: '/promotions/add',
+  PromotionsEdit: (id: string) => `/promotions/edit/${id}`,
 };

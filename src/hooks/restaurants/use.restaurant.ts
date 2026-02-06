@@ -76,6 +76,27 @@ export const useRestaurants = (restaurantId?: string) => {
     onError: handleError,
   });
 
+
+  const updateCategoriesMutation = useMutation({
+    mutationFn: ({ restaurantId, categoryIds }: { restaurantId: string; categoryIds: string[] }) =>
+      restaurantService.updateCategories(restaurantId, { categoryIds }),
+      
+    onSuccess: (updatedRestaurant, variables) => {
+      addToast('Cuisines updated successfully', 'success');
+      queryClient.setQueryData(['restaurant', variables.restaurantId], updatedRestaurant);
+      queryClient.setQueryData<Restaurant[]>(['restaurants', 'all'], (oldList) => {
+        if (!oldList) return []; 
+
+        return oldList.map((restaurant) => 
+          restaurant.id === variables.restaurantId 
+            ? updatedRestaurant 
+            : restaurant  
+        );
+      });
+    },
+    onError: handleError,
+  });
+
   return {
     restaurants, // Now this variable exists
     isLoading,
@@ -86,9 +107,11 @@ export const useRestaurants = (restaurantId?: string) => {
     updateRestaurant: updateMutation.mutateAsync,
     toggleOpen: toggleOpenMutation.mutateAsync,
     getRestaurantById: getRestaurantById,
+    updateCategories: updateCategoriesMutation.mutateAsync,
 
     // LOADING STATES
     isCreating: createMutation.isPending,
     isUpdating: updateMutation.isPending,
+    isUpdatingCategories: updateCategoriesMutation.isPending,
   };
 };

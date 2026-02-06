@@ -48,7 +48,10 @@
     "confirm": "Confirm",
     "copied_to_clipboard": "Copied to clipboard",
     "go_dashboard": "Go to Dashboard",
-    "return_home": "Return Home"
+    "return_home": "Return Home",
+    "select_all": "Select All",
+    "deselect_all": "Deselect All",
+    "no_description": "No description provided."
   },
   "login": {
     "login": "Login",
@@ -347,7 +350,10 @@
     "update_modifier": "Edit modifier",
     "update_modifier_description": "Do you want to edit the modifier group? You'll affect all the products with this modifier group including the new or removed options.",
     "update_status": "Edit status",
-    "update_status_description": "Do you want to edit the status? You'll affect all the products linked to this."
+    "update_status_description": "Do you want to edit the status? You'll affect all the products linked to this.",
+     "delete_promotion": "Delete Promotion?",
+    "delete_promotion_description": "Are you sure? This promotion will no longer apply to new orders. Past orders will keep the historical record.",
+    "delete": "Delete"
   },
   "payments": {
     "verifying_stripe": "Verifying Stripe Status...",
@@ -363,5 +369,70 @@
     "secure_connection": "Secure Connection 256-bit",
     "generating_link": "Generating secure link...",
     "try_again": "Resume Setup"
+  },
+  "categories": {
+    "title": "Global Cuisines",
+    "description": "Manage food categories and cuisines",
+    "add_title": "Add New Category",
+    "add": "Add Category",
+    "add_description": "Define a new global cuisine type for the platform.",
+    "edit_title": "Edit Category",
+    "search_placeholder": "Search categories or slugs...",
+    "empty": "No categories found",
+    "field_name": "Category Name",
+    "field_icon": "Emoji Icon",
+    "field_image_url": "Banner Image URL",
+    "validation_name_required": "Category name is required",
+    "tips_description": "Emojis load instantly! Use emojis (e.g., 🍕) for quick filter chips and high-quality image URLs for larger search banners.",
+    "delete_category": "Delete category",
+    "delete_category_description": "Do you want to delete the category? If there are restaurants linked to this category will be removed too.",
+    "manage_title": "Manage Cuisines",
+    "manage_description": "Select the cuisines that best describe your restaurant to help customers find you.",
+    "section_selected": "Active Cuisines",
+    "section_available": "Available to Add",
+    "no_selection": "No cuisines selected yet.",
+    "all_selected": "All available cuisines are already selected!",
+    "edit_tooltip": "Edit restaurant cuisines"
+  },
+  "promotions": {
+    "title": "Promotions & Offers",
+    "subtitle": "Manage discounts and special campaigns.",
+    "add": "New Promotion",
+    "search_placeholder": "Search by name or type...",
+    "empty": "No promotions found. Create one to boost sales!",
+    
+    "add_title": "Create Promotion",
+    "add_description": "Configure a new discount campaign for your menu.",
+    "edit_title": "Edit Promotion",
+    
+    "section_details": "Promotion Details",
+    "section_duration": "Duration",
+    "section_products": "Applicable Products",
+    
+    "field_name": "Promotion Name",
+    "field_description": "Description",
+    "field_type": "Discount Type",
+    "field_value": "Value",
+    "field_value_percentage": "Percentage (%)",
+    "field_value_amount": "Discount Amount ($)",
+    "field_start_date": "Start Date & Time",
+    "field_end_date": "End Date & Time",
+    
+    "type_percentage": "Percentage Discount",
+    "type_fixed": "Fixed Amount Off",
+    "type_bogo": "Buy One Get One (2x1)",
+    
+    "duration_warning": "Promotions will automatically expire after the end date.",
+    "products_helper": "Select the products that will receive this discount.",
+    "edit_products_disabled_note": "To apply this promotion to different products, please create a new one.",
+    
+    "validation_name_required": "Please enter a name for the promotion.",
+    "validation_dates_required": "Start and End dates are required.",
+    "validation_dates_invalid": "The end date must be after the start date.",
+    "validation_value_negative": "The discount value cannot be negative.",
+    "validation_products_required": "You must select at least one product.",
+    
+    "status_active": "Active",
+    "status_paused": "Paused"
   }
 }
