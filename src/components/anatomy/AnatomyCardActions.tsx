@@ -2,36 +2,39 @@ import type { LucideIcon } from 'lucide-react';
 import React from 'react';
 import AnatomyButton from '../anatomy/AnatomyButton';
 
-interface ActionConfig {
+export interface ActionConfig {
   label: string;
   onClick: (e: React.MouseEvent) => void;
   icon?: LucideIcon;
   disabled?: boolean;
+  variant?: 'primary' | 'secondary' | 'danger' | 'ghost'; 
 }
 
 interface AnatomyCardActionsProps {
   primary?: ActionConfig;
   secondary?: ActionConfig;
-  reverse?: boolean;
+  tertiary?: ActionConfig; 
+  reverse?: boolean;      
   className?: string;
 }
 
 const AnatomyCardActions: React.FC<AnatomyCardActionsProps> = ({ 
   primary, 
   secondary, 
+  tertiary,
   reverse = false,
   className = "" 
 }) => {
   
-  if (!primary && !secondary) return null;
-
-  const renderButton = (action: ActionConfig, variant: 'primary' | 'secondary') => {
+  if (!primary && !secondary && !tertiary) return null;
+  const activeCount = [primary, secondary, tertiary].filter(Boolean).length;
+  const renderButton = (action: ActionConfig, defaultVariant: 'primary' | 'secondary' | 'ghost') => {
     const Icon = action.icon;
     return (
       <AnatomyButton
-        variant={variant}
+        variant={action.variant || defaultVariant} 
         fullWidth
-        onClick={(e) => {
+        onClick={(e: React.MouseEvent) => {
           e.stopPropagation();
           action.onClick(e);
         }}
@@ -39,23 +42,25 @@ const AnatomyCardActions: React.FC<AnatomyCardActionsProps> = ({
         className="h-10 text-xs px-2 sm:px-4" 
       >
         {Icon && <Icon className="w-3.5 h-3.5 mr-2 shrink-0" />} 
-        
         <span className="truncate">{action.label}</span>
       </AnatomyButton>
     );
   };
 
+  const gridCols = `grid-cols-${activeCount}`;
+
   return (
-    <div className={`grid ${(primary && secondary) ? 'grid-cols-2' : 'grid-cols-1'} gap-3 pt-3 mt-auto border-t border-border ${className}`}>
-      
+    <div className={`grid ${gridCols} gap-3 pt-3 mt-auto border-t border-border ${className}`}>
       {reverse ? (
         <>
           {primary && renderButton(primary, 'primary')}
           {secondary && renderButton(secondary, 'secondary')}
+          {tertiary && renderButton(tertiary, 'ghost')}
         </>
       ) : (
         <>
-          {secondary ? renderButton(secondary, 'secondary') : <div />}
+          {tertiary && renderButton(tertiary, 'ghost')}
+          {secondary && renderButton(secondary, 'secondary')}
           {primary && renderButton(primary, 'primary')}
         </>
       )}

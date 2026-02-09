@@ -225,14 +225,18 @@ const {navigateTo} = useAppNavigation();
     const newGroups = [...modifierGroups];
     // 1. Generate new temp ID
     const newId = `new-group-${Date.now()}`;
+
+    const originalGroup = newGroups[idx];
     
-    // 2. Clone object and update ID
     newGroups[idx] = { 
-        ...newGroups[idx], 
-        id: newId,
-        // Append (Copy) to name for clarity, optional
-        name: `${newGroups[idx].name} (Copy)` 
-    };
+      ...originalGroup, 
+      id: newId,
+      name: `${originalGroup.name} (Copy)`,
+      options: originalGroup.options.map(opt => ({
+          ...opt,
+          id: `new-opt-${Date.now()}-${Math.random()}`,
+      }))
+  };
 
     setModifierGroups(newGroups);
     setDetachWarningIdx(null); // Close warning

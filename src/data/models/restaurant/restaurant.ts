@@ -1,4 +1,5 @@
 import type { Category } from "../../../service/category.service";
+import type { CommissionType } from "../../../service/restaurant.service";
 import type { User } from "../user/user";
 
 export const PriceRange = {
@@ -39,9 +40,13 @@ export interface Restaurant {
   stripeOnboardingCompleted: boolean;
   stripeChargesEnabled: boolean;
   stripePayoutsEnabled: boolean;
-  commissionRate: number;
   publicPhone?: string;
   privatePhone?: string;
   status: string;
   categories?: Category[];
+    deliveryFee?: number;
+  commissionValue?: string;
+  commissionType?: CommissionType;
+  stripeFeePct?: number;
+  stripeFeeFixed?: number;
 }

@@ -9,6 +9,7 @@ import { getMenuForRole, ROLES, type UserRole } from '../../config/roles';
 import { useTranslation } from 'react-i18next';
 import { useLogout } from '../../hooks/auth/use.logout';
 import ManageCategoriesSection from '../../pages/restaurants/components/ManageCategoriesSection';
+import ManageRestaurantSettingsSection from '../../pages/restaurants/components/ManageRestaurantSettingsSection';
 
 interface SidebarProps {
   mobile?: boolean;
@@ -99,7 +100,11 @@ const Sidebar: React.FC<SidebarProps> = ({ mobile = false }) => {
       </div>
 
       <div>
-        <ManageCategoriesSection isSidebarCollapsed={isSidebarCollapsed} mobile={mobile}  />
+        {activeRestaurant && <ManageRestaurantSettingsSection isSidebarCollapsed={isSidebarCollapsed} mobile={mobile}/>}
+      </div>
+
+      <div>
+        {activeRestaurant && <ManageCategoriesSection isSidebarCollapsed={isSidebarCollapsed} mobile={mobile}  />}
       </div>
 
       <div className="p-4 border-t border-border">

@@ -51,7 +51,10 @@
     "return_home": "Return Home",
     "select_all": "Select All",
     "deselect_all": "Deselect All",
-    "no_description": "No description provided."
+    "no_description": "No description provided.",
+    "save_changes": "Save Changes",
+    "save_config": "Save Configuration",
+    "saving": "Saving..."
   },
   "login": {
     "login": "Login",
@@ -434,5 +437,24 @@
     
     "status_active": "Active",
     "status_paused": "Paused"
+  },
+  "settings": {
+    "title": "Restaurant Settings",
+    "admin_title": "Admin Configuration",
+    "operational_title": "Store Operations",
+    "operational_subtitle": "Update your daily settings like delivery fees and opening status.",
+    "admin_subtitle": "Managing financial configuration for {{name}}",
+    "section_operations": "Daily Operations",
+    "section_financials": "Financial Configuration",
+    "store_status": "Store Status",
+    "store_status_desc": "Turn off to stop receiving new orders immediately.",
+    "delivery_fee": "Delivery Fee",
+    "delivery_fee_help": "Set to 0 for free delivery promotions.",
+    "prep_time": "Prep Time (min)",
+    "commission_type": "Commission Type",
+    "commission_value": "Commission Value",
+    "comm_percentage": "Percentage (%)",
+    "comm_fixed": "Fixed Amount ($)",
+    "admin_config": "Admin Config"
   }
 }

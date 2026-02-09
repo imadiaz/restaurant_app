@@ -1,5 +1,5 @@
-import React from "react";
-import { MapPin, Store, Edit, ExternalLink, User } from "lucide-react";
+import React, { useState } from "react";
+import { MapPin, Store, Edit, ExternalLink, User, Settings } from "lucide-react";
 import AnatomyText from "../../../components/anatomy/AnatomyText";
 import type {
   Restaurant,
@@ -9,6 +9,10 @@ import { useTranslation } from "react-i18next";
 import { STATUS } from "../../../config/status.config";
 import AnatomyCardActions from "../../../components/anatomy/AnatomyCardActions";
 import AnatomyTag from "../../../components/anatomy/AnatomyTag";
+import ManageRestaurantSettingsSection from "./ManageRestaurantSettingsSection";
+import { isSuperAdmin } from "../../../data/models/user/utils/user.utils";
+import ManageRestaurantSettingsModal from "./ManageRestaurantSettingsModal";
+import { useAuthStore } from "../../../store/auth.store";
 
 interface RestaurantCardProps {
   restaurant: Restaurant;
@@ -33,13 +37,17 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({
     };
     return map[range] || "$$";
   };
+  const {user} = useAuthStore((state) => state);
+  const [showSettingsModal, setShowSettingsModal] = useState(false);
+
+  const canEditSettings = isSuperAdmin(user) || restaurant.userId === user?.id;
+  const isAdminMode = isSuperAdmin(user);
 
   return (
     <div
-      onClick={onViewDetail}
       className="bg-background-card rounded-3xl overflow-hidden shadow-sm border border-border hover:shadow-md transition-all group relative flex flex-col h-full cursor-pointer"
     >
-      <div className="h-32 w-full bg-gray-100 dark:bg-gray-800 relative">
+      <div onClick={onViewDetail} className="h-32 w-full bg-gray-100 dark:bg-gray-800 relative">
         {restaurant.heroImageUrl ? (
           <>
             <img
@@ -139,8 +147,27 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({
             icon: ExternalLink,
             onClick: onEnterDashboard,
           }}
+          tertiary={ canEditSettings ? {
+              label: 'Config',
+              icon: Settings,
+              variant: 'ghost',
+              onClick: () => setShowSettingsModal(true)
+            } : undefined }
+            reverse={true}
         />
       </div>
+      {showSettingsModal && (
+        <ManageRestaurantSettingsModal
+          isOpen={showSettingsModal}
+          onClose={() => setShowSettingsModal(false)}
+          restaurant={restaurant}
+          isAdminMode={isAdminMode}
+          onSuccess={() => {
+             // Optional: Refresh list or show success toast
+             console.log("Settings updated!");
+          }}
+        />
+      )}
     </div>
   );
 };

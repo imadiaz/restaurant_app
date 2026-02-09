@@ -48,7 +48,6 @@ const RestaurantFormPage: React.FC = () => {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [priceRange, setPriceRange] = useState<PriceRange>("moderate");
-  const [commissionRate, setCommissionRate] = useState<number>(20);
   const [avgPrepTime, setAvgPrepTime] = useState<number>(25);
   const [rfc, setRfc] = useState("");
   const [legalName, setLegalName] = useState("");
@@ -83,7 +82,6 @@ const RestaurantFormPage: React.FC = () => {
           setName(data.name);
           setDescription(data.description || "");
           setPriceRange(data.priceRange);
-          setCommissionRate(data.commissionRate);
           setAvgPrepTime(data.averagePrepTimeMin);   
           setRfc(data.rfc || "");
           setLegalName(data.legalName || "");
@@ -170,7 +168,6 @@ const RestaurantFormPage: React.FC = () => {
       const payloadBase = {
         userId,
         name, description, priceRange,
-        commissionRate: Number(commissionRate),
         averagePrepTimeMin: Number(avgPrepTime),
         streetAddress, colony, city, state: stateGeo, zipCode,
         lat: Number(lat), lng: Number(lng),
@@ -266,14 +263,6 @@ const RestaurantFormPage: React.FC = () => {
                 <option value="$$$">Expensive ($$$)</option>
                 <option value="$$$$">Very Expensive ($$$$)</option>
               </AnatomySelect>
-
-              <AnatomyTextField 
-                label={t('restaurants.commission_rate')}
-                type="number"
-                value={commissionRate}
-                onChange={e => setCommissionRate(Number(e.target.value))}
-                min={0} max={100}
-              />
               
                <div className="md:col-span-2">
                  <AnatomyTextField 

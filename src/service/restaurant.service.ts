@@ -2,36 +2,33 @@ import type { ApiResponse } from "../data/models/api/api.types";
 import type { PriceRange, Restaurant } from "../data/models/restaurant/restaurant";
 import axiosClient from "./api/axiosClient";
 
+export const CommissionType = {
+  PERCENTAGE: 'percentage',
+  FIXED_AMOUNT: 'fixed_amount',
+} as const;
 
-// Interfaz de Lectura (Lo que recibes del Backend)
+export type CommissionType =
+  typeof CommissionType[keyof typeof CommissionType];
 
-
-// DTO para CREAR (Lo que envías en el POST)
 export interface CreateRestaurantDto {
-  userId: string; // El dueño asignado
+  userId: string;
   name: string;
   description?: string;
   logoUrl?: string;
   heroImageUrl?: string;
   priceRange?: PriceRange;
   
-  // Dirección (Obligatorios según tu entity)
   streetAddress: string;
   colony: string;
   city: string;
   state: string;
   zipCode: string;
-  
-  // Geo
   lat: number;
   lng: number;
-  
-  // Fiscales (Opcionales al crear, se pueden llenar luego)
   rfc?: string;
   legalName?: string;
   responsibleName?: string;
   responsiblePhone?: string;
-  commissionRate?: number;
   publicPhone?: string;
   privatePhone?: string;
   averagePrepTimeMin?: number;
@@ -44,6 +41,19 @@ export interface UpdateRestaurantDto extends Partial<CreateRestaurantDto> {
 
 export interface UpdateRestaurantCategoriesDto {
   categoryIds: string[];
+}
+
+export interface UpdateRestaurantOperationalDto {
+  deliveryFee?: number;
+  isOpen?: boolean;
+  averagePrepTimeMin?: number;
+}
+
+export interface AdminUpdateRestaurantDto extends UpdateRestaurantOperationalDto {
+  commissionType?: CommissionType;
+  commissionValue?: number;
+  stripeFeePct?: number;
+  stripeFeeFixed?: number;
 }
 
 export const restaurantService = {
@@ -80,5 +90,20 @@ export const restaurantService = {
       data
     );
     return response.data;
+  },
+
+  async updateOperational(id: string, data: UpdateRestaurantOperationalDto): Promise<Restaurant> {
+    const response = await axiosClient.patch<ApiResponse<Restaurant>>(
+      `/restaurants/${id}/operational`,
+      data
+    );
+    return response.data.data ?? response.data;
+  },
+  async updateAdminConfig(id: string, data: AdminUpdateRestaurantDto): Promise<Restaurant> {
+    const response = await axiosClient.patch<ApiResponse<Restaurant>>(
+      `/restaurants/${id}/admin-config`,
+      data
+    );
+    return response.data.data ?? response.data;
   }
 };
