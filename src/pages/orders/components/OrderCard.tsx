@@ -144,9 +144,9 @@ const OrderCard: React.FC<OrderCardProps> = ({
         <div className="mb-4">
           <AnatomyText.H3 
             className="mb-0 text-text-main font-bold truncate w-full text-lg leading-tight" 
-            title={`${order.clientSnapshot?.firstName} ${order.clientSnapshot?.lastName}`}
+            title={`${order.customerSnapshot?.firstName} ${order.customerSnapshot?.lastName}`}
           >
-            {order.clientSnapshot?.firstName || t('common.guest')} {order.clientSnapshot?.lastName || ""}
+            {order.customerSnapshot?.firstName || t('common.guest')} {order.customerSnapshot?.lastName || ""}
           </AnatomyText.H3>
         </div>
 

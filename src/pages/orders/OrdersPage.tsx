@@ -47,7 +47,7 @@ const OrdersPage: React.FC = () => {
         const currentTab = TABS.find(t => t.id === activeTab);
         const matchesTab = currentTab ? currentTab.statuses.includes(order.status) : true;
         const q = searchQuery.toLowerCase();
-        const clientName = `${order.clientSnapshot?.firstName || ''} ${order.clientSnapshot?.lastName || ''}`.toLowerCase();
+        const clientName = `${order.customerSnapshot?.firstName || ''} ${order.customerSnapshot?.lastName || ''}`.toLowerCase();
         const matchesSearch = !searchQuery || 
                               clientName.includes(q) || 
                               order.id.toLowerCase().includes(q);

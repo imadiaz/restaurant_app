@@ -220,11 +220,11 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
                   </div>
                   <div>
                     <AnatomyText.Body className="font-bold text-text-main text-sm">
-                      {order.clientSnapshot?.firstName || t("orders.guest")}{" "}
-                      {order.clientSnapshot?.lastName || ""}
+                      {order.customerSnapshot?.firstName || t("orders.guest")}{" "}
+                      {order.customerSnapshot?.lastName || ""}
                     </AnatomyText.Body>
                     <AnatomyText.Small className="text-text-muted text-xs">
-                      {order.clientSnapshot?.phone || t("orders.no_phone")}
+                      {order.customerSnapshot?.phone || t("orders.no_phone")}
                     </AnatomyText.Small>
                   </div>
                 </div>

@@ -41,7 +41,7 @@ export interface DeliveryAddressSnapshot {
   lng: number;
 }
 
-export interface ClientSnapshot {
+export interface CustomerSnapshot {
   id: string;
   userId: string;
   firstName: string;
@@ -116,7 +116,7 @@ export interface Order {
 
   // Snapshots
   deliveryAddress?: DeliveryAddressSnapshot;
-  clientSnapshot?: ClientSnapshot;
+  customerSnapshot?: CustomerSnapshot;
   driverSnapshot?: DriverSnapshot | null;
   statusHistory?: StatusHistoryEntry[];
 
