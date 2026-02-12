@@ -54,7 +54,8 @@
     "no_description": "No description provided.",
     "save_changes": "Save Changes",
     "save_config": "Save Configuration",
-    "saving": "Saving..."
+    "saving": "Saving...",
+     "search_code": "Search by code..."
   },
   "login": {
     "login": "Login",
@@ -356,7 +357,9 @@
     "update_status_description": "Do you want to edit the status? You'll affect all the products linked to this.",
      "delete_promotion": "Delete Promotion?",
     "delete_promotion_description": "Are you sure? This promotion will no longer apply to new orders. Past orders will keep the historical record.",
-    "delete": "Delete"
+    "delete": "Delete",
+     "delete_title": "Delete Coupon?",
+    "delete_description": "Are you sure you want to delete the coupon \"{{item}}\"? This action cannot be undone."
   },
   "payments": {
     "verifying_stripe": "Verifying Stripe Status...",
@@ -456,5 +459,54 @@
     "comm_percentage": "Percentage (%)",
     "comm_fixed": "Fixed Amount ($)",
     "admin_config": "Admin Config"
+  },
+  "coupons": {
+    "title": "Coupons & Promos",
+    "subtitle": "Manage discounts and promotional codes.",
+    "add": "Create Coupon",
+    "edit": "Edit Coupon",
+    "add_description": "Create a new discount rule for your customers.",
+    "edit_description": "Modify existing coupon details.",
+    "empty": "No coupons found. Create one to get started!",
+    "no_description": "No description provided",
+    
+    "section_general": "General Information",
+    "section_rules": "Discount Rules",
+    "section_validity": "Validity Period",
+    "section_limits": "Usage Limits",
+
+    "code": "Coupon Code",
+    "code_help": "Unique code users will enter (e.g. SAVE20)",
+    "description": "Description",
+    "description_placeholder": "Internal note or customer facing description...",
+    
+    "discount_type": "Discount Type",
+    "type_percentage": "Percentage (%)",
+    "type_fixed": "Fixed Amount ($)",
+    "type_free_shipping": "Free Shipping",
+    
+    "discount_value": "Discount Value",
+    "min_order": "Min. Order Amount",
+    "min_order_help": "Minimum subtotal required to apply.",
+    "max_discount": "Max Discount",
+    "max_discount_help": "Cap the discount amount (for % types).",
+    
+    "start_date": "Start Date",
+    "end_date": "End Date",
+    
+    "limit_global": "Total Usage Limit",
+    "limit_global_help": "Max times this coupon can be used in total.",
+    "limit_user": "Limit Per User",
+    "limit_user_help": "Max times a single user can use this.",
+
+    "scope": {
+      "global": "Global (Platform)",
+      "restaurant": "Restaurant Only",
+      "referral": "Referral Code"
+    }
+  },
+  "validation": {
+    "required": "This field is required",
+    "min_length": "Must be at least {{min}} characters"
   }
 }

@@ -32,6 +32,8 @@ import CategoriesPage from "./pages/categories/CategoryPage";
 import CategoryFormPage from "./pages/categories/CategoryFormPage";
 import PromotionsPage from "./pages/promotions/PromotionPage";
 import PromotionsFormPage from "./pages/promotions/PromotionFormPage";
+import CouponsPage from "./pages/coupons/CouponsPage";
+import CouponFormPage from "./pages/coupons/CouponFormPage";
 
 function App() {
   return (
@@ -113,6 +115,10 @@ function App() {
             <Route path="promotions" element={<PromotionsPage />} />
             <Route path="promotions/add" element={<PromotionsFormPage />} />
             <Route path="promotions/edit/:id" element={<PromotionsFormPage />} />
+
+            <Route path="coupons" element={<CouponsPage />} />
+            <Route path="coupons/add" element={<CouponFormPage />} />
+            <Route path="coupons/edit/:id" element={<CouponFormPage />} />
           </Route>
         </Route>
 

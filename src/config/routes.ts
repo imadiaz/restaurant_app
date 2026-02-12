@@ -23,4 +23,6 @@ export const Routes = {
   CategoriesEdit: (id: string) => `/categories/edit/${id}`,
   PromotionsAdd: '/promotions/add',
   PromotionsEdit: (id: string) => `/promotions/edit/${id}`,
+  CouponsAdd: '/coupons/add',
+  CouponsEdit: (id: string) => `/coupons/edit/${id}`,
 };

@@ -10,6 +10,7 @@ import {
   Utensils,
   ChefHat,
   TicketPercent,
+  Club,
 } from "lucide-react";
 import { Routes } from "./routes";
 
@@ -42,6 +43,7 @@ const MENUS = {
      { label: "Group Products", path: "/dashboard/modifiers", icon: Utensils },
     { label: "Menu Sections", path: "/dashboard/menu-sections", icon: Album },
      { label: "Promotions", path: "/dashboard/promotions", icon: TicketPercent },
+      { label: "Coupons", path: "/dashboard/coupons", icon: Club },
   ],
 };
 
