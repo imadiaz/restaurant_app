@@ -103,7 +103,7 @@ const OrderCard: React.FC<OrderCardProps> = ({
 
   const orderTime = (): string => {
     if (order.statusHistory && order.statusHistory.length > 0) {
-      return order.statusHistory[0].localTime;
+      return order.statusHistory[order.statusHistory.length-1].localTime;
     }
     return format(new Date(order.createdAt), "d MMM, h:mm a");
   };

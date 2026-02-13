@@ -36,12 +36,18 @@ const CouponCard: React.FC<CouponCardProps> = ({
     : `${formatCurrency(coupon.value)} OFF`;
 
   return (
-    <div className="bg-background-card rounded-3xl p-5 border border-border shadow-sm hover:shadow-md transition-all group flex flex-col h-full relative overflow-hidden">
-      
-      {/* Decorative dashed line for "Coupon" feel */}
-      <div className="absolute top-0 right-12 w-[1px] h-full border-r border-dashed border-gray-200 dark:border-gray-700/50" />
-      <div className="absolute -right-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-background-main border border-border z-10" />
-
+    <div className="bg-background-card rounded-3xl  border border-border shadow-sm hover:shadow-md transition-all group flex flex-col h-full relative overflow-hidden">
+      {coupon.imageUrl && (
+        <div className="h-32 w-full relative bg-gray-100 shrink-0">
+           <img 
+             src={coupon.imageUrl} 
+             alt={coupon.code} 
+             className="w-full h-full object-cover"
+           />
+     
+        </div>
+      )}
+      <div className='p-5'>
       {/* HEADER */}
       <div className="flex justify-between items-start mb-4 pr-4">
         <div>
@@ -102,6 +108,7 @@ const CouponCard: React.FC<CouponCardProps> = ({
         />
       </div>
 
+      </div>
     </div>
   );
 };

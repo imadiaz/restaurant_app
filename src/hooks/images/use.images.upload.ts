@@ -7,7 +7,8 @@ export const FILES_PATHS = {
   RestaurantsLogo: `general/restaurants/images/logo`,
   RestaurantsBanner: `general/restaurants/images/banners`,
   Products:(restaurantId: string) => `restaurants/${restaurantId}/products`,
-  Drivers:(restaurantId: string) =>`restaurants/${restaurantId}/drivers/`
+  RestaurantCoupons: (restaurantId: string) => `restaurants/${restaurantId}/coupons`,
+  Drivers:(restaurantId: string) =>`restaurants/${restaurantId}/drivers`
 } as const;
 
 export const useImagesUpload = () => {

@@ -41,6 +41,16 @@ export interface DeliveryAddressSnapshot {
   lng: number;
 }
 
+export interface PaymentSnapshot {
+  id?: string | null;
+  type?: string | null;
+  brand?: string | null;
+  last4?: string | null;
+  expirationMonth?: string | number;
+  expirationYear?: string | number;  
+  country?: string | null;  
+}
+
 export interface CustomerSnapshot {
   id: string;
   userId: string;
@@ -119,6 +129,9 @@ export interface Order {
   customerSnapshot?: CustomerSnapshot;
   driverSnapshot?: DriverSnapshot | null;
   statusHistory?: StatusHistoryEntry[];
+  paymentSnapshot?: PaymentSnapshot;
+  discount?: number | null;
+  couponCode?: string | null;
 
   // Notes
   restaurantNote?: string;

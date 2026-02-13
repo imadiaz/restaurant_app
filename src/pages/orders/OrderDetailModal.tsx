@@ -271,6 +271,14 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
                     <AnatomyText.Small className="text-text-muted text-xs capitalize">
                       {order.paymentMethod.replace("_", " ")}
                     </AnatomyText.Small>
+                    {order.paymentSnapshot && <div className="flex flex-col">
+                    <AnatomyText.Small className="text-text-muted text-xs capitalize">
+                      {order.paymentSnapshot?.brand}
+                    </AnatomyText.Small>
+                    <AnatomyText.Small className="text-text-muted text-xs capitalize">
+                      **** {order.paymentSnapshot?.last4}
+                    </AnatomyText.Small>
+                    </div>}
                     {order.changeFor && (
                       <AnatomyText.Small className="text-orange-600 mt-1">
                         {t("orders.change_for")}: ${order.changeFor}
@@ -336,12 +344,21 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
                 </div>
               )}
 
+              {order.couponCode && <div className="flex justify-between mt-4">
+                  <AnatomyText.Small className="text-text-muted font-bold">
+                    {t("orders.coupon")}
+                  </AnatomyText.Small>
+                  <AnatomyText.Body className="text-primary font-bold">
+                    {order.couponCode}
+                  </AnatomyText.Body>
+                </div>}
+
               <div className="space-y-2">
                 <AnatomyText.Label className="uppercase tracking-wider text-xs font-bold text-text-muted">
                   {t("orders.payment_summary")}
                 </AnatomyText.Label>
 
-                <div className="flex justify-between">
+                <div className="flex justify-between mt-4">
                   <AnatomyText.Small className="text-text-muted">
                     {t("orders.subtotal")}
                   </AnatomyText.Small>
@@ -367,6 +384,30 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
                     </AnatomyText.Small>
                   </div>
                 )}
+
+                  {order.discount && Number(order.discount) > 0 && (
+                  <div className="flex justify-between">
+                    <AnatomyText.Small className="text-text-muted">
+                      {t("orders.totalWithDiscount")}
+                    </AnatomyText.Small>
+                    <AnatomyText.Body className="font-bold">
+                      ${Number(order.totalAmount + order.discount).toFixed(2)}
+                    </AnatomyText.Body>
+                  </div>
+                )}
+
+                {Number(order.discount) > 0 && (
+                  <div className="flex justify-between">
+                    <AnatomyText.Small className="text-text-muted">
+                      {t("orders.discount")}
+                    </AnatomyText.Small>
+                    <AnatomyText.Body className="font-bold text-primary">
+                      ${Number(order.discount).toFixed(2)}
+                    </AnatomyText.Body>
+                  </div>
+                )}
+
+            
 
                 <div className="border-t border-border my-2 pt-2 flex justify-between items-center">
                   <AnatomyText.Body className="font-bold text-text-main text-lg">

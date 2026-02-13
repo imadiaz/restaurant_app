@@ -285,6 +285,9 @@
     "move_status_to": "Move Status To:",
     "empty_list_description": "Try selecting a different tab or check back later for new orders.",
     "items_count": "Items",
+    "discount":"Discount",
+    "coupon":"Coupon",
+    "totalWithDiscount":"Total order",
     "items_ordered": "Items Ordered",
     "tabs": {
       "all": "All Orders (Actives)",

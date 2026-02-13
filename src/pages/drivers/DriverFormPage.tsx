@@ -113,7 +113,7 @@ const DriverFormPage: React.FC = () => {
       } 
     } else if (!finalImageUrl && !isEditMode) {
       finalImageUrl = `https://ui-avatars.com/api/?name=${firstName}+${lastName}&background=random`;
-    }
+    } 
 
     try {
       const payload: CreateDriverDto = {

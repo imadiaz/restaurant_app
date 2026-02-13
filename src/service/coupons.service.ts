@@ -38,6 +38,7 @@ export interface Coupon {
   currentUsages: number;
   isActive: boolean;
   createdAt: string;
+  imageUrl?: string;
 }
 
 // DTOs
@@ -55,6 +56,7 @@ export interface CreateCouponDto {
   usageLimitGlobal?: number;
   usageLimitPerUser?: number;
   isActive?: boolean;
+  imageUrl?: string;
 }
 
 export interface UpdateCouponDto extends Partial<CreateCouponDto> {
