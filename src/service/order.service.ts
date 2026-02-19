@@ -8,6 +8,7 @@ export const OrderStatus = {
   READY: 'READY',
   ON_WAY: 'ON_WAY',
   DELIVERED: 'DELIVERED',
+  COURIER_ARRIVING: 'COURIER_ARRIVING',
   CANCELLED: 'CANCELLED'
 } as const;
 

@@ -55,7 +55,8 @@
     "save_changes": "Save Changes",
     "save_config": "Save Configuration",
     "saving": "Saving...",
-     "search_code": "Search by code..."
+     "search_code": "Search by code...",
+     "acceptOrder":"Acept order"
   },
   "login": {
     "login": "Login",
@@ -288,6 +289,7 @@
     "discount":"Discount",
     "coupon":"Coupon",
     "totalWithDiscount":"Total order",
+    "pickup_code":"Pick up code",
     "items_ordered": "Items Ordered",
     "tabs": {
       "all": "All Orders (Actives)",
@@ -306,7 +308,8 @@
       "ready": "Ready",
       "on_way": "On Way",
       "delivered": "Delivered",
-      "cancelled": "Cancelled"
+      "cancelled": "Cancelled",
+      "courier_arriving": "Courier arriving"
     },
     "type": {
       "delivery": "Delivery",

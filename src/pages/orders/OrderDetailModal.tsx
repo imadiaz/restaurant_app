@@ -112,6 +112,10 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
     setSelectedDriverId("");
   };
 
+  const handleAcceptOrder = () => {
+        onStatusChange(OrderStatus.CONFIRMED, undefined, undefined);
+  }
+
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200"
@@ -385,7 +389,7 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
                   </div>
                 )}
 
-                  {order.discount && Number(order.discount) > 0 && (
+                  {order.discount != null && Number(order.discount) > 0 && (
                   <div className="flex justify-between">
                     <AnatomyText.Small className="text-text-muted">
                       {t("orders.totalWithDiscount")}
@@ -494,6 +498,14 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
           <div className="flex gap-3">
             {/* PENDING -> PREPARING */}
             {order.status === OrderStatus.PENDING &&
+            <AnatomyButton
+                    onClick={handleAcceptOrder}
+                    className="bg-orange-500 hover:bg-orange-600 text-white border-transparent"
+                  >
+                    <Check className="w-4 h-4 mr-2" /> {t("common.acceptOrder")}
+                  </AnatomyButton>
+            }
+            {order.status === OrderStatus.CONFIRMED &&
               (showPrepTime ? (
                 <div className="flex items-center gap-3 animate-in slide-in-from-right-5 duration-200">
                   <span className="text-sm font-medium text-text-muted">

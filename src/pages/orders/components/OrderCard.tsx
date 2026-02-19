@@ -56,7 +56,12 @@ const OrderCard: React.FC<OrderCardProps> = ({
           icon: Flame,
           textKey: "orders.status.cooking",
         };
-
+case OrderStatus.COURIER_ARRIVING:
+        return {
+          variant: "success",
+          icon: CheckCircle,
+          textKey: "orders.status.courier_arriving",
+        };
       case OrderStatus.READY:
         return {
           variant: "success",
@@ -210,6 +215,15 @@ const OrderCard: React.FC<OrderCardProps> = ({
               </span>
             </a>
           )}
+        </div>
+
+        <div className="flex justify-between items-center mb-2">
+          <AnatomyText.Label className="ml-0 text-text-main">
+            {t("orders.pickup_code")}
+          </AnatomyText.Label>
+          <AnatomyText.H3 className="ml-0 text-primary mb-0">
+            {order.pickupCode}
+          </AnatomyText.H3>
         </div>
 
         <div className="border-b border-dashed border-border my-3"></div>

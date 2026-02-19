@@ -119,7 +119,7 @@ const Sidebar: React.FC<SidebarProps> = ({ mobile = false }) => {
           <LogOut className={`w-5 h-5 ${(!isSidebarCollapsed || mobile) ? 'mr-3' : ''}`} />
           {(!isSidebarCollapsed || mobile) && <span className="font-medium text-sm">{t('login.logout')}</span>}
         </button>
-        <span className='text text-sm text-text-muted'>v.1.0.13</span>
+        <span className='text text-sm text-text-muted'>v.1.0.30</span>
       </div>
 
     </div>

@@ -22,7 +22,7 @@ const TABS: OrderTab[] = [
   { id: 'new', labelKey: 'orders.tabs.new', statuses: [OrderStatus.PENDING, OrderStatus.CONFIRMED,] },
   { id: 'cooking', labelKey: 'orders.tabs.cooking', statuses: [OrderStatus.PREPARING] },
   { id: 'ready', labelKey: 'orders.tabs.ready', statuses: [OrderStatus.READY] },
-  { id: 'active', labelKey: 'orders.tabs.active', statuses: [OrderStatus.ON_WAY] },
+  { id: 'active', labelKey: 'orders.tabs.active', statuses: [OrderStatus.ON_WAY, OrderStatus.COURIER_ARRIVING] },
   { id: 'completed', labelKey: 'orders.tabs.completed', statuses: [OrderStatus.DELIVERED, OrderStatus.CANCELLED] },
 ];
 
