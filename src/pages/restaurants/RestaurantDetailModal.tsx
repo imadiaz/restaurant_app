@@ -103,7 +103,7 @@ const RestaurantDetailModal: React.FC<RestaurantDetailModalProps> = ({
 
                   <div className="p-4 rounded-2xl bg-gray-50 dark:bg-gray-900/50 border border-border">
                      <AnatomyText.Label>{t('restaurants.commission_rate')}</AnatomyText.Label>
-                     <AnatomyText.H3>{restaurant.commissionRate}%</AnatomyText.H3>
+                     <AnatomyText.H3>{restaurant.commissionType?.toString()}%</AnatomyText.H3>
                   </div>
 
                   <div className="p-4 rounded-2xl bg-gray-50 dark:bg-gray-900/50 border border-border">

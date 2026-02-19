@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Plus, Tag, Search } from 'lucide-react';
+import { Plus, Tag } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import AnatomyButton from '../../components/anatomy/AnatomyButton';
 import AnatomySearchBar from '../../components/anatomy/AnatomySearchBar';

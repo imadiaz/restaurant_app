@@ -7,7 +7,7 @@ import {
   Clock,
   AlertCircle,
   ExternalLink,
-  Package,
+
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import AnatomyTag from "../../components/anatomy/AnatomyTag";

@@ -8,7 +8,7 @@ import { useCoupons } from '../../hooks/coupons/use.coupons';
 import { useAppNavigation } from '../../hooks/navigation/use.app.navigation';
 import { useConfirm } from '../../hooks/use.confirm.modal';
 import { Routes } from '../../config/routes';
-import CouponCard from './components/CouponCArd';
+import CouponCard from './components/CouponCard';
 
 
 const CouponsPage: React.FC = () => {

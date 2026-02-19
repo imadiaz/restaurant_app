@@ -31,10 +31,6 @@ const processQueue = (error: any, token: string | null = null) => {
 /* ------------------------------------------------------------------ */
 /* Centralized refresh function                                         */
 /* ------------------------------------------------------------------ */
-interface TokenResponse {
-  accessToken: string;
-  refreshToken: string;
-}
 const refreshTokens = async (): Promise<string> => {
   if (isRefreshing) {
     return new Promise((resolve, reject) => {

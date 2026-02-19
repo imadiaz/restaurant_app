@@ -13,7 +13,7 @@ export const useRestaurantOperations = () => {
     mutationFn: ({ id, data }: { id: string; data: UpdateRestaurantOperationalDto }) =>
       restaurantService.updateOperational(id, data),
     
-    onSuccess: (data, variables) => {
+    onSuccess: (_, variables) => {
       addToast('Operational settings updated successfully', 'success');
         queryClient.invalidateQueries({ queryKey: ['restaurant', variables.id] });
         queryClient.invalidateQueries({ queryKey: ['restaurants'] });
@@ -25,7 +25,7 @@ export const useRestaurantOperations = () => {
     mutationFn: ({ id, data }: { id: string; data: AdminUpdateRestaurantDto }) =>
       restaurantService.updateAdminConfig(id, data),
       
-    onSuccess: (data, variables) => {
+    onSuccess: (_, variables) => {
       addToast('Restaurant configuration updated', 'success');
       queryClient.invalidateQueries({ queryKey: ['restaurant', variables.id] });
       queryClient.invalidateQueries({ queryKey: ['restaurants'] });

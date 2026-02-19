@@ -33,7 +33,7 @@ const CouponCard: React.FC<CouponCardProps> = ({
   // Helper to format discount (e.g., "20%" or "$100.00")
   const formattedValue = coupon.type === CouponType.PERCENTAGE 
     ? `${coupon.value}% OFF` 
-    : `${formatCurrency(coupon.value)} OFF`;
+    : `${coupon.value} OFF`;
 
   return (
     <div className="bg-background-card rounded-3xl  border border-border shadow-sm hover:shadow-md transition-all group flex flex-col h-full relative overflow-hidden">
@@ -114,7 +114,3 @@ const CouponCard: React.FC<CouponCardProps> = ({
 };
 
 export default CouponCard;
-
-function formatCurrency(value: number) {
-    throw new Error('Function not implemented.');
-}

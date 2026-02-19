@@ -4,9 +4,7 @@ import { useParams } from "react-router-dom";
 import {
   Save,
   Calendar,
-  Tag,
   DollarSign,
-  AlertCircle,
   Layers,
   Percent,
 } from "lucide-react";

@@ -9,7 +9,6 @@ import { useTranslation } from "react-i18next";
 import { STATUS } from "../../../config/status.config";
 import AnatomyCardActions from "../../../components/anatomy/AnatomyCardActions";
 import AnatomyTag from "../../../components/anatomy/AnatomyTag";
-import ManageRestaurantSettingsSection from "./ManageRestaurantSettingsSection";
 import { isSuperAdmin } from "../../../data/models/user/utils/user.utils";
 import ManageRestaurantSettingsModal from "./ManageRestaurantSettingsModal";
 import { useAuthStore } from "../../../store/auth.store";
