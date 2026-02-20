@@ -113,8 +113,8 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
   };
 
   const handleAcceptOrder = () => {
-        onStatusChange(OrderStatus.CONFIRMED, undefined, undefined);
-  }
+    onStatusChange(OrderStatus.CONFIRMED, undefined, undefined);
+  };
 
   return (
     <div
@@ -253,8 +253,8 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
                     >
                       <MapPin className="w-3.5 h-3.5 mr-2 mt-0.5 shrink-0 group-hover/address:text-primary transition-colors" />
                       <AnatomyText.Small className="text-text-muted text-xs group-hover/address:text-primary leading-relaxed max-w-[200px]">
-                      {formattedAddress}
-                    </AnatomyText.Small>
+                        {formattedAddress}
+                      </AnatomyText.Small>
                     </a>
                     {order.deliveryAddress?.details && (
                       <AnatomyText.Small className="text-primary mt-1 font-medium">
@@ -275,20 +275,36 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
                     <AnatomyText.Small className="text-text-muted text-xs capitalize">
                       {order.paymentMethod.replace("_", " ")}
                     </AnatomyText.Small>
-                    {order.paymentSnapshot && <div className="flex flex-col">
-                    <AnatomyText.Small className="text-text-muted text-xs capitalize">
-                      {order.paymentSnapshot?.brand}
-                    </AnatomyText.Small>
-                    <AnatomyText.Small className="text-text-muted text-xs capitalize">
-                      **** {order.paymentSnapshot?.last4}
-                    </AnatomyText.Small>
-                    </div>}
+                    {order.paymentSnapshot && order.paymentMethod == "CARD" && (
+                      <div className="flex flex-col">
+                        <AnatomyText.Small className="text-text-muted text-xs capitalize">
+                          {order.paymentSnapshot?.brand}
+                        </AnatomyText.Small>
+                        <AnatomyText.Small className="text-text-muted text-xs capitalize">
+                          **** {order.paymentSnapshot?.last4}
+                        </AnatomyText.Small>
+                      </div>
+                    )}
                     {order.changeFor && (
                       <AnatomyText.Small className="text-orange-600 mt-1">
                         {t("orders.change_for")}: ${order.changeFor}
                       </AnatomyText.Small>
                     )}
                   </div>
+                </div>
+                <div>
+                  {order.status == OrderStatus.INCOMPLETE_PAYMENT && order.incompletePaymentAmount && (
+                    <div className="flex flex-col p-2 gap-2">
+                      <AnatomyTag variant="error">
+                        {t("orders.incomplete_payment")}
+                      </AnatomyTag>
+
+                      <AnatomyTag variant="error">
+                        {t("orders.incomplete_payment_amount")}: $
+                        {order.incompletePaymentAmount}
+                      </AnatomyTag>
+                    </div>
+                  )}
                 </div>
                 {order.driverSnapshot && (
                   <div className="mt-3 flex items-center gap-3 bg-white dark:bg-gray-800 p-3 rounded-xl border border-border/60 shadow-sm">
@@ -348,14 +364,16 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
                 </div>
               )}
 
-              {order.couponCode && <div className="flex justify-between mt-4">
+              {order.couponCode && (
+                <div className="flex justify-between mt-4">
                   <AnatomyText.Small className="text-text-muted font-bold">
                     {t("orders.coupon")}
                   </AnatomyText.Small>
                   <AnatomyText.Body className="text-primary font-bold">
                     {order.couponCode}
                   </AnatomyText.Body>
-                </div>}
+                </div>
+              )}
 
               <div className="space-y-2">
                 <AnatomyText.Label className="uppercase tracking-wider text-xs font-bold text-text-muted">
@@ -389,7 +407,7 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
                   </div>
                 )}
 
-                  {order.discount != null && Number(order.discount) > 0 && (
+                {order.discount != null && Number(order.discount) > 0 && (
                   <div className="flex justify-between">
                     <AnatomyText.Small className="text-text-muted">
                       {t("orders.totalWithDiscount")}
@@ -410,8 +428,6 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
                     </AnatomyText.Body>
                   </div>
                 )}
-
-            
 
                 <div className="border-t border-border my-2 pt-2 flex justify-between items-center">
                   <AnatomyText.Body className="font-bold text-text-main text-lg">
@@ -497,14 +513,14 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
 
           <div className="flex gap-3">
             {/* PENDING -> PREPARING */}
-            {order.status === OrderStatus.PENDING &&
-            <AnatomyButton
-                    onClick={handleAcceptOrder}
-                    className="bg-orange-500 hover:bg-orange-600 text-white border-transparent"
-                  >
-                    <Check className="w-4 h-4 mr-2" /> {t("common.acceptOrder")}
-                  </AnatomyButton>
-            }
+            {order.status === OrderStatus.PENDING && (
+              <AnatomyButton
+                onClick={handleAcceptOrder}
+                className="bg-orange-500 hover:bg-orange-600 text-white border-transparent"
+              >
+                <Check className="w-4 h-4 mr-2" /> {t("common.acceptOrder")}
+              </AnatomyButton>
+            )}
             {order.status === OrderStatus.CONFIRMED &&
               (showPrepTime ? (
                 <div className="flex items-center gap-3 animate-in slide-in-from-right-5 duration-200">
@@ -560,8 +576,7 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
               ))}
 
             {/* PREPARING -> READY */}
-            {(order.status === OrderStatus.PREPARING ||
-              order.status === OrderStatus.CONFIRMED) &&
+            {order.status === OrderStatus.PREPARING &&
               (order.type === OrderType.DELIVERY ? (
                 <div className="flex items-center align-center gap-2 animate-in fade-in">
                   <div className="w-48">

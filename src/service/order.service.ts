@@ -9,7 +9,8 @@ export const OrderStatus = {
   ON_WAY: 'ON_WAY',
   DELIVERED: 'DELIVERED',
   COURIER_ARRIVING: 'COURIER_ARRIVING',
-  CANCELLED: 'CANCELLED'
+  CANCELLED: 'CANCELLED',
+  INCOMPLETE_PAYMENT: 'INCOMPLETE_PAYMENT'
 } as const;
 
 export const OrderType = {
@@ -146,6 +147,7 @@ export interface Order {
   products: OrderProduct[];
   
   estimatedCompletionTime?: string;
+  incompletePaymentAmount?: number;
 }
 
 // --- DTOs (Only for Updates) ---

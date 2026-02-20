@@ -11,6 +11,7 @@ import {
   Bike,
   Phone,
   Copy,
+  Check,
 } from "lucide-react";
 import AnatomyTag, {
   type TagVariant,
@@ -31,13 +32,9 @@ interface OrderCardProps {
   onClick: () => void;
 }
 
-const OrderCard: React.FC<OrderCardProps> = ({
-  order,
-  onClick,
-}) => {
-
-  const {addToast} = useToastStore();
-  const {t} = useTranslation();
+const OrderCard: React.FC<OrderCardProps> = ({ order, onClick }) => {
+  const { addToast } = useToastStore();
+  const { t } = useTranslation();
   const getStatusConfig = (
     status: OrderStatusType,
   ): { variant: TagVariant; icon: any; textKey: string } => {
@@ -50,13 +47,18 @@ const OrderCard: React.FC<OrderCardProps> = ({
         };
 
       case OrderStatus.CONFIRMED:
+        return {
+          variant: "warning",
+          icon: Check,
+          textKey: "orders.status.confirmed",
+        };
       case OrderStatus.PREPARING:
         return {
           variant: "warning",
           icon: Flame,
           textKey: "orders.status.cooking",
         };
-case OrderStatus.COURIER_ARRIVING:
+      case OrderStatus.COURIER_ARRIVING:
         return {
           variant: "success",
           icon: CheckCircle,
@@ -89,6 +91,12 @@ case OrderStatus.COURIER_ARRIVING:
           icon: AlertCircle,
           textKey: "orders.status.cancelled",
         };
+         case OrderStatus.INCOMPLETE_PAYMENT:
+        return {
+          variant: "error",
+          icon: AlertCircle,
+          textKey: "orders.status.incomplete_payment",
+        };
 
       default:
         return {
@@ -108,7 +116,7 @@ case OrderStatus.COURIER_ARRIVING:
 
   const orderTime = (): string => {
     if (order.statusHistory && order.statusHistory.length > 0) {
-      return order.statusHistory[order.statusHistory.length-1].localTime;
+      return order.statusHistory[order.statusHistory.length - 1].localTime;
     }
     return format(new Date(order.createdAt), "d MMM, h:mm a");
   };
@@ -116,42 +124,44 @@ case OrderStatus.COURIER_ARRIVING:
   const handleCopyId = (e: React.MouseEvent) => {
     e.stopPropagation();
     navigator.clipboard.writeText(order.id);
-    addToast(t('common.copied_to_clipboard'), 'success');
+    addToast(t("common.copied_to_clipboard"), "success");
   };
 
   return (
     <div className="bg-background-card p-5 rounded-3xl shadow-sm border border-border flex flex-col h-full hover:shadow-md transition-all duration-300 group relative">
       <div className="cursor-pointer flex-1" onClick={onClick}>
-          <div className="mb-3 flex justify-between items-start">
-           <AnatomyTag variant={config.variant} className="flex items-center gap-1 self-center">
-              <Icon className="w-3.5 h-3.5" /> 
-              <span className="font-semibold">{t(config.textKey)}</span>
-           </AnatomyTag>
-                      <div className="flex flex-col items-end">
-              <div 
-                className="flex items-center gap-1.5 bg-gray-50 dark:bg-gray-800/80 pl-2 pr-1 py-1 rounded-md border border-border/50 group/copy hover:border-primary/30 transition-colors"
-                onClick={handleCopyId} // Allow clicking the whole box to copy
-                title={t('common.click_to_copy')}
-              >
-                <span className="text-xs font-mono text-text-main font-medium">
-                  #{order.id.slice(0, 8)}
-                </span>
-                <button 
-                  className="p-1 rounded bg-white dark:bg-gray-700 text-text-muted group-hover/copy:text-primary group-hover/copy:bg-primary/10 transition-all"
-                >
-                   <Copy className="w-3 h-3" />
-                </button>
-              </div>
-           </div>
+        <div className="mb-3 flex justify-between items-start">
+          <AnatomyTag
+            variant={config.variant}
+            className="flex items-center gap-1 self-center"
+          >
+            <Icon className="w-3.5 h-3.5" />
+            <span className="font-semibold">{t(config.textKey)}</span>
+          </AnatomyTag>
+          <div className="flex flex-col items-end">
+            <div
+              className="flex items-center gap-1.5 bg-gray-50 dark:bg-gray-800/80 pl-2 pr-1 py-1 rounded-md border border-border/50 group/copy hover:border-primary/30 transition-colors"
+              onClick={handleCopyId} // Allow clicking the whole box to copy
+              title={t("common.click_to_copy")}
+            >
+              <span className="text-xs font-mono text-text-main font-medium">
+                #{order.id.slice(0, 8)}
+              </span>
+              <button className="p-1 rounded bg-white dark:bg-gray-700 text-text-muted group-hover/copy:text-primary group-hover/copy:bg-primary/10 transition-all">
+                <Copy className="w-3 h-3" />
+              </button>
+            </div>
+          </div>
         </div>
 
         {/* Row B: Customer Name (Full Width) */}
         <div className="mb-4">
-          <AnatomyText.H3 
-            className="mb-0 text-text-main font-bold truncate w-full text-lg leading-tight" 
+          <AnatomyText.H3
+            className="mb-0 text-text-main font-bold truncate w-full text-lg leading-tight"
             title={`${order.customerSnapshot?.firstName} ${order.customerSnapshot?.lastName}`}
           >
-            {order.customerSnapshot?.firstName || t('common.guest')} {order.customerSnapshot?.lastName || ""}
+            {order.customerSnapshot?.firstName || t("common.guest")}{" "}
+            {order.customerSnapshot?.lastName || ""}
           </AnatomyText.H3>
         </div>
 

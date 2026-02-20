@@ -291,6 +291,9 @@
     "totalWithDiscount":"Total order",
     "pickup_code":"Pick up code",
     "items_ordered": "Items Ordered",
+    "incomplete_payment":"Incomplete payment",
+    "incomplete_payment_amount":"Amount payed",
+    "estimated_amount":"Amount",
     "tabs": {
       "all": "All Orders (Actives)",
       "new": "New",
@@ -309,7 +312,8 @@
       "on_way": "On Way",
       "delivered": "Delivered",
       "cancelled": "Cancelled",
-      "courier_arriving": "Courier arriving"
+      "courier_arriving": "Courier arriving",
+      "incomplete_payment":"Incomplete payment"
     },
     "type": {
       "delivery": "Delivery",

@@ -11,6 +11,7 @@ import {
   ChefHat,
   TicketPercent,
   Club,
+  ChartArea,
 } from "lucide-react";
 import { Routes } from "./routes";
 
@@ -35,6 +36,7 @@ const MENUS = {
     { label: "Restaurant categories", path: `/admin/categories`, icon: ChefHat },
   ],
   RESTAURANT: [
+    { label: "Dashboard", path: "/dashboard/home", icon: ChartArea },
     { label: 'Orders', path: '/dashboard/orders', icon: ShoppingBag },
     { label: "Products", path: "/dashboard/products", icon: Coffee },
     { label: "Schedule", path: "/dashboard/schedule", icon: Calendar },
