@@ -526,6 +526,24 @@
       "platform_debt_description": "Amount owed to the platform from unpaid orders or fees.",
       "total_revenue":"Total Revenue",
       "revenue_description":"Total revenue generated from orders before fees and discounts.",
-      "total_orders":"Total Orders"
+      "total_orders":"Total Orders",
+      "generate_payment_link": "Generate Payment Link",
+      "sections": {
+        "platform":"Platform Summary",
+        "financial":"Financial Overview",
+        "orders":"Orders & Products"
+      },
+      "card_revenue":"Card revenue ",
+      "cash_revenue":"Cash revenue",
+      "total_refunded":"Total refunded"
+  },
+  "stripe": {
+    "payment_success":"Your stripe payment to the platform was successful!",
+    "payment_success_desc":"If you have any questions about it please contact support",
+    "payment_status":"Payment status",
+    "verified":"Verified",
+    "not_verified":"Not verified",
+    "payment_failure":"Stripe payment failed",
+    "payment_failure_desc":"There was an issue verifying your payment, please contact support for assistance."
   }
 }

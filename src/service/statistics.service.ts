@@ -30,7 +30,15 @@ export interface PlatformDebt {
   debtAmount: number;
 }
 
-// --- SERVICE ---
+export interface FinancialSummary {
+  totalCardRevenue: number;
+  totalCashRevenue: number;
+  cashOrdersCount: number;
+  totalPlatformCommissions: number;
+  totalDebtSettled: number;
+  totalRefunded: number;
+  netPlatformProfit: number;
+}
 
 export const statisticsService = {
   
@@ -61,6 +69,14 @@ export const statisticsService = {
   async getPlatformDebt(id: string): Promise<PlatformDebt> {
     const response = await axiosClient.get<any, ApiResponse<PlatformDebt>>(
       `/statistics/${id}/platform-debt`
+    );
+    return response.data;
+  },
+
+  async getFinancialSummary(filters?: StatisticsFilterDto): Promise<FinancialSummary> {
+    const response = await axiosClient.get<any, ApiResponse<FinancialSummary>>(
+      '/statistics/financials', 
+      { params: filters }
     );
     return response.data;
   },

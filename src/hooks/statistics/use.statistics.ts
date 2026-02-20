@@ -94,6 +94,22 @@ export const useStatistics = (dates?: { startDate?: string; endDate?: string }) 
     enabled: !!activeRestaurant?.id, 
   });
 
+  const {
+    data: financialSummary,
+    isLoading: isLoadingFinancials,
+    isError: isErrorFinancials,
+  } = useQuery({
+    queryKey: ['statistics', 'financials', filters],
+    queryFn: async () => {
+      try {
+        return await statisticsService.getFinancialSummary(filters);
+      } catch (error) {
+        handleError(error);
+        throw error;
+      }
+    },
+    enabled: !!activeRestaurant?.id, 
+  });
 
 
   return {
@@ -101,19 +117,21 @@ export const useStatistics = (dates?: { startDate?: string; endDate?: string }) 
     chartData,
     topProducts,
     platformDebt,
+    financialSummary,
 
     isLoadingSummary,
     isLoadingChart,
     isLoadingTopProducts,
     isLoadingPlatformDebt,
+    isLoadingFinancials,
     
-    isFetchingAny: isLoadingSummary || isLoadingChart || isLoadingTopProducts || isLoadingPlatformDebt,
+    isFetchingAny: isLoadingSummary || isLoadingChart || isLoadingTopProducts || isLoadingPlatformDebt || isLoadingFinancials,
 
     isErrorSummary,
     isErrorChart,
     isErrorTopProducts,
     isErrorPlatformDebt,
-    
-    hasAnyError: isErrorSummary || isErrorChart || isErrorTopProducts || isErrorPlatformDebt,
+    isErrorFinancials,
+    hasAnyError: isErrorSummary || isErrorChart || isErrorTopProducts || isErrorPlatformDebt || isErrorFinancials,
   };
 };

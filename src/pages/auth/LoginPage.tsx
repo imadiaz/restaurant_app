@@ -20,8 +20,6 @@ const LoginPage: React.FC = () => {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log(username);
-    console.log(password);
     const model = deviceInfo?.device.model 
       ? `${deviceInfo.device.vendor || ''} ${deviceInfo.device.model}`.trim()
       : `${deviceInfo?.browser.name} on ${deviceInfo?.os.name}`;

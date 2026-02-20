@@ -42,16 +42,27 @@ export const useRestaurantOperations = () => {
       },
       onError: handleError,
     });
+
+    const generatePaymentLink = useMutation({
+      mutationFn: ({ id }: { id: string; }) => 
+        restaurantService.generatePaymentLink(id),
+      onSuccess: (_) => {
+        queryClient.invalidateQueries({ queryKey: ['restaurants'] });
+      },
+      onError: handleError,
+    });
   
 
   return {
     updateOperational: operationalMutation.mutateAsync,
     updateAdminConfig: adminConfigMutation.mutateAsync,
     setupPaymentLink: setupPaymentLink.mutateAsync,
+    generatePaymentLink: generatePaymentLink.mutateAsync,
 
     isUpdatingOperational: operationalMutation.isPending,
     isUpdatingAdminConfig: adminConfigMutation.isPending,
     isSettingUpPaymentLink: setupPaymentLink.isPending,
+    isGeneratingPaymentLink: generatePaymentLink.isPending,
     
     operationalError: operationalMutation.error,
     adminConfigError: adminConfigMutation.error,

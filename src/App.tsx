@@ -34,6 +34,7 @@ import PromotionsFormPage from "./pages/promotions/PromotionFormPage";
 import CouponsPage from "./pages/coupons/CouponsPage";
 import CouponFormPage from "./pages/coupons/CouponFormPage";
 import StatisticsPage from "./pages/statistics/StatisticsPage";
+import PaymentPlatformPage from "./pages/payments/PaymentPlatformPage";
 
 function App() {
   return (
@@ -51,6 +52,10 @@ function App() {
         <Route
           path="/payments/onboarding/refresh/:id"
           element={<PaymentRefreshPage />}
+        />
+        <Route
+          path="/payments/restaurant/finance"
+          element={<PaymentPlatformPage />}
         />
         <Route path="/" element={<RootRedirect />} />
         <Route path="/unauthorized" element={<UnauthorizedPage />} />
@@ -86,7 +91,7 @@ function App() {
           }
         >
           <Route path="/dashboard" element={<DashboardLayout />}>
-            <Route index element={<StatisticsPage />} />
+            <Route path="home"  element={<StatisticsPage />} />
             <Route path="orders" element={<OrdersPage />} />
             <Route path="users" element={<UsersPage />} />
             <Route path="users/add" element={<UserFormPage />} />

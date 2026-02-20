@@ -116,5 +116,12 @@ export const restaurantService = {
     );
     console.log('Payment config response:', response);
     return response.data.data;
+  },
+
+  async generatePaymentLink(restaurantId: string) {
+    const response = await axiosClient.get<ApiResponse<any>>(
+      `payments/restaurant/${restaurantId}/platform-debt-link`);
+    console.log('Payment link generated:', response);
+    return response.data;
   }
 };
