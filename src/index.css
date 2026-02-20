@@ -10,11 +10,11 @@
   /* --- COLORS --- */
   
   /* Primary Color */
-  --color-primary: #16a349;
-  --color-primary-hover: #1FE066;
+  --color-primary: #EE8410;
+  --color-primary-hover: #ED9739;
 
   /* Accent */
-  --color-accent: #16A34A;
+  --color-accent: #C26D10;
 
   /* --- SEMANTIC COLORS (The Magic Part) --- */
   /* We define variables for specific PARTS of the UI, not just colors. */

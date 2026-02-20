@@ -33,12 +33,25 @@ export const useRestaurantOperations = () => {
     onError: handleError,
   });
 
+   const setupPaymentLink = useMutation({
+      mutationFn: ({ id }: { id: string; }) => 
+        restaurantService.setPaymentConfig(id),
+      onSuccess: (_) => {
+        addToast('Enlace de configuración de cuenta en strip connect enviado exitosamente', 'success');
+        queryClient.invalidateQueries({ queryKey: ['restaurants'] });
+      },
+      onError: handleError,
+    });
+  
+
   return {
     updateOperational: operationalMutation.mutateAsync,
     updateAdminConfig: adminConfigMutation.mutateAsync,
+    setupPaymentLink: setupPaymentLink.mutateAsync,
 
     isUpdatingOperational: operationalMutation.isPending,
     isUpdatingAdminConfig: adminConfigMutation.isPending,
+    isSettingUpPaymentLink: setupPaymentLink.isPending,
     
     operationalError: operationalMutation.error,
     adminConfigError: adminConfigMutation.error,

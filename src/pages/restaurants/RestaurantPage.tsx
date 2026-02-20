@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Plus, Store } from "lucide-react";
+import { Plus, Route, Store } from "lucide-react";
 import { useAppStore } from "../../store/app.store";
 import AnatomyButton from "../../components/anatomy/AnatomyButton";
 import AnatomySearchBar from "../../components/anatomy/AnatomySearchBar";
@@ -28,7 +28,7 @@ const RestaurantsPage: React.FC = () => {
 
   const handleEnterDashboard = (restaurant: Restaurant) => {
     setActiveRestaurant(restaurant);
-    navigateTo("/");
+    navigateTo(Routes.Dashboard);
   };
 
   const handleRestaurantClick = (restaurant: Restaurant) => {

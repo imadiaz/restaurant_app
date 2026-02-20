@@ -105,5 +105,16 @@ export const restaurantService = {
       data
     );
     return response.data.data ?? response.data;
+  },
+
+  async setPaymentConfig(id: string) {
+    const response = await axiosClient.post<ApiResponse<any>>(
+      `/payments/setup-restaurant/${id}`,
+      {
+        id: id
+      }
+    );
+    console.log('Payment config response:', response);
+    return response.data.data;
   }
 };

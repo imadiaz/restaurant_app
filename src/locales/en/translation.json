@@ -384,7 +384,8 @@
     "expired_desc": "For your security, Stripe links expire after a few minutes of inactivity. You can generate a new link below to continue where you left off.",
     "secure_connection": "Secure Connection 256-bit",
     "generating_link": "Generating secure link...",
-    "try_again": "Resume Setup"
+    "try_again": "Resume Setup",
+    "send_strip_link": "Send Stripe Link"
   },
   "categories": {
     "title": "Global Cuisines",
@@ -518,5 +519,13 @@
   "validation": {
     "required": "This field is required",
     "min_length": "Must be at least {{min}} characters"
+  },
+  "statistics": {
+    "platform_debt": "Platform Debt",
+      "total_debt": "Total Debt",
+      "platform_debt_description": "Amount owed to the platform from unpaid orders or fees.",
+      "total_revenue":"Total Revenue",
+      "revenue_description":"Total revenue generated from orders before fees and discounts.",
+      "total_orders":"Total Orders"
   }
 }

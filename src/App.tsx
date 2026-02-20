@@ -1,6 +1,5 @@
 import LoginPage from "./pages/auth/LoginPage";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
-import HomePage from "./pages/home/HomePage";
 import DashboardLayout from "./components/layout/DashboardLayout";
 import OrdersPage from "./pages/orders/OrdersPage";
 import UsersPage from "./pages/users/UsersPage";
@@ -34,6 +33,7 @@ import PromotionsPage from "./pages/promotions/PromotionPage";
 import PromotionsFormPage from "./pages/promotions/PromotionFormPage";
 import CouponsPage from "./pages/coupons/CouponsPage";
 import CouponFormPage from "./pages/coupons/CouponFormPage";
+import StatisticsPage from "./pages/statistics/StatisticsPage";
 
 function App() {
   return (
@@ -78,7 +78,6 @@ function App() {
           </Route>
         </Route>
 
-        {/* PROTECTED ROUTES (Requires login) */}
         <Route
           element={
             <RoleGuard
@@ -87,7 +86,7 @@ function App() {
           }
         >
           <Route path="/dashboard" element={<DashboardLayout />}>
-            <Route index element={<HomePage />} />
+            <Route index element={<StatisticsPage />} />
             <Route path="orders" element={<OrdersPage />} />
             <Route path="users" element={<UsersPage />} />
             <Route path="users/add" element={<UserFormPage />} />
@@ -122,7 +121,6 @@ function App() {
           </Route>
         </Route>
 
-        {/* CATCH ALL - Redirect to root */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>

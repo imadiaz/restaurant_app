@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { X, Save, Clock, DollarSign, Store, Shield } from 'lucide-react';
+import { X, Save, Clock, DollarSign, Store, Shield, Link } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useForm, Controller } from 'react-hook-form';
 import AnatomyButton from '../../../components/anatomy/AnatomyButton';
@@ -40,7 +40,7 @@ const ManageRestaurantSettingsModal: React.FC<ManageRestaurantSettingsModalProps
   onSuccess
 }) => {
   const { t } = useTranslation();
-  const { updateOperational, updateAdminConfig, isUpdatingOperational, isUpdatingAdminConfig } = useRestaurantOperations();
+  const { updateOperational, updateAdminConfig, isUpdatingOperational, isUpdatingAdminConfig, setupPaymentLink, isSettingUpPaymentLink } = useRestaurantOperations();
 
   const isSubmitting = isUpdatingOperational || isUpdatingAdminConfig;
 
@@ -106,6 +106,14 @@ const ManageRestaurantSettingsModal: React.FC<ManageRestaurantSettingsModalProps
       // Error handled globally via hook
     }
   };
+
+  const setupPaymentLinkHandler = async () => {
+    try {
+      await setupPaymentLink({ id: restaurant.id });
+    } catch (error) {
+      console.error("Failed to send Stripe link", error);
+    }
+  }
 
   // Watch for dynamic commission label
   const commType = watch("commissionType");
@@ -257,6 +265,15 @@ const ManageRestaurantSettingsModal: React.FC<ManageRestaurantSettingsModalProps
 
         {/* Footer */}
         <div className="p-6 border-t border-border bg-gray-50/50 dark:bg-gray-900/20 shrink-0 flex justify-end gap-3 rounded-b-3xl">
+        
+        {isAdminMode && (!restaurant.stripePayoutsEnabled || !restaurant.stripeOnboardingCompleted || !restaurant.stripeChargesEnabled) && <AnatomyButton variant="ghost" isLoading={isSettingUpPaymentLink} onClick={() => {
+            setupPaymentLinkHandler();
+           }}>
+             <Link className="w-4 h-4 mr-2" />
+            {t('payments.send_strip_link')}
+           </AnatomyButton>
+}
+
           <AnatomyButton variant="secondary" onClick={onClose} disabled={isSubmitting}>
             {t('common.cancel')}
           </AnatomyButton>

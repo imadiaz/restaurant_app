@@ -77,26 +77,43 @@ export const useStatistics = (dates?: { startDate?: string; endDate?: string }) 
     enabled: !!activeRestaurant?.id,
   });
 
+  const {
+    data: platformDebt,
+    isLoading: isLoadingPlatformDebt,
+    isError: isErrorPlatformDebt,
+  } = useQuery({
+    queryKey: ['statistics', 'platform-debt', filters],
+    queryFn: async () => {
+      try {
+        return await statisticsService.getPlatformDebt(filters.restaurantId!);
+      } catch (error) {
+        handleError(error);
+        throw error;
+      }
+    },
+    enabled: !!activeRestaurant?.id, 
+  });
+
+
+
   return {
-    // --- Data ---
     summary,
     chartData,
     topProducts,
+    platformDebt,
 
-    // --- Loading States ---
     isLoadingSummary,
     isLoadingChart,
     isLoadingTopProducts,
+    isLoadingPlatformDebt,
     
-    // Combined loading state for convenience if you want to show one giant spinner
-    isFetchingAny: isLoadingSummary || isLoadingChart || isLoadingTopProducts,
+    isFetchingAny: isLoadingSummary || isLoadingChart || isLoadingTopProducts || isLoadingPlatformDebt,
 
-    // --- Error States ---
     isErrorSummary,
     isErrorChart,
     isErrorTopProducts,
+    isErrorPlatformDebt,
     
-    // Combined error state
-    hasAnyError: isErrorSummary || isErrorChart || isErrorTopProducts,
+    hasAnyError: isErrorSummary || isErrorChart || isErrorTopProducts || isErrorPlatformDebt,
   };
 };
