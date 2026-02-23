@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Plus, Route, Store } from "lucide-react";
+import { Plus, Store } from "lucide-react";
 import { useAppStore } from "../../store/app.store";
 import AnatomyButton from "../../components/anatomy/AnatomyButton";
 import AnatomySearchBar from "../../components/anatomy/AnatomySearchBar";

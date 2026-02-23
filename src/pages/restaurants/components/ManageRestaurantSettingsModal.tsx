@@ -1,14 +1,14 @@
-import React, { useEffect } from 'react';
-import { X, Save, Clock, DollarSign, Store, Shield, Link } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { X, Save, DollarSign, Store, Shield, Link, Plus, Trash2, Receipt, Clock } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { useForm, Controller } from 'react-hook-form';
+// Assuming you have these exported from your hooks/services
+import { useRestaurantOperations, useRestaurantFees } from '../../../hooks/restaurants/use.operations';
+import { FeeType, type CreateRestaurantFeeDto } from '../../../service/restaurant.service';
 import AnatomyButton from '../../../components/anatomy/AnatomyButton';
-import AnatomyTextField from '../../../components/anatomy/AnatomyTextField';
 import AnatomyText from '../../../components/anatomy/AnatomyText';
 import type { Restaurant } from '../../../data/models/restaurant/restaurant';
-import { useRestaurantOperations } from '../../../hooks/restaurants/use.operations';
-import { CommissionType } from '../../../service/restaurant.service';
-
+import { Controller, useForm } from 'react-hook-form';
+import AnatomyTextField from '../../../components/anatomy/AnatomyTextField';
 
 interface ManageRestaurantSettingsModalProps {
   isOpen: boolean;
@@ -18,18 +18,9 @@ interface ManageRestaurantSettingsModalProps {
   onSuccess?: () => void;
 }
 
-// Form Data Shape
 interface SettingsFormData {
-  // Operational
   isOpen: boolean;
-  deliveryFee: number;
   averagePrepTimeMin: number;
-  
-  // Admin Only
-  commissionType?: CommissionType;
-  commissionValue?: number;
-  stripeFeePct?: number;
-  stripeFeeFixed?: number;
 }
 
 const ManageRestaurantSettingsModal: React.FC<ManageRestaurantSettingsModalProps> = ({
@@ -40,72 +31,27 @@ const ManageRestaurantSettingsModal: React.FC<ManageRestaurantSettingsModalProps
   onSuccess
 }) => {
   const { t } = useTranslation();
-  const { updateOperational, updateAdminConfig, isUpdatingOperational, isUpdatingAdminConfig, setupPaymentLink, isSettingUpPaymentLink } = useRestaurantOperations();
+  
+  // Hooks for Operations and Fees
+  const { setupPaymentLink, isSettingUpPaymentLink, syncRestaurantFees, isSyncingFees } = useRestaurantOperations();
+  const { fees, isLoadingFees } = useRestaurantFees(restaurant.id);
 
-  const isSubmitting = isUpdatingOperational || isUpdatingAdminConfig;
+  // Local state to manage the dynamic list of fees before saving
+  const [localFees, setLocalFees] = useState<CreateRestaurantFeeDto[]>([]);
 
-  const { control, register, handleSubmit, reset, watch } = useForm<SettingsFormData>({
-    defaultValues: {
-      isOpen: restaurant.isOpen,
-      deliveryFee: Number(restaurant.deliveryFee),
-      averagePrepTimeMin: restaurant.averagePrepTimeMin,
-      commissionType: restaurant.commissionType ?? CommissionType.PERCENTAGE,
-      commissionValue: Number(restaurant.commissionValue ?? 20),
-      stripeFeePct: Number(restaurant.stripeFeePct ?? 3.6),
-      stripeFeeFixed: Number(restaurant.stripeFeeFixed ?? 3.0),
-    }
-  });
-
+  // Load existing fees into our local form state when the modal opens/data loads
   useEffect(() => {
-    if (isOpen) {
-      reset({
-        isOpen: restaurant.isOpen,
-        deliveryFee: Number(restaurant.deliveryFee),
-        averagePrepTimeMin: restaurant.averagePrepTimeMin,
-        commissionType: restaurant.commissionType ?? CommissionType.PERCENTAGE,
-        commissionValue: Number(restaurant.commissionValue ?? 20),
-        stripeFeePct: Number(restaurant.stripeFeePct ?? 3.6),
-        stripeFeeFixed: Number(restaurant.stripeFeeFixed ?? 3.0),
-      });
+    if (fees) {
+      setLocalFees(
+        fees.map((f) => ({
+          name: f.name,
+          description: f.description || '',
+          type: f.type,
+          value: f.value,
+        }))
+      );
     }
-  }, [isOpen, restaurant, reset]);
-
-  const onSubmit = async (data: SettingsFormData) => {
-    try {
-      if (isAdminMode) {
-        // 🛡️ Super Admin: Sends everything
-        await updateAdminConfig({
-          id: restaurant.id,
-          data: {
-            // Operational
-            isOpen: data.isOpen,
-            deliveryFee: Number(data.deliveryFee),
-            averagePrepTimeMin: Number(data.averagePrepTimeMin),
-            // Financials
-            commissionType: data.commissionType,
-            commissionValue: Number(data.commissionValue),
-            stripeFeePct: Number(data.stripeFeePct),
-            stripeFeeFixed: Number(data.stripeFeeFixed),
-          }
-        });
-      } else {
-        // 👨‍🍳 Owner: Sends only operational data
-        await updateOperational({
-          id: restaurant.id,
-          data: {
-            isOpen: data.isOpen,
-            deliveryFee: Number(data.deliveryFee),
-            averagePrepTimeMin: Number(data.averagePrepTimeMin),
-          }
-        });
-      }
-      onSuccess?.();
-      onClose();
-    } catch (error) {
-      console.error("Update failed", error);
-      // Error handled globally via hook
-    }
-  };
+  }, [fees]);
 
   const setupPaymentLinkHandler = async () => {
     try {
@@ -113,12 +59,61 @@ const ManageRestaurantSettingsModal: React.FC<ManageRestaurantSettingsModalProps
     } catch (error) {
       console.error("Failed to send Stripe link", error);
     }
-  }
+  };
 
-  // Watch for dynamic commission label
-  const commType = watch("commissionType");
+  // --- Dynamic Fee Handlers ---
+  const handleAddFee = () => {
+    setLocalFees([...localFees, { name: '', description: '', type: FeeType.FLAT, value: 0 }]);
+  };
+
+  const handleRemoveFee = (index: number) => {
+    const newFees = [...localFees];
+    newFees.splice(index, 1);
+    setLocalFees(newFees);
+  };
+
+  const handleFeeChange = (index: number, field: keyof CreateRestaurantFeeDto, val: any) => {
+    const newFees = [...localFees];
+    newFees[index] = { ...newFees[index], [field]: val };
+    setLocalFees(newFees);
+  };
+
+  const handleSaveFees = async () => {
+    try {
+      await syncRestaurantFees({
+        id: restaurant.id,
+        data: { fees: localFees },
+      });
+      // Optionally call onSuccess or show a local success state
+    } catch (error) {
+      console.error("Failed to save fees", error);
+    }
+  };
+
+  const  {updateOperational, isUpdatingOperational} = useRestaurantOperations();
+  const { control, register, handleSubmit, reset, watch } = useForm<SettingsFormData>({
+    defaultValues: {
+      isOpen: restaurant.isOpen,
+      averagePrepTimeMin: restaurant.averagePrepTimeMin,
+    }
+  });
 
   if (!isOpen) return null;
+
+  const onSubmit = async (data: SettingsFormData) => {
+    try {
+      await updateOperational({
+          id: restaurant.id,
+          data: {
+            isOpen: data.isOpen,
+            averagePrepTimeMin: Number(data.averagePrepTimeMin),
+        }});
+      onSuccess?.();
+      onClose();
+    } catch (error) {
+      console.error("Update failed", error);
+    }
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-in fade-in duration-200">
@@ -130,13 +125,13 @@ const ManageRestaurantSettingsModal: React.FC<ManageRestaurantSettingsModalProps
             <div className="flex items-center gap-2">
               {isAdminMode ? <Shield className="w-5 h-5 text-purple-600" /> : <Store className="w-5 h-5 text-primary" />}
               <AnatomyText.H3 className="text-lg">
-                {isAdminMode ? t('settings.admin_title') : t('settings.operational_title')}
+                {isAdminMode ? t('settings.admin_title', 'Admin Settings') : t('settings.operational_title', 'Operational Settings')}
               </AnatomyText.H3>
             </div>
             <AnatomyText.Small className="text-text-muted mt-1">
               {isAdminMode 
                 ? t('settings.admin_subtitle', { name: restaurant.name }) 
-                : t('settings.operational_subtitle')}
+                : t('settings.operational_subtitle', 'Manage your restaurant parameters')}
             </AnatomyText.Small>
           </div>
           <button onClick={onClose} className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors">
@@ -144,11 +139,7 @@ const ManageRestaurantSettingsModal: React.FC<ManageRestaurantSettingsModalProps
           </button>
         </div>
 
-        {/* Scrollable Body */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-8">
-          
-          {/* SECTION 1: OPERATIONS (Everyone sees this) */}
-          <section className="space-y-4">
+        <section className="flex flex-col p-6  overflow-y-auto space-y-4">
             <div className="flex items-center gap-2 mb-4">
               <Clock className="w-4 h-4 text-gray-400" />
               <AnatomyText.Label className="text-primary">{t('settings.section_operations')}</AnatomyText.Label>
@@ -179,16 +170,6 @@ const ManageRestaurantSettingsModal: React.FC<ManageRestaurantSettingsModalProps
                   )}
                 />
               </div>
-
-              {/* Delivery Fee */}
-              <AnatomyTextField
-                label={t('settings.delivery_fee')}
-                type="number"
-                icon={<DollarSign className="w-4 h-4 text-gray-400" />}
-                {...register('deliveryFee', { min: 0, required: true })}
-                placeholder="0.00"
-              />
-
               {/* Prep Time */}
               <AnatomyTextField
                 label={t('settings.prep_time')}
@@ -198,9 +179,143 @@ const ManageRestaurantSettingsModal: React.FC<ManageRestaurantSettingsModalProps
                 placeholder="20"
               />
             </div>
+
+            <AnatomyButton 
+             onClick={handleSubmit(onSubmit)} 
+             disabled={isUpdatingOperational}
+             // Change color if admin
+             className={isAdminMode ? "bg-purple-600 hover:bg-purple-700 text-white border-transparent" : ""}
+          >
+            {isUpdatingOperational ? t('common.saving') : (
+              <>
+                <Save className="w-4 h-4 mr-2"/> 
+                {isAdminMode ? t('common.save_config') : t('common.save_changes')}
+              </>
+            )}
+          </AnatomyButton>
           </section>
 
+        {/* Scrollable Body */}
+        <div className="flex-1 overflow-y-auto p-6 space-y-8">
+          
+          {/* ========================================== */}
+          {/* SECTION 1: FEES & SURCHARGES (For Everyone) */}
+          {/* ========================================== */}
+          <section className="space-y-4 animate-in slide-in-from-bottom-4 duration-300">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <Receipt className="w-4 h-4 text-orange-500" />
+                <AnatomyText.Label className="text-orange-600 dark:text-orange-400">
+                  {t('settings.section_fees', 'Additional Fees & Surcharges')}
+                </AnatomyText.Label>
+              </div>
+              <AnatomyButton variant="ghost"  onClick={handleAddFee}>
+                <Plus className="w-4 h-4 mr-2" />
+                {t('settings.add_fee', 'Add Fee')}
+              </AnatomyButton>
+            </div>
+
+            <div className="bg-orange-50/50 dark:bg-orange-900/10 p-5 rounded-2xl border border-orange-100 dark:border-orange-900/30 space-y-4">
+              {isLoadingFees ? (
+                <div className="text-center text-gray-500 py-4">Loading fees...</div>
+              ) : localFees.length === 0 ? (
+                <div className="text-center text-gray-500 py-4 text-sm">
+                  {t('settings.no_fees', 'No additional fees configured.')}
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {localFees.map((fee, index) => (
+                    <div key={index} className="flex flex-col gap-3 bg-white dark:bg-gray-800 p-4 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm">
+                      
+                      {/* Top Row: Name, Type, Value, Delete */}
+                      <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-end">
+                        
+                        {/* Name Input */}
+                        <div className="flex-1 w-full">
+                          <label className="text-xs font-medium text-gray-500 mb-1 block">Fee Name</label>
+                          <input
+                            type="text"
+                            placeholder="e.g. Packaging Fee"
+                            value={fee.name}
+                            onChange={(e) => handleFeeChange(index, 'name', e.target.value)}
+                            className="w-full text-sm p-2 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-primary focus:border-primary outline-none dark:bg-gray-700"
+                          />
+                        </div>
+
+                        {/* Type Dropdown */}
+                        <div className="w-full sm:w-32 shrink-0">
+                          <label className="text-xs font-medium text-gray-500 mb-1 block">Type</label>
+                          <select
+                            value={fee.type}
+                            onChange={(e) => handleFeeChange(index, 'type', e.target.value as FeeType)}
+                            className="w-full text-sm p-2 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-primary outline-none bg-white dark:bg-gray-700"
+                          >
+                            <option value={FeeType.FLAT}>Flat ($)</option>
+                            <option value={FeeType.PERCENTAGE}>Percent (%)</option>
+                          </select>
+                        </div>
+
+                        {/* Value Input */}
+                        <div className="w-full sm:w-24 shrink-0">
+                          <label className="text-xs font-medium text-gray-500 mb-1 block">Value</label>
+                          <input
+                            type="number"
+                            min="0"
+                            step="0.01"
+                            value={fee.value}
+                            onChange={(e) => handleFeeChange(index, 'value', parseFloat(e.target.value) || 0)}
+                            className="w-full text-sm p-2 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-primary outline-none dark:bg-gray-700"
+                          />
+                        </div>
+
+                        {/* Remove Button */}
+                        <button
+                          onClick={() => handleRemoveFee(index)}
+                          className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors shrink-0"
+                          title="Remove Fee"
+                        >
+                          <Trash2 className="w-5 h-5" />
+                        </button>
+                      </div>
+
+                      {/* Bottom Row: Description */}
+                      <div className="w-full">
+                        <label className="text-xs font-medium text-gray-500 mb-1 block">
+                          {t('settings.fee_description_label', 'Description (Optional)')}
+                        </label>
+                        <input
+                          type="text"
+                          placeholder={t('settings.fee_description_placeholder', 'e.g. Required for eco-friendly containers')}
+                          value={fee.description}
+                          onChange={(e) => handleFeeChange(index, 'description', e.target.value)}
+                          className="w-full text-sm p-2 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-primary focus:border-primary outline-none dark:bg-gray-700"
+                        />
+                      </div>
+                      
+                    </div>
+                  ))}
+                </div>
+              )}
+              
+              {/* Save Fees Button */}
+              <div className="flex justify-end pt-2">
+                <AnatomyButton 
+                  variant="primary" 
+                 
+                  onClick={handleSaveFees}
+                  isLoading={isSyncingFees}
+                  disabled={isLoadingFees || isSyncingFees}
+                >
+                  <Save className="w-4 h-4 mr-2" />
+                  {t('settings.save_fees', 'Save Fees')}
+                </AnatomyButton>
+              </div>
+            </div>
+          </section>
+          
+          {/* ========================================== */}
           {/* SECTION 2: FINANCIALS (Admin Only) */}
+          {/* ========================================== */}
           {isAdminMode && (
             <>
               <div className="h-px bg-border" />
@@ -213,49 +328,7 @@ const ManageRestaurantSettingsModal: React.FC<ManageRestaurantSettingsModalProps
                 </div>
 
                 <div className="bg-purple-50/50 dark:bg-purple-900/10 p-5 rounded-2xl border border-purple-100 dark:border-purple-900/30 space-y-5">
-                  
-                  {/* Commission Config */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-text-primary mb-1.5">{t('settings.commission_type')}</label>
-                      <select 
-                        {...register('commissionType')}
-                        className="w-full rounded-xl border-border bg-background-input px-3 py-2.5 text-sm focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-all"
-                      >
-                        <option value={CommissionType.PERCENTAGE}>{t('settings.comm_percentage')}</option>
-                        <option value={CommissionType.FIXED_AMOUNT}>{t('settings.comm_fixed')}</option>
-                      </select>
-                    </div>
-
-                    <AnatomyTextField
-                      label={t('settings.commission_value')}
-                      type="number"
-                      {...register('commissionValue', { min: 0, required: true })}
-                      placeholder="0.00"
-                      // Dynamic Icon based on selection
-                      icon={commType === CommissionType.PERCENTAGE ? "%" : <DollarSign className="w-3 h-3"/>}
-                    />
-                  </div>
-
-                  {/* Stripe Config */}
-                  <div className="pt-2 border-t border-purple-200/50 dark:border-purple-800/50">
-                     <AnatomyText.Small className="block mb-3 text-purple-600/70 font-medium">Stripe Configuration</AnatomyText.Small>
-                     <div className="grid grid-cols-2 gap-4">
-                        <AnatomyTextField
-                          label="Stripe Fee (%)"
-                          type="number"
-                          step="0.01"
-                          {...register('stripeFeePct', { min: 0 })}
-                        />
-                         <AnatomyTextField
-                          label="Stripe Fixed ($)"
-                          type="number"
-                          step="0.01"
-                          {...register('stripeFeeFixed', { min: 0 })}
-                        />
-                     </div>
-                  </div>
-
+                   {/* Put your existing admin inputs like commission % here */}
                 </div>
               </section>
             </>
@@ -265,32 +338,12 @@ const ManageRestaurantSettingsModal: React.FC<ManageRestaurantSettingsModalProps
 
         {/* Footer */}
         <div className="p-6 border-t border-border bg-gray-50/50 dark:bg-gray-900/20 shrink-0 flex justify-end gap-3 rounded-b-3xl">
-        
-        {isAdminMode && (!restaurant.stripePayoutsEnabled || !restaurant.stripeOnboardingCompleted || !restaurant.stripeChargesEnabled) && <AnatomyButton variant="ghost" isLoading={isSettingUpPaymentLink} onClick={() => {
-            setupPaymentLinkHandler();
-           }}>
-             <Link className="w-4 h-4 mr-2" />
-            {t('payments.send_strip_link')}
-           </AnatomyButton>
-}
-
-          <AnatomyButton variant="secondary" onClick={onClose} disabled={isSubmitting}>
-            {t('common.cancel')}
-          </AnatomyButton>
-          
-          <AnatomyButton 
-             onClick={handleSubmit(onSubmit)} 
-             disabled={isSubmitting}
-             // Change color if admin
-             className={isAdminMode ? "bg-purple-600 hover:bg-purple-700 text-white border-transparent" : ""}
-          >
-            {isSubmitting ? t('common.saving') : (
-              <>
-                <Save className="w-4 h-4 mr-2"/> 
-                {isAdminMode ? t('common.save_config') : t('common.save_changes')}
-              </>
-            )}
-          </AnatomyButton>
+          {isAdminMode && (!restaurant.stripePayoutsEnabled || !restaurant.stripeOnboardingCompleted || !restaurant.stripeChargesEnabled) && (
+            <AnatomyButton variant="ghost" isLoading={isSettingUpPaymentLink} onClick={setupPaymentLinkHandler}>
+              <Link className="w-4 h-4 mr-2" />
+              {t('payments.send_strip_link')}
+            </AnatomyButton>
+          )}
         </div>
 
       </div>

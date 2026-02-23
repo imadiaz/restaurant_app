@@ -43,18 +43,44 @@ export interface UpdateRestaurantCategoriesDto {
   categoryIds: string[];
 }
 
+export const FeeType = {
+  FLAT: 'FLAT',
+  PERCENTAGE: 'PERCENTAGE',
+} as const;
+
+export type FeeType = typeof FeeType[keyof typeof FeeType];
+
+// 🆕 NEW: The interface for a single fee as returned by the backend
+export interface RestaurantFee {
+  id: string;
+  name: string;
+  description: string | null;
+  type: FeeType;
+  value: number;
+  isActive: boolean;
+  restaurantId: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateRestaurantFeeDto {
+  name: string;
+  description?: string;
+  type: FeeType;
+  value: number;
+}
+
+// 🆕 NEW: The bulk wrapper DTO expected by the backend
+export interface BulkCreateRestaurantFeesDto {
+  fees: CreateRestaurantFeeDto[];
+}
+
+
 export interface UpdateRestaurantOperationalDto {
-  deliveryFee?: number;
   isOpen?: boolean;
   averagePrepTimeMin?: number;
 }
 
-export interface AdminUpdateRestaurantDto extends UpdateRestaurantOperationalDto {
-  commissionType?: CommissionType;
-  commissionValue?: number;
-  stripeFeePct?: number;
-  stripeFeeFixed?: number;
-}
 
 export const restaurantService = {
   
@@ -99,13 +125,13 @@ export const restaurantService = {
     );
     return response.data.data ?? response.data;
   },
-  async updateAdminConfig(id: string, data: AdminUpdateRestaurantDto): Promise<Restaurant> {
-    const response = await axiosClient.patch<ApiResponse<Restaurant>>(
-      `/restaurants/${id}/admin-config`,
-      data
-    );
-    return response.data.data ?? response.data;
-  },
+  // async updateAdminConfig(id: string, data: AdminUpdateRestaurantDto): Promise<Restaurant> {
+  //   const response = await axiosClient.patch<ApiResponse<Restaurant>>(
+  //     `/restaurants/${id}/admin-config`,
+  //     data
+  //   );
+  //   return response.data.data ?? response.data;
+  // },
 
   async setPaymentConfig(id: string) {
     const response = await axiosClient.post<ApiResponse<any>>(
@@ -123,5 +149,22 @@ export const restaurantService = {
       `payments/restaurant/${restaurantId}/platform-debt-link`);
     console.log('Payment link generated:', response);
     return response.data;
-  }
+  },
+
+  /**
+   * Retrieves all additional fees (active and inactive) for a specific restaurant.
+   */
+  async getFees(id: string): Promise<RestaurantFee[]> {
+    const response = await axiosClient.get<any, ApiResponse<RestaurantFee[]>>(`/restaurants/${id}/fees`);
+    return response.data;
+  },
+
+  /**
+   * Overwrites all existing fees for the restaurant with the provided array.
+   * Send an empty array to remove all fees.
+   */
+  async syncFees(id: string, data: BulkCreateRestaurantFeesDto): Promise<RestaurantFee[]> {
+    const response = await axiosClient.put<any, ApiResponse<RestaurantFee[]>>(`/restaurants/${id}/fees`, data);
+    return response.data;
+  },
 };
