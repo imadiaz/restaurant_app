@@ -91,7 +91,7 @@ const ManageRestaurantSettingsModal: React.FC<ManageRestaurantSettingsModalProps
   };
 
   const  {updateOperational, isUpdatingOperational} = useRestaurantOperations();
-  const { control, register, handleSubmit, reset, watch } = useForm<SettingsFormData>({
+  const { control, register, handleSubmit} = useForm<SettingsFormData>({
     defaultValues: {
       isOpen: restaurant.isOpen,
       averagePrepTimeMin: restaurant.averagePrepTimeMin,
