@@ -189,6 +189,11 @@
     "no_active_restaurant": "System error: no active restaurant selected.",
     "no_active_restaurant_description": "Open a restaurant dashboard before creating this resource."
   },
+  "error_boundary": {
+    "title": "Something went wrong",
+    "description": "The application could not finish loading this view. Reload to try again.",
+    "reload": "Reload application"
+  },
   "api_errors": {
     "default": "Something went wrong. Please try again later.",
     "network": "Unable to connect to the server. Check your connection.",

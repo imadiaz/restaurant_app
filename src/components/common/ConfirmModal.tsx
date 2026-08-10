@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { AlertTriangle, Info, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { useDialogAccessibility } from '../../hooks/use.dialog.accessibility';
 
 
 interface ConfirmModalProps {
@@ -27,6 +28,8 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
   isLoading = false,
 }) => {
   const { t } = useTranslation();
+  const dialogRef = useRef<HTMLDivElement>(null);
+  useDialogAccessibility(isOpen, dialogRef, onClose);
   if (!isOpen) return null;
 
   // Variant Styles
@@ -59,7 +62,7 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
       />
 
       {/* Modal Panel */}
-      <div className="relative w-full max-w-md transform overflow-hidden rounded-card bg-background-card border border-border p-6 text-left shadow-xl transition-all animate-in fade-in zoom-in-95 duration-200">
+      <div ref={dialogRef} tabIndex={-1} className="relative w-full max-w-md transform overflow-hidden rounded-card bg-background-card border border-border p-6 text-left shadow-xl transition-all animate-in fade-in zoom-in-95 duration-200">
         
         {/* Close Button (Top Right) */}
         <button
