@@ -120,7 +120,15 @@
     "required_image": "You need to upload an image and logo",
     "upload_logo": "Upload logo",
     "cover_image": "Cover Image",
-    "upload_cover": "Upload cover"
+    "upload_cover": "Upload cover",
+    "image": "Image",
+    "preview_alt": "Preview of {{label}}",
+    "logo_preview": "Restaurant logo preview",
+    "cover_preview": "Restaurant cover preview",
+    "upload_help": "Choose an image up to {{maxSizeMB}} MB.",
+    "allowed_formats": "Formats: {{formats}}",
+    "error_too_large": "The image exceeds the {{maxSizeMB}} MB limit",
+    "error_invalid_format": "Invalid format. Use: {{formats}}"
   },
   "users": {
     "user": "User",

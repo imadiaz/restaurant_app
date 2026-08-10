@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import {  useParams } from "react-router-dom";
 import {
   Building2, MapPin, FileText, Phone, 
-  ImageIcon, Save, Globe,
+  Save, Globe,
   Mail
 } from "lucide-react";
 import AnatomyButton from "../../components/anatomy/AnatomyButton";
@@ -22,6 +22,7 @@ import GoogleMapsLocationPicker from "../../components/common/GoogleMapsLocation
 import { ROLES } from "../../config/roles";
 import { useTranslation } from "react-i18next";
 import { isBlank, isValidEmail } from "../../utils/validation.utils";
+import { ImageUploadInput } from "../../components/common/ImageUploadInput";
 
 
 
@@ -351,55 +352,29 @@ const RestaurantFormPage: React.FC = () => {
 
         <div className="space-y-6">
           
-          <div className="bg-background-card p-6 rounded-3xl shadow-sm border border-border flex flex-col items-center text-center">
-             <AnatomyText.H3 className="mb-2">{t('common.logo')}</AnatomyText.H3>
-             <div className="relative group mb-4">
-               <div className="w-40 h-40 rounded-full border-4 border-border shadow-inner overflow-hidden relative bg-gray-50 dark:bg-gray-800 flex items-center justify-center">
-                 {logoPreview ? (
-                   <img src={logoPreview} alt="Logo" className="w-full h-full object-cover" />
-                 ) : (
-                   <div className="text-center text-text-muted">
-                      <ImageIcon className="w-8 h-8 mx-auto mb-1" />
-                      <span className="text-xs">{t('images.upload_logo')}</span>
-                   </div>
-                 )}
-                 <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity rounded-full cursor-pointer">
-                   <ImageIcon className="w-8 h-8 text-white mb-2" />
-                 </div>
-               </div>
-               <input type="file" accept="image/*" className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" onChange={(e) => {
-                  const file = e.target.files?.[0];
-                  if(file) { 
-                    setLogoFile(file); 
-                    setLogoPreview(URL.createObjectURL(file)); 
-                     setIsLogoUploaded(false);
-                  }
-               }}/>
-             </div>
-          </div>
+          <ImageUploadInput
+            label={t('images.upload_logo')}
+            initialPreview={logoPreview}
+            previewAlt={t('images.logo_preview')}
+            sticky={false}
+            onFileSelect={(file) => {
+              setLogoFile(file);
+              setIsLogoUploaded(false);
+            }}
+          />
 
           {/* Hero Image Upload */}
-          <div className="bg-background-card p-6 rounded-3xl shadow-sm border border-border">
-             <AnatomyText.H3 className="mb-4">{t('images.cover_image')}</AnatomyText.H3>
-             <div className="w-full h-32 rounded-xl border-2 border-dashed border-border flex items-center justify-center relative overflow-hidden bg-gray-50 dark:bg-gray-800">
-                {heroPreview ? (
-                   <img src={heroPreview} alt="Cover" className="w-full h-full object-cover" />
-                ) : (
-                   <div className="text-center text-text-muted">
-                      <ImageIcon className="w-8 h-8 mx-auto mb-1" />
-                      <span className="text-xs">{t('images.upload_cover')}</span>
-                   </div>
-                )}
-                <input type="file" accept="image/*" className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" onChange={(e) => {
-                  const file = e.target.files?.[0];
-                  if(file) { 
-                    setHeroFile(file); 
-                    setHeroPreview(URL.createObjectURL(file)); 
-                    setIsBannerUploaded(false);
-                  }
-               }}/>
-             </div>
-          </div>
+          <ImageUploadInput
+            label={t('images.upload_cover')}
+            initialPreview={heroPreview}
+            previewAlt={t('images.cover_preview')}
+            shape="landscape"
+            sticky={false}
+            onFileSelect={(file) => {
+              setHeroFile(file);
+              setIsBannerUploaded(false);
+            }}
+          />
 
           {isEditMode && (
              <div className="bg-background-card p-6 rounded-3xl shadow-sm border border-border">

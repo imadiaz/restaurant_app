@@ -12,7 +12,6 @@
     "go_back": "Regresar",
     "preview": "Vista previa",
     "loading": "Cargando",
-    "save": "Guardar",
     "update": "Actualizar"
   },
   "login": {
@@ -40,6 +39,19 @@
     "error": "Error",
     "no_active_restaurant": "Error del sistema: no hay un restaurante activo seleccionado.",
     "no_active_restaurant_description": "Abre el panel de un restaurante antes de crear este recurso."
+  },
+  "images": {
+    "required_image": "Debes subir el logo y la portada",
+    "upload_logo": "Subir logo",
+    "upload_cover": "Subir portada",
+    "image": "Imagen",
+    "preview_alt": "Vista previa de {{label}}",
+    "logo_preview": "Vista previa del logo del restaurante",
+    "cover_preview": "Vista previa de la portada del restaurante",
+    "upload_help": "Selecciona una imagen de hasta {{maxSizeMB}} MB.",
+    "allowed_formats": "Formatos: {{formats}}",
+    "error_too_large": "La imagen supera el límite de {{maxSizeMB}} MB",
+    "error_invalid_format": "Formato inválido. Usa: {{formats}}"
   },
   "validation": {
     "invalid_dates": "Ingresa fechas válidas",

@@ -13,12 +13,7 @@ export const imagesService = {
   formData.append('path', folderPath); 
   const response = await axiosClient.post<unknown, ApiResponse<ImagesResponse>>(
     '/images/upload/file',
-    formData, 
-    {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    }
+    formData,
   );
 
   return response.data.url;
