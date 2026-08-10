@@ -16,11 +16,14 @@ const LoginPage: React.FC = () => {
   const deviceInfo = useDeviceInfo();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [submitted, setSubmitted] = useState(false);
   const { t } = useTranslation();
 
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    setSubmitted(true);
+    if (!username.trim() || !password) return;
     const model = deviceInfo?.device.model 
       ? `${deviceInfo.device.vendor || ''} ${deviceInfo.device.model}`.trim()
       : `${deviceInfo?.browser.name} on ${deviceInfo?.os.name}`;
@@ -65,13 +68,15 @@ const LoginPage: React.FC = () => {
             </AnatomyText.Subtitle>
           </div>
 
-          <form className="w-full space-y-5 mt-6" onSubmit={handleLogin}>
+          <form className="w-full space-y-5 mt-6" onSubmit={handleLogin} noValidate>
             
             <AnatomyTextField 
               label={t('forms.username')} 
               placeholder={t('forms.username_placeholder')} 
               icon={<User />}
               required 
+              value={username}
+              error={submitted && !username.trim() ? t('forms.required') : undefined}
               autoComplete="username"
               onChange={(e) => setUsername(e.target.value)}
             />
@@ -82,6 +87,8 @@ const LoginPage: React.FC = () => {
               placeholder={t('forms.password_placeholder')} 
               icon={<Lock />}
               required
+              value={password}
+              error={submitted && !password ? t('forms.required') : undefined}
               autoComplete="current-password"
               onChange={(e) => setPassword(e.target.value)}
             />

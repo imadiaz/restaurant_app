@@ -2,20 +2,41 @@
   "common": {
     "save": "Guardar",
     "cancel": "Cancelar",
-    "edit": "Edit",
-    "delete": "Delete",
-    "status": "Status",
-    "active": "Active",
-    "inactive": "Inactive",
-    "need_help":"Need heelp? Contact support"
+    "edit": "Editar",
+    "delete": "Eliminar",
+    "status": "Estado",
+    "active": "Activo",
+    "inactive": "Inactivo",
+    "need_help":"¿Necesitas ayuda? Contacta a soporte",
+    "search": "Buscar...",
+    "go_back": "Regresar",
+    "preview": "Vista previa",
+    "loading": "Cargando",
+    "save": "Guardar",
+    "update": "Actualizar"
   },
   "login": {
     "login":"Iniciar sesion",
-    "login_description": "Morelos flavours is an a unique experience located in the center of the Morelos"
+    "login_description": "Morelos Flavours es una experiencia única en el corazón de Morelos",
+    "logout": "Cerrar sesión"
   },
   "forms": {
     "username":"Usuario",
-    "password":"Contrasena",
-    "forgot_password":"Forgot password?"
+    "password":"Contraseña",
+    "username_placeholder": "Ingresa tu usuario",
+    "password_placeholder": "Ingresa tu contraseña",
+    "forgot_password":"¿Olvidaste tu contraseña?",
+    "show_password": "Mostrar contraseña",
+    "hide_password": "Ocultar contraseña",
+    "select_options": "Selecciona opciones...",
+    "search_options": "Buscar opciones",
+    "remove_option": "Quitar {{option}}",
+    "no_results": "No se encontraron resultados",
+    "required": "Este campo es obligatorio"
+  },
+  "errors": {
+    "error": "Error",
+    "no_active_restaurant": "Error del sistema: no hay un restaurante activo seleccionado.",
+    "no_active_restaurant_description": "Abre el panel de un restaurante antes de crear este recurso."
   }
 }

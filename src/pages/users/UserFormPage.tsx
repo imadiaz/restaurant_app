@@ -56,7 +56,8 @@ const UserFormPage: React.FC = () => {
   const [selectedRestaurantId, setSelectedRestaurantId] = useState<string>(
      activeRestaurant?.id || ''
   );
-    const [isImageUploaded,setIsImageUploaded] = useState(false);
+  const [isImageUploaded,setIsImageUploaded] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   
 
   
@@ -94,28 +95,25 @@ const hasLoadedData = useRef(false);
   }, [isEditMode, id, getUserById, goBack]);
 
   const handleSave = async () => {
-    if (!firstName || !lastName || !phone || !username) {
+    const nextErrors: Record<string, string> = {};
+    if (!firstName.trim()) nextErrors.firstName = t('forms.required');
+    if (!lastName.trim()) nextErrors.lastName = t('forms.required');
+    if (!username.trim()) nextErrors.username = t('forms.required');
+    if (!phone.trim()) nextErrors.phone = t('forms.required');
+    if (roleId === undefined || Number.isNaN(roleId)) nextErrors.roleId = t('users.validation_role');
+    if (phone && phone.length < 10) nextErrors.phone = t('users.validation_phone');
+
+    const passwordRegex = /((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/;
+    if ((!isEditMode || password.length > 0) && !passwordRegex.test(password)) {
+      nextErrors.password = t('users.validation_password');
+    }
+
+    setFieldErrors(nextErrors);
+    if (Object.keys(nextErrors).length > 0) {
       addToast(t('users.fields_validation'), "error");
       return;
     }
-
-    if (roleId === undefined) {
-      addToast(t('users.validation_role'), "error");
-      return;
-    }
-
-    if (phone.length < 10) {
-      addToast(t('users.validation_phone'), "error");
-      return;
-    }
-
-    if (!isEditMode || (isEditMode && password.length > 0)) {
-       const passwordRegex = /((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/;
-       if (!passwordRegex.test(password)) {
-         addToast(t('users.validation_password'), "error");
-         return;
-       }
-    }
+    if (roleId === undefined || Number.isNaN(roleId)) return;
 
     let finalImageUrl = imagePreview || "";
 
@@ -147,7 +145,6 @@ const hasLoadedData = useRef(false);
         if (password) {
             updatePayload.password = password; 
         }
-        console.log("User updated", updatePayload);
         await updateUser({id, data: updatePayload});
       } else {
         const createPayload: CreateUserDto = {
@@ -161,7 +158,6 @@ const hasLoadedData = useRef(false);
           profileImageUrl: finalImageUrl,
           restaurantId: selectedRestaurantId,
         };
-        console.log("User saved", createPayload)
         await createUser(createPayload);
       }
       goBack();
@@ -203,14 +199,22 @@ const hasLoadedData = useRef(false);
                 label={t('users.first_name')}
                 placeholder="e.g. Juan"
                 value={firstName}
-                onChange={(e) => setFirstName(e.target.value)}
+                onChange={(e) => {
+                  setFirstName(e.target.value);
+                  if (e.target.value.trim()) setFieldErrors((errors) => ({ ...errors, firstName: '' }));
+                }}
+                error={fieldErrors.firstName}
                 required
               />
               <AnatomyTextField
                 label={t('users.last_name')}
                 placeholder="e.g. Pérez"
                 value={lastName}
-                onChange={(e) => setLastName(e.target.value)}
+                onChange={(e) => {
+                  setLastName(e.target.value);
+                  if (e.target.value.trim()) setFieldErrors((errors) => ({ ...errors, lastName: '' }));
+                }}
+                error={fieldErrors.lastName}
                 required
               />
 
@@ -218,7 +222,11 @@ const hasLoadedData = useRef(false);
                 label={t('forms.username')}
                 placeholder="e.g. juan.perez"
                 value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                onChange={(e) => {
+                  setUsername(e.target.value);
+                  if (e.target.value.trim()) setFieldErrors((errors) => ({ ...errors, username: '' }));
+                }}
+                error={fieldErrors.username}
                 icon={<AtSign className="w-4 h-4 text-text-muted" />}
                 required
               />
@@ -228,7 +236,11 @@ const hasLoadedData = useRef(false);
                 prefix="+52"
                 placeholder="55 1234 5678"
                 value={phone}
-                onChange={(e) => setPhone(e.target.value)}
+                onChange={(e) => {
+                  setPhone(e.target.value);
+                  if (e.target.value.length >= 10) setFieldErrors((errors) => ({ ...errors, phone: '' }));
+                }}
+                error={fieldErrors.phone}
                 icon={<Phone className="w-4 h-4 text-text-muted" />}
                 required
                 maxLength={15}
@@ -291,8 +303,13 @@ const hasLoadedData = useRef(false);
               <div>
                  <AnatomyRolesSelect
                     label={t('users.assigne_role')}
-                    value={roleId || ""}
-                    onChange={(e) => setRoleId(Number(e.target.value))}
+                    value={roleId ?? "select"}
+                    onChange={(e) => {
+                      const nextRoleId = e.target.value === 'select' ? undefined : Number(e.target.value);
+                      setRoleId(nextRoleId);
+                      if (nextRoleId !== undefined) setFieldErrors((errors) => ({ ...errors, roleId: '' }));
+                    }}
+                    error={fieldErrors.roleId}
                     showAllOption={false}
                     valueMode="id"
                     required
@@ -324,14 +341,14 @@ const hasLoadedData = useRef(false);
                 <AnatomyTextFieldPassword
                   placeholder={isEditMode ? t('forms.password_description'): "Pass1234!"}
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                    setFieldErrors((errors) => ({ ...errors, password: '' }));
+                  }}
+                  error={fieldErrors.password}
+                  helperText={isEditMode ? t('forms.password_description') : undefined}
                   required={!isEditMode} 
                 />
-                {!isEditMode && (
-                  <AnatomyText.Small className="text-xs text-text-muted mt-1 block">
-                    {t('users.validation_password')}
-                  </AnatomyText.Small>
-                )}
               </div>
             </div>
           </div>

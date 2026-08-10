@@ -1,20 +1,30 @@
 import React, { useId, useState } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import AnatomyFieldMessage from './AnatomyFieldMessage';
 
 interface AnatomyTextFieldPasswordProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string;
   icon?: React.ReactNode; // Optional Icon for the LEFT side (e.g. Lock)
+  error?: string;
+  helperText?: string;
 }
 
 const AnatomyTextFieldPassword: React.FC<AnatomyTextFieldPasswordProps> = ({ 
   label, 
   icon, 
   className = "",
+  error,
+  helperText,
+  'aria-describedby': ariaDescribedBy,
   ...props 
 }) => {
+  const { t } = useTranslation();
   const [showPassword, setShowPassword] = useState(false);
   const generatedId = useId();
   const inputId = props.id ?? generatedId;
+  const messageId = `${inputId}-message`;
+  const describedBy = [ariaDescribedBy, error || helperText ? messageId : undefined].filter(Boolean).join(' ') || undefined;
 
   const toggleVisibility = () => {
     setShowPassword(!showPassword);
@@ -42,9 +52,12 @@ const AnatomyTextFieldPassword: React.FC<AnatomyTextFieldPasswordProps> = ({
           {...props}
           id={inputId}
           type={showPassword ? "text" : "password"}
+          aria-invalid={error ? true : props['aria-invalid']}
+          aria-describedby={describedBy}
           className={`
             w-full py-3 border rounded-control font-medium transition-colors
-            bg-input border-border text-text-main placeholder:text-text-subtle
+            bg-input text-text-main placeholder:text-text-subtle
+            ${error ? 'border-danger' : 'border-border'}
             
             /* Focus */
             focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary
@@ -59,7 +72,7 @@ const AnatomyTextFieldPassword: React.FC<AnatomyTextFieldPasswordProps> = ({
           type="button" // Important: prevents form submission
           onClick={toggleVisibility}
           className="absolute inset-y-0 right-0 px-4 flex items-center text-text-subtle hover:text-text-main transition-colors"
-          aria-label={showPassword ? "Hide password" : "Show password"}
+          aria-label={showPassword ? t('forms.hide_password') : t('forms.show_password')}
         >
           {showPassword ? (
             <EyeOff className="h-5 w-5" />
@@ -68,6 +81,7 @@ const AnatomyTextFieldPassword: React.FC<AnatomyTextFieldPasswordProps> = ({
           )}
         </button>
       </div>
+      <AnatomyFieldMessage id={messageId} error={error} helperText={helperText} />
     </div>
   );
 };

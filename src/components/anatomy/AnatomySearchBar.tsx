@@ -1,11 +1,13 @@
 import React from 'react';
 import { Search } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface SearchBarProps extends React.InputHTMLAttributes<HTMLInputElement> {
   className?: string;
 }
 
 const AnatomySearchBar: React.FC<SearchBarProps> = ({ className = "", ...props }) => {
+  const { t } = useTranslation();
   return (
     <div className={`relative w-full ${className}`}>
       <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
@@ -20,7 +22,7 @@ const AnatomySearchBar: React.FC<SearchBarProps> = ({ className = "", ...props }
           focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary
           transition-colors shadow-sm
         "
-        placeholder="Search..."
+        placeholder={t('common.search')}
         {...props}
       />
     </div>

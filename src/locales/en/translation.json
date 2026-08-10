@@ -56,7 +56,9 @@
     "save_config": "Save Configuration",
     "saving": "Saving...",
      "search_code": "Search by code...",
-     "acceptOrder":"Acept order"
+     "acceptOrder":"Accept order",
+     "go_back": "Go back",
+     "preview": "Preview"
   },
   "login": {
     "login": "Login",
@@ -71,7 +73,14 @@
     "forgot_password": "Forgot password?",
     "no_items_found": "No items found",
     "change_password": "Change Password",
-    "password_description": "Leave blank to keep current password"
+    "password_description": "Leave blank to keep current password",
+    "show_password": "Show password",
+    "hide_password": "Hide password",
+    "select_options": "Select options...",
+    "search_options": "Search options",
+    "remove_option": "Remove {{option}}",
+    "no_results": "No results found",
+    "required": "This field is required"
   },
   "restaurants": {
     "restaurant": "Restaurant",
@@ -163,6 +172,11 @@
     "error": "Error",
     "no_active_restaurant": "System Error: No active restaurant selected context.",
     "no_active_restaurant_description": "You are not inside a specific restaurant dashboard. We cannot create a section without knowing which restaurant it belongs to."
+  },
+  "errors": {
+    "error": "Error",
+    "no_active_restaurant": "System error: no active restaurant selected.",
+    "no_active_restaurant_description": "Open a restaurant dashboard before creating this resource."
   },
   "products": {
     "products": "Products",

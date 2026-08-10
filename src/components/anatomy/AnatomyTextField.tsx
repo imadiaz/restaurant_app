@@ -1,10 +1,13 @@
 import React, { useId } from 'react';
+import AnatomyFieldMessage from './AnatomyFieldMessage';
 
 interface AnatomyTextFieldProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'size' | 'prefix'> {
   label?: string;
   icon?: React.ReactNode;
   prefix?: string; // ✅ 1. Add prefix to interface
   size?: 'sm' | 'md';
+  error?: string;
+  helperText?: string;
 }
 
 const AnatomyTextField: React.FC<AnatomyTextFieldProps> = ({ 
@@ -13,10 +16,15 @@ const AnatomyTextField: React.FC<AnatomyTextFieldProps> = ({
   prefix, // ✅ 2. Destructure prefix here
   className = "", 
   size = 'md', 
+  error,
+  helperText,
+  'aria-describedby': ariaDescribedBy,
   ...props 
 }) => {
   const generatedId = useId();
   const inputId = props.id ?? generatedId;
+  const messageId = `${inputId}-message`;
+  const describedBy = [ariaDescribedBy, error || helperText ? messageId : undefined].filter(Boolean).join(' ') || undefined;
   
   const sizeConfig = {
     sm: {
@@ -82,7 +90,8 @@ const AnatomyTextField: React.FC<AnatomyTextFieldProps> = ({
             ${currentSize.input}
 
             /* Light Mode */
-            bg-input border-border text-text-main placeholder:text-text-subtle
+            bg-input text-text-main placeholder:text-text-subtle
+            ${error ? 'border-danger' : 'border-border'}
             
             /* Focus */
             focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary
@@ -92,8 +101,11 @@ const AnatomyTextField: React.FC<AnatomyTextFieldProps> = ({
           `}
           {...props}
           id={inputId}
+          aria-invalid={error ? true : props['aria-invalid']}
+          aria-describedby={describedBy}
         />
       </div>
+      <AnatomyFieldMessage id={messageId} error={error} helperText={helperText} />
     </div>
   );
 };

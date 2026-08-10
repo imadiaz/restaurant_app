@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect, useId } from 'react';
 import { ChevronDown, X, Search, Check } from 'lucide-react';
 import AnatomyText from './AnatomyText';
+import { useTranslation } from 'react-i18next';
 
 export interface MultiSelectOption {
   value: string;
@@ -21,9 +22,11 @@ const AnatomyMultiSelect: React.FC<AnatomyMultiSelectProps> = ({
   options,
   value,
   onChange,
-  placeholder = "Select options...",
+  placeholder,
   className = ""
 }) => {
+  const { t } = useTranslation();
+  const resolvedPlaceholder = placeholder ?? t('forms.select_options');
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const containerRef = useRef<HTMLDivElement>(null);
@@ -81,7 +84,7 @@ const AnatomyMultiSelect: React.FC<AnatomyMultiSelectProps> = ({
         aria-expanded={isOpen}
         aria-controls={listboxId}
         aria-haspopup="listbox"
-        aria-label={label ?? placeholder}
+        aria-label={label ?? resolvedPlaceholder}
         className={`
           min-h-[42px] px-3 py-1.5 rounded-xl border bg-background-card transition-all cursor-pointer flex flex-wrap items-center gap-2
           ${isOpen ? 'border-primary ring-1 ring-primary' : 'border-border hover:border-gray-400 dark:hover:border-gray-500'}
@@ -90,7 +93,7 @@ const AnatomyMultiSelect: React.FC<AnatomyMultiSelectProps> = ({
         onKeyDown={handleTriggerKeyDown}
       >
         {selectedOptions.length === 0 && (
-          <span className="text-text-muted text-sm py-1">{placeholder}</span>
+          <span className="text-text-muted text-sm py-1">{resolvedPlaceholder}</span>
         )}
 
         {selectedOptions.map((opt) => (
@@ -102,7 +105,7 @@ const AnatomyMultiSelect: React.FC<AnatomyMultiSelectProps> = ({
             <button 
               type="button"
               onClick={(e) => removeOption(e, opt.value)}
-              aria-label={`Remove ${opt.label}`}
+              aria-label={t('forms.remove_option', { option: opt.label })}
               className="ml-1 hover:text-red-500 focus:outline-none"
             >
               <X className="w-3 h-3" />
@@ -125,8 +128,8 @@ const AnatomyMultiSelect: React.FC<AnatomyMultiSelectProps> = ({
               <Search className="w-4 h-4 absolute left-2.5 top-2.5 text-text-muted" />
               <input 
                 type="text"
-                aria-label="Search options"
-                placeholder="Search..."
+                aria-label={t('forms.search_options')}
+                placeholder={t('common.search')}
                 className="w-full pl-9 pr-3 py-2 bg-gray-50 dark:bg-gray-900 rounded-lg text-sm border-none focus:ring-1 focus:ring-primary outline-none"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
@@ -160,7 +163,7 @@ const AnatomyMultiSelect: React.FC<AnatomyMultiSelectProps> = ({
               })
             ) : (
               <div role="status" className="p-4 text-center text-text-muted text-sm">
-                No results found.
+                {t('forms.no_results')}
               </div>
             )}
           </div>

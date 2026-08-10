@@ -1,6 +1,7 @@
 import { ArrowLeft } from "lucide-react";
 import AnatomyText from "../anatomy/AnatomyText";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 interface PageHeaderProps {
   
@@ -12,6 +13,7 @@ actions?: React.ReactNode;
 
 const PageHeader: React.FC<PageHeaderProps> = ({ title, subtitle, actions, showNavBack = true }) => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   return (
     <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 sm:mb-8">
@@ -24,8 +26,8 @@ const PageHeader: React.FC<PageHeaderProps> = ({ title, subtitle, actions, showN
             className="p-2 rounded-full transition-colors border border-transparent 
               hover:bg-background-card hover:shadow-sm hover:border-border
               text-text-muted hover:text-text-main"
-            title="Go Back"
-            aria-label="Go back"
+            title={t('common.go_back')}
+            aria-label={t('common.go_back')}
           >
             <ArrowLeft className="w-5 h-5" />
           </button>

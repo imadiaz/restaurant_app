@@ -32,6 +32,7 @@ const CategoryFormPage: React.FC = () => {
   const [name, setName] = useState("");
   const [icon, setIcon] = useState("");
   const [imageUrl, setImageUrl] = useState("");
+  const [nameError, setNameError] = useState<string>();
 
   const hasLoadedData = useRef(false);
 
@@ -56,9 +57,11 @@ const CategoryFormPage: React.FC = () => {
 
   const handleSave = async () => {
     if (!name.trim()) {
+      setNameError(t("categories.validation_name_required"));
       addToast(t("categories.validation_name_required"), "error");
       return;
     }
+    setNameError(undefined);
 
     try {
       const cleanIcon = icon.trim() || undefined;
@@ -134,7 +137,11 @@ const CategoryFormPage: React.FC = () => {
               label={t("categories.field_name")} 
               placeholder="e.g. Japanese, Fast Food, Breakfast"
               value={name}
-              onChange={(e) => setName(e.target.value)}
+              onChange={(e) => {
+                setName(e.target.value);
+                if (e.target.value.trim()) setNameError(undefined);
+              }}
+              error={nameError}
               required
             />
 

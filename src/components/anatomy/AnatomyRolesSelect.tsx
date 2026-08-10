@@ -8,6 +8,8 @@ interface AnatomyRolesSelectProps extends React.SelectHTMLAttributes<HTMLSelectE
   label?: string;
   showAllOption?: boolean;
   valueMode?: 'id' | 'name';
+  error?: string;
+  helperText?: string;
 }
 
 const AnatomyRolesSelect: React.FC<AnatomyRolesSelectProps> = ({ 
