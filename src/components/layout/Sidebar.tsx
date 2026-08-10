@@ -13,9 +13,10 @@ import ManageRestaurantSettingsSection from '../../pages/restaurants/components/
 
 interface SidebarProps {
   mobile?: boolean;
+  onNavigate?: () => void;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ mobile = false }) => {
+const Sidebar: React.FC<SidebarProps> = ({ mobile = false, onNavigate }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
@@ -24,6 +25,12 @@ const Sidebar: React.FC<SidebarProps> = ({ mobile = false }) => {
 
   const handleLogout = async() => {
     await logout();
+    onNavigate?.();
+  };
+
+  const handleNavigate = (path: string) => {
+    navigate(path);
+    onNavigate?.();
   };
   
   const { activeRestaurant } = useAppStore();
@@ -81,8 +88,9 @@ const Sidebar: React.FC<SidebarProps> = ({ mobile = false }) => {
         {menuItems.map((item) => (
           <button
             key={item.path}
-            onClick={() => navigate(item.path)}
+            onClick={() => handleNavigate(item.path)}
             aria-current={isActive(item.path) ? 'page' : undefined}
+            title={isSidebarCollapsed && !mobile ? t(item.labelKey, item.label) : undefined}
             className={`
               w-full flex items-center p-3 rounded-xl transition-all duration-200 group
               ${isActive(item.path) 
@@ -91,7 +99,7 @@ const Sidebar: React.FC<SidebarProps> = ({ mobile = false }) => {
               ${isSidebarCollapsed && !mobile ? 'justify-center' : ''}
             `}
           >
-            <item.icon className={`w-5 h-5 ${(!isSidebarCollapsed || mobile) ? 'mr-3' : ''}`} />
+            <item.icon aria-hidden="true" className={`w-5 h-5 ${(!isSidebarCollapsed || mobile) ? 'mr-3' : ''}`} />
             
             {(!isSidebarCollapsed || mobile) && (
               <span className="font-medium text-sm">{t(item.labelKey, item.label)}</span>
@@ -117,7 +125,7 @@ const Sidebar: React.FC<SidebarProps> = ({ mobile = false }) => {
             ${isSidebarCollapsed && !mobile ? 'justify-center' : ''}
           `}
         >
-          <LogOut className={`w-5 h-5 ${(!isSidebarCollapsed || mobile) ? 'mr-3' : ''}`} />
+          <LogOut aria-hidden="true" className={`w-5 h-5 ${(!isSidebarCollapsed || mobile) ? 'mr-3' : ''}`} />
           {(!isSidebarCollapsed || mobile) && <span className="font-medium text-sm">{t('login.logout')}</span>}
         </button>
         <span className='text text-sm text-text-muted'>v.1.0.31</span>

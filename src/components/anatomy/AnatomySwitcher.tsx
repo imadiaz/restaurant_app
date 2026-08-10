@@ -35,7 +35,7 @@ const AnatomySwitcher: React.FC<AnatomySwitcherProps> = ({
     <div className={className}>
       {label && <AnatomyText.Label className="mb-1.5 block">{label}</AnatomyText.Label>}
       
-      <div className={`flex p-1 rounded-xl bg-background border border-border transition-opacity duration-200 ${!isInteractive ? 'opacity-60 cursor-not-allowed' : ''}`}>
+      <div role="group" aria-label={label} className={`flex p-1 rounded-xl bg-background border border-border transition-opacity duration-200 ${!isInteractive ? 'opacity-60 cursor-not-allowed' : ''}`}>
         {options.map((option) => {
           const isActive = value === option.value;
           
@@ -44,6 +44,8 @@ const AnatomySwitcher: React.FC<AnatomySwitcherProps> = ({
               key={option.value}
               type="button"
               disabled={!isInteractive}
+              aria-pressed={isActive}
+              aria-busy={isLoading && isActive ? true : undefined}
               onClick={() => onChange(option.value)}
               className={`
                 flex-1 flex items-center justify-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold transition-all relative overflow-hidden
@@ -54,7 +56,7 @@ const AnatomySwitcher: React.FC<AnatomySwitcherProps> = ({
               `}
             >
               {isLoading && isActive ? (
-                 <Loader2 className="w-3.5 h-3.5 animate-spin text-primary" />
+                 <Loader2 aria-hidden="true" className="w-3.5 h-3.5 animate-spin text-primary" />
               ) : (
                  option.icon && <span className={isActive ? "text-primary" : "text-gray-400"}>{option.icon}</span>
               )}

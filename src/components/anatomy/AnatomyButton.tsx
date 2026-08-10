@@ -39,11 +39,11 @@ const AnatomyButton: React.FC<ButtonProps> = ({
   return (
     <button 
       className={`${baseStyles} ${variants[variant]} ${className}`} 
-      disabled={disabled || isLoading} // Disable if loading
+      disabled={disabled || isLoading}
+      aria-busy={isLoading || undefined}
       {...props}
     >
-      {/* Show Spinner if loading */}
-      {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+      {isLoading && <Loader2 aria-hidden="true" className="mr-2 h-4 w-4 animate-spin" />}
       
       {children}
     </button>

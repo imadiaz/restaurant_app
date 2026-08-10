@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
 
 import { useLayoutStore } from '../../store/layout.store';
@@ -21,6 +21,22 @@ const DashboardLayout: React.FC = () => {
   const handleMobileClose = () => setIsMobileOpen(false);
   const handleMobileToggle = () => setIsMobileOpen(!isMobileOpen);
 
+  useEffect(() => {
+    if (!isMobileOpen) return;
+
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') handleMobileClose();
+    };
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    document.addEventListener('keydown', handleEscape);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      document.removeEventListener('keydown', handleEscape);
+    };
+  }, [isMobileOpen]);
+
   const handleExitRestaurant = () => {
     setActiveRestaurant(null); 
     navigate('/admin/restaurants'); 
@@ -31,13 +47,24 @@ const DashboardLayout: React.FC = () => {
   return (
     <div className="min-h-screen bg-background text-text-main font-sans flex flex-col transition-colors duration-300">
     
-      <div className={`md:hidden fixed inset-0 z-50 ${isMobileOpen ? 'pointer-events-auto' : 'pointer-events-none'}`}>
-        <div 
+      <div
+        className={`md:hidden fixed inset-0 z-50 ${isMobileOpen ? 'pointer-events-auto visible' : 'pointer-events-none invisible'}`}
+        aria-hidden={!isMobileOpen}
+      >
+        <button
+          type="button"
+          aria-label={t('navigation.close_menu', 'Close navigation menu')}
           className={`absolute inset-0 bg-black/50 transition-opacity duration-300 ${isMobileOpen ? 'opacity-100' : 'opacity-0'}`}
           onClick={handleMobileClose}
         />
-        <div className={`absolute left-0 top-0 bottom-0 w-64 transition-transform duration-300 ${isMobileOpen ? 'translate-x-0' : '-translate-x-full'}`}>
-           <Sidebar mobile />
+        <div
+          id="mobile-navigation"
+          role="dialog"
+          aria-modal="true"
+          aria-label={t('navigation.main', 'Main navigation')}
+          className={`absolute left-0 top-0 bottom-0 w-64 max-w-[85vw] transition-transform duration-300 ${isMobileOpen ? 'translate-x-0' : '-translate-x-full'}`}
+        >
+           <Sidebar mobile onNavigate={handleMobileClose} />
         </div>
       </div>
 
@@ -78,7 +105,7 @@ const DashboardLayout: React.FC = () => {
             </div>
           )}
 
-          <Header onMobileMenuClick={handleMobileToggle} />
+          <Header onMobileMenuClick={handleMobileToggle} isMobileMenuOpen={isMobileOpen} />
           
         </div>
 

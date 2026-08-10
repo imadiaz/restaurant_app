@@ -22,20 +22,23 @@ const AnatomyCheckbox: React.FC<AnatomyCheckboxProps> = ({
       <div className="relative">
         <input
           type="checkbox"
-          className="sr-only" // Hide default browser checkbox
+          className="peer sr-only"
           checked={checked}
           onChange={(e) => onChange(e.target.checked)}
           disabled={disabled}
         />
         <div 
+          aria-hidden="true"
           className={`
             w-5 h-5 rounded-md border flex items-center justify-center transition-all duration-200
+            peer-focus-visible:ring-2 peer-focus-visible:ring-primary peer-focus-visible:ring-offset-2 peer-focus-visible:ring-offset-background
             ${checked 
               ? 'bg-primary border-primary' 
               : 'bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 hover:border-primary/50'}
           `}
         >
           <Check 
+            aria-hidden="true"
             className={`w-3.5 h-3.5 text-white transition-transform duration-200 ${checked ? 'scale-100' : 'scale-0'}`} 
             strokeWidth={3}
           />

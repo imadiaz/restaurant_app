@@ -9,9 +9,10 @@ import { useTranslation } from 'react-i18next';
 
 interface HeaderProps {
   onMobileMenuClick?: () => void;
+  isMobileMenuOpen?: boolean;
 }
 
-const Header: React.FC<HeaderProps> = ({ onMobileMenuClick }) => {
+const Header: React.FC<HeaderProps> = ({ onMobileMenuClick, isMobileMenuOpen = false }) => {
   const { t } = useTranslation();
   const currentUser = useAuthStore(state => state.user);
   const { toggleSidebar, isSidebarCollapsed } = useLayoutStore();
@@ -24,6 +25,8 @@ const Header: React.FC<HeaderProps> = ({ onMobileMenuClick }) => {
         <button 
           onClick={onMobileMenuClick} 
           aria-label={t('navigation.open_menu', 'Open navigation menu')}
+          aria-controls="mobile-navigation"
+          aria-expanded={isMobileMenuOpen}
           className="md:hidden p-2 hover:bg-background rounded-lg text-text-muted transition-colors"
         >
           <Menu className="w-6 h-6" />
@@ -39,11 +42,11 @@ const Header: React.FC<HeaderProps> = ({ onMobileMenuClick }) => {
         </button>
       </div>
 
-      <div className="flex items-center gap-6 ml-auto">
+      <div className="flex items-center gap-2 sm:gap-4 md:gap-6 ml-auto">
         
         <ThemeToggle />
 
-        <div className="flex items-center gap-4 border-r border-border pr-6">
+        <div className="flex items-center gap-1 sm:gap-3 md:gap-4 border-r border-border pr-2 sm:pr-4 md:pr-6">
           <button aria-label={t('notifications.title', 'Notifications')} className="relative p-2 text-text-muted hover:bg-background hover:text-text-main rounded-full transition-colors">
             <Bell className="w-5 h-5" />
             <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-background-card"></span>

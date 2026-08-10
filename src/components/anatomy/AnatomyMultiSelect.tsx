@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useId } from 'react';
 import { ChevronDown, X, Search, Check } from 'lucide-react';
 import AnatomyText from './AnatomyText';
 
@@ -27,6 +27,8 @@ const AnatomyMultiSelect: React.FC<AnatomyMultiSelectProps> = ({
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const containerRef = useRef<HTMLDivElement>(null);
+  const generatedId = useId();
+  const listboxId = `${generatedId}-listbox`;
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -38,6 +40,14 @@ const AnatomyMultiSelect: React.FC<AnatomyMultiSelectProps> = ({
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  const handleTriggerKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      setIsOpen((open) => !open);
+    }
+    if (event.key === 'Escape') setIsOpen(false);
+  };
 
   // Filter options based on search
   const filteredOptions = options.filter(opt => 
@@ -66,11 +76,18 @@ const AnatomyMultiSelect: React.FC<AnatomyMultiSelectProps> = ({
 
       {/* Main Box */}
       <div 
+        role="combobox"
+        tabIndex={0}
+        aria-expanded={isOpen}
+        aria-controls={listboxId}
+        aria-haspopup="listbox"
+        aria-label={label ?? placeholder}
         className={`
           min-h-[42px] px-3 py-1.5 rounded-xl border bg-background-card transition-all cursor-pointer flex flex-wrap items-center gap-2
           ${isOpen ? 'border-primary ring-1 ring-primary' : 'border-border hover:border-gray-400 dark:hover:border-gray-500'}
         `}
         onClick={() => setIsOpen(!isOpen)}
+        onKeyDown={handleTriggerKeyDown}
       >
         {selectedOptions.length === 0 && (
           <span className="text-text-muted text-sm py-1">{placeholder}</span>
@@ -83,7 +100,9 @@ const AnatomyMultiSelect: React.FC<AnatomyMultiSelectProps> = ({
           >
             {opt.label}
             <button 
+              type="button"
               onClick={(e) => removeOption(e, opt.value)}
+              aria-label={`Remove ${opt.label}`}
               className="ml-1 hover:text-red-500 focus:outline-none"
             >
               <X className="w-3 h-3" />
@@ -92,7 +111,7 @@ const AnatomyMultiSelect: React.FC<AnatomyMultiSelectProps> = ({
         ))}
 
         <div className="ml-auto pl-2">
-          <ChevronDown className={`w-4 h-4 text-text-muted transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+          <ChevronDown aria-hidden="true" className={`w-4 h-4 text-text-muted transition-transform ${isOpen ? 'rotate-180' : ''}`} />
         </div>
       </div>
 
@@ -106,6 +125,7 @@ const AnatomyMultiSelect: React.FC<AnatomyMultiSelectProps> = ({
               <Search className="w-4 h-4 absolute left-2.5 top-2.5 text-text-muted" />
               <input 
                 type="text"
+                aria-label="Search options"
                 placeholder="Search..."
                 className="w-full pl-9 pr-3 py-2 bg-gray-50 dark:bg-gray-900 rounded-lg text-sm border-none focus:ring-1 focus:ring-primary outline-none"
                 value={searchQuery}
@@ -117,26 +137,29 @@ const AnatomyMultiSelect: React.FC<AnatomyMultiSelectProps> = ({
           </div>
 
           {/* Options List */}
-          <div className="max-h-60 overflow-y-auto p-1">
+          <div id={listboxId} role="listbox" aria-multiselectable="true" className="max-h-60 overflow-y-auto p-1">
             {filteredOptions.length > 0 ? (
               filteredOptions.map((option) => {
                 const isSelected = value.includes(option.value);
                 return (
-                  <div 
+                  <button
+                    type="button"
                     key={option.value}
                     onClick={() => toggleOption(option.value)}
+                    role="option"
+                    aria-selected={isSelected}
                     className={`
-                      flex items-center justify-between px-3 py-2.5 rounded-lg cursor-pointer text-sm transition-colors
+                      w-full flex items-center justify-between px-3 py-2.5 rounded-lg cursor-pointer text-sm transition-colors
                       ${isSelected ? 'bg-primary/5 text-primary font-medium' : 'text-text-main hover:bg-gray-50 dark:hover:bg-gray-800'}
                     `}
                   >
                     <span>{option.label}</span>
-                    {isSelected && <Check className="w-4 h-4" />}
-                  </div>
+                    {isSelected && <Check aria-hidden="true" className="w-4 h-4" />}
+                  </button>
                 );
               })
             ) : (
-              <div className="p-4 text-center text-text-muted text-sm">
+              <div role="status" className="p-4 text-center text-text-muted text-sm">
                 No results found.
               </div>
             )}

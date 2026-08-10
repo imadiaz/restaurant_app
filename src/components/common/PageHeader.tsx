@@ -14,8 +14,8 @@ const PageHeader: React.FC<PageHeaderProps> = ({ title, subtitle, actions, showN
   const navigate = useNavigate();
 
   return (
-    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
-      <div className="flex items-center gap-4">
+    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 sm:mb-8">
+      <div className="flex min-w-0 items-center gap-3 sm:gap-4">
         
         {/* Back Button */}
         {showNavBack && (
@@ -32,7 +32,7 @@ const PageHeader: React.FC<PageHeaderProps> = ({ title, subtitle, actions, showN
         )}
 
         {/* Title & Subtitle */}
-        <div>
+        <div className="min-w-0">
           <AnatomyText.H1>{title}</AnatomyText.H1>
           {subtitle && (
             <AnatomyText.Body className="text-text-muted mt-1">
@@ -43,7 +43,7 @@ const PageHeader: React.FC<PageHeaderProps> = ({ title, subtitle, actions, showN
       </div>
 
       {/* Actions (Buttons, etc) */}
-      <div className="flex items-center gap-3">
+      <div className="flex flex-wrap items-center gap-3">
         {actions}
       </div>
     </div>
