@@ -115,10 +115,10 @@ const ManageRestaurantSettingsModal: React.FC<ManageRestaurantSettingsModalProps
       <div ref={dialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby="restaurant-settings-title" className="bg-background-card w-full max-w-2xl rounded-3xl shadow-2xl border border-border flex flex-col max-h-[90vh]">
         
         {/* Header */}
-        <div className={`p-6 border-b border-border flex justify-between items-center shrink-0 rounded-t-3xl ${isAdminMode ? 'bg-purple-50/50 dark:bg-purple-900/10' : ''}`}>
+        <div className={`p-6 border-b border-border flex justify-between items-center shrink-0 rounded-t-3xl ${isAdminMode ? 'bg-primary/5' : ''}`}>
           <div>
             <div className="flex items-center gap-2">
-              {isAdminMode ? <Shield className="w-5 h-5 text-purple-600" /> : <Store className="w-5 h-5 text-primary" />}
+              {isAdminMode ? <Shield className="w-5 h-5 text-primary" /> : <Store className="w-5 h-5 text-primary" />}
               <AnatomyText.H3 id="restaurant-settings-title" className="text-lg">
                 {isAdminMode ? t('settings.admin_title', 'Admin Settings') : t('settings.operational_title', 'Operational Settings')}
               </AnatomyText.H3>
@@ -160,7 +160,7 @@ const ManageRestaurantSettingsModal: React.FC<ManageRestaurantSettingsModalProps
                         checked={field.value}
                         onChange={(e) => field.onChange(e.target.checked)}
                       />
-                      <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                      <div className="w-11 h-6 bg-surface-hover peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-background-card after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-background-card after:border-border-strong after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
                     </label>
                   )}
                 />
@@ -169,7 +169,7 @@ const ManageRestaurantSettingsModal: React.FC<ManageRestaurantSettingsModalProps
               <AnatomyTextField
                 label={t('settings.prep_time')}
                 type="number"
-                icon={<Clock className="w-4 h-4 text-gray-400" />}
+                icon={<Clock className="w-4 h-4 text-text-subtle" />}
                 {...register('averagePrepTimeMin', { min: 0, required: true })}
                 placeholder="20"
               />
@@ -179,7 +179,7 @@ const ManageRestaurantSettingsModal: React.FC<ManageRestaurantSettingsModalProps
              onClick={handleSubmit(onSubmit)} 
              disabled={isUpdatingOperational}
              // Change color if admin
-             className={isAdminMode ? "bg-purple-600 hover:bg-purple-700 text-white border-transparent" : ""}
+             className={isAdminMode ? "bg-primary hover:bg-primary-hover text-white border-transparent" : ""}
           >
             {isUpdatingOperational ? t('common.saving') : (
               <>
@@ -199,8 +199,8 @@ const ManageRestaurantSettingsModal: React.FC<ManageRestaurantSettingsModalProps
           <section className="space-y-4 animate-in slide-in-from-bottom-4 duration-300">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
-                <Receipt className="w-4 h-4 text-orange-500" />
-                <AnatomyText.Label className="text-orange-600 dark:text-orange-400">
+                <Receipt className="w-4 h-4 text-warning" />
+                <AnatomyText.Label className="text-warning">
                   {t('settings.section_fees', 'Additional Fees & Surcharges')}
                 </AnatomyText.Label>
               </div>
@@ -210,40 +210,40 @@ const ManageRestaurantSettingsModal: React.FC<ManageRestaurantSettingsModalProps
               </AnatomyButton>
             </div>
 
-            <div className="bg-orange-50/50 dark:bg-orange-900/10 p-5 rounded-2xl border border-orange-100 dark:border-orange-900/30 space-y-4">
+            <div className="bg-warning-surface p-5 rounded-2xl border border-warning/20 space-y-4">
               {isLoadingFees ? (
-                <div className="text-center text-gray-500 py-4">Loading fees...</div>
+                <div className="text-center text-text-muted py-4">{t('common.loading')}</div>
               ) : editableFees.length === 0 ? (
-                <div className="text-center text-gray-500 py-4 text-sm">
+                <div className="text-center text-text-muted py-4 text-sm">
                   {t('settings.no_fees', 'No additional fees configured.')}
                 </div>
               ) : (
                 <div className="space-y-4">
                   {editableFees.map((fee, index) => (
-                    <div key={index} className="flex flex-col gap-3 bg-white dark:bg-gray-800 p-4 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm">
+                    <div key={index} className="flex flex-col gap-3 bg-background-card p-4 rounded-xl border border-border shadow-sm">
                       
                       {/* Top Row: Name, Type, Value, Delete */}
                       <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-end">
                         
                         {/* Name Input */}
                         <div className="flex-1 w-full">
-                          <label className="text-xs font-medium text-gray-500 mb-1 block">Fee Name</label>
+                          <label className="text-xs font-medium text-text-muted mb-1 block">{t('settings.fee_name', 'Fee Name')}</label>
                           <input
                             type="text"
                             placeholder="e.g. Packaging Fee"
                             value={fee.name}
                             onChange={(e) => handleFeeChange(index, 'name', e.target.value)}
-                            className="w-full text-sm p-2 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-primary focus:border-primary outline-none dark:bg-gray-700"
+                            className="w-full text-sm p-2 border border-border rounded-lg focus:ring-primary focus:border-primary outline-none bg-input text-text-main"
                           />
                         </div>
 
                         {/* Type Dropdown */}
                         <div className="w-full sm:w-32 shrink-0">
-                          <label className="text-xs font-medium text-gray-500 mb-1 block">Type</label>
+                          <label className="text-xs font-medium text-text-muted mb-1 block">{t('common.type', 'Type')}</label>
                           <select
                             value={fee.type}
                             onChange={(e) => handleFeeChange(index, 'type', e.target.value as FeeType)}
-                            className="w-full text-sm p-2 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-primary outline-none bg-white dark:bg-gray-700"
+                            className="w-full text-sm p-2 border border-border rounded-lg focus:ring-primary outline-none bg-input text-text-main"
                           >
                             <option value={FeeType.FLAT}>Flat ($)</option>
                             <option value={FeeType.PERCENTAGE}>Percent (%)</option>
@@ -252,22 +252,22 @@ const ManageRestaurantSettingsModal: React.FC<ManageRestaurantSettingsModalProps
 
                         {/* Value Input */}
                         <div className="w-full sm:w-24 shrink-0">
-                          <label className="text-xs font-medium text-gray-500 mb-1 block">Value</label>
+                          <label className="text-xs font-medium text-text-muted mb-1 block">{t('common.value', 'Value')}</label>
                           <input
                             type="number"
                             min="0"
                             step="0.01"
                             value={fee.value}
                             onChange={(e) => handleFeeChange(index, 'value', parseFloat(e.target.value) || 0)}
-                            className="w-full text-sm p-2 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-primary outline-none dark:bg-gray-700"
+                            className="w-full text-sm p-2 border border-border rounded-lg focus:ring-primary outline-none bg-input text-text-main"
                           />
                         </div>
 
                         {/* Remove Button */}
                         <button
                           onClick={() => handleRemoveFee(index)}
-                          className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors shrink-0"
-                          title="Remove Fee"
+                          className="p-2 text-danger hover:bg-danger-surface rounded-lg transition-colors shrink-0"
+                          title={t('settings.remove_fee', 'Remove Fee')}
                         >
                           <Trash2 className="w-5 h-5" />
                         </button>
@@ -275,7 +275,7 @@ const ManageRestaurantSettingsModal: React.FC<ManageRestaurantSettingsModalProps
 
                       {/* Bottom Row: Description */}
                       <div className="w-full">
-                        <label className="text-xs font-medium text-gray-500 mb-1 block">
+                        <label className="text-xs font-medium text-text-muted mb-1 block">
                           {t('settings.fee_description_label', 'Description (Optional)')}
                         </label>
                         <input
@@ -283,7 +283,7 @@ const ManageRestaurantSettingsModal: React.FC<ManageRestaurantSettingsModalProps
                           placeholder={t('settings.fee_description_placeholder', 'e.g. Required for eco-friendly containers')}
                           value={fee.description}
                           onChange={(e) => handleFeeChange(index, 'description', e.target.value)}
-                          className="w-full text-sm p-2 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-primary focus:border-primary outline-none dark:bg-gray-700"
+                          className="w-full text-sm p-2 border border-border rounded-lg focus:ring-primary focus:border-primary outline-none bg-input text-text-main"
                         />
                       </div>
                       
@@ -316,13 +316,13 @@ const ManageRestaurantSettingsModal: React.FC<ManageRestaurantSettingsModalProps
               <div className="h-px bg-border" />
               <section className="space-y-4 animate-in slide-in-from-bottom-4 duration-300">
                 <div className="flex items-center gap-2 mb-4">
-                  <DollarSign className="w-4 h-4 text-purple-500" />
-                  <AnatomyText.Label className="text-purple-600 dark:text-purple-400">
+                  <DollarSign className="w-4 h-4 text-primary" />
+                  <AnatomyText.Label className="text-primary">
                     {t('settings.section_financials')} (Admin Only)
                   </AnatomyText.Label>
                 </div>
 
-                <div className="bg-purple-50/50 dark:bg-purple-900/10 p-5 rounded-2xl border border-purple-100 dark:border-purple-900/30 space-y-5">
+                <div className="bg-primary/5 p-5 rounded-2xl border border-primary/20 space-y-5">
                    {/* Put your existing admin inputs like commission % here */}
                 </div>
               </section>
@@ -332,7 +332,7 @@ const ManageRestaurantSettingsModal: React.FC<ManageRestaurantSettingsModalProps
         </div>
 
         {/* Footer */}
-        <div className="p-6 border-t border-border bg-gray-50/50 dark:bg-gray-900/20 shrink-0 flex justify-end gap-3 rounded-b-3xl">
+        <div className="p-6 border-t border-border bg-surface-muted shrink-0 flex justify-end gap-3 rounded-b-3xl">
           {isAdminMode && (!restaurant.stripePayoutsEnabled || !restaurant.stripeOnboardingCompleted || !restaurant.stripeChargesEnabled) && (
             <AnatomyButton variant="ghost" isLoading={isSettingUpPaymentLink} onClick={setupPaymentLinkHandler}>
               <Link className="w-4 h-4 mr-2" />

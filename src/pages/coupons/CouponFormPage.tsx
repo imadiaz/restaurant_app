@@ -258,13 +258,13 @@ const CouponFormPage: React.FC = () => {
       <div className="max-w-4xl mx-auto pb-20">
         {/* Error Banner */}
         {!activeRestaurant && !isAdmin && (
-          <div className="mb-6 bg-red-50 border border-red-200 rounded-2xl p-4 flex items-start gap-3">
-            <AlertCircle className="w-5 h-5 text-red-600 mt-0.5" />
+          <div className="mb-6 bg-danger-surface border border-danger/20 rounded-2xl p-4 flex items-start gap-3">
+            <AlertCircle className="w-5 h-5 text-danger mt-0.5" />
             <div>
-              <AnatomyText.H3 className="!text-red-700 text-sm">
+              <AnatomyText.H3 className="!text-danger text-sm">
                 {t("errors.error")}
               </AnatomyText.H3>
-              <AnatomyText.Body className="!text-red-600 text-xs">
+              <AnatomyText.Body className="!text-danger text-xs">
                 {t("errors.no_active_restaurant_description")}
               </AnatomyText.Body>
             </div>
@@ -287,7 +287,7 @@ const CouponFormPage: React.FC = () => {
                   minLength: { value: 3, message: t('coupons.code_min_length') },
                 })}
                 error={errors.code?.message}
-                icon={<Tag className="w-4 h-4 text-gray-400" />}
+                icon={<Tag className="w-4 h-4 text-text-subtle" />}
               />
 
               <AnatomyTextArea
@@ -387,7 +387,7 @@ const CouponFormPage: React.FC = () => {
                   onChange: () => clearErrors(["startDate", "endDate"]),
                 })}
                 error={errors.startDate?.message}
-                icon={<Calendar className="w-4 h-4 text-gray-400" />}
+                icon={<Calendar className="w-4 h-4 text-text-subtle" />}
               />
 
               <AnatomyTextField
@@ -398,7 +398,7 @@ const CouponFormPage: React.FC = () => {
                   onChange: () => clearErrors("endDate"),
                 })}
                 error={errors.endDate?.message}
-                icon={<Calendar className="w-4 h-4 text-gray-400" />}
+                icon={<Calendar className="w-4 h-4 text-text-subtle" />}
               />
             </div>
 
@@ -416,7 +416,7 @@ const CouponFormPage: React.FC = () => {
                   onChange: () => clearErrors("usageLimitGlobal"),
                 })}
                 error={errors.usageLimitGlobal?.message}
-                icon={<Hash className="w-4 h-4 text-gray-400" />}
+                icon={<Hash className="w-4 h-4 text-text-subtle" />}
               />
 
               <AnatomyTextField
@@ -427,7 +427,7 @@ const CouponFormPage: React.FC = () => {
                   onChange: () => clearErrors("usageLimitGlobal"),
                 })}
                 error={errors.usageLimitPerUser?.message}
-                icon={<Users className="w-4 h-4 text-gray-400" />}
+                icon={<Users className="w-4 h-4 text-text-subtle" />}
               />
             </div>
             <div className="space-y-6">

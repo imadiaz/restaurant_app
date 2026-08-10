@@ -28,13 +28,13 @@ const handleGoHome = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 p-4 text-center">
-      <div className="w-24 h-24 bg-red-100 rounded-full flex items-center justify-center mb-6 animate-in zoom-in duration-300">
-        <ShieldAlert className="w-12 h-12 text-red-600" />
+    <div className="min-h-screen flex flex-col items-center justify-center bg-background p-4 text-center">
+      <div className="w-24 h-24 bg-danger-surface rounded-full flex items-center justify-center mb-6 animate-in zoom-in duration-300">
+        <ShieldAlert className="w-12 h-12 text-danger" />
       </div>
       
       <AnatomyText.H1 className="mb-2">Access Denied</AnatomyText.H1>
-      <AnatomyText.Body className="text-gray-500 max-w-md mb-8">
+      <AnatomyText.Body className="text-text-muted max-w-md mb-8">
         You do not have permission to view this page. If you believe this is an error, please contact your administrator.
       </AnatomyText.Body>
 

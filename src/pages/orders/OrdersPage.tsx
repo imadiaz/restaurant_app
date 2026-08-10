@@ -101,7 +101,7 @@ const OrdersPage: React.FC = () => {
                   px-4 py-2 rounded-xl text-sm font-medium transition-all flex items-center gap-2 whitespace-nowrap
                   ${activeTab === tab.id 
                     ? 'bg-primary text-white shadow-md' 
-                    : 'text-text-muted hover:bg-gray-100 dark:hover:bg-gray-800'}
+                    : 'text-text-muted hover:bg-surface-hover'}
                 `}
               >
                 <span>{t(tab.labelKey)}</span>
@@ -109,7 +109,7 @@ const OrdersPage: React.FC = () => {
                     px-2 py-0.5 rounded-full text-xs font-bold
                     ${activeTab === tab.id 
                        ? 'bg-white/20 text-white' 
-                       : 'bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300'}
+                       : 'bg-surface-hover text-text-muted'}
                 `}>
                   {counts[tab.id] || 0}
                 </span>
@@ -130,7 +130,7 @@ const OrdersPage: React.FC = () => {
            </div>
         ) : (
            <div className="flex flex-col items-center justify-center py-20 bg-background-card rounded-3xl border border-dashed border-border text-center">
-              <div className="p-4 bg-gray-50 dark:bg-gray-800/50 rounded-full mb-4">
+              <div className="p-4 bg-surface-muted rounded-full mb-4">
                  <ShoppingBag className="w-10 h-10 text-text-muted opacity-50" />
               </div>
               <AnatomyText.H3 className="text-text-muted mb-2">

@@ -141,14 +141,14 @@ const OrderCard: React.FC<OrderCardProps> = ({ order, onClick }) => {
           </AnatomyTag>
           <div className="flex flex-col items-end">
             <div
-              className="flex items-center gap-1.5 bg-gray-50 dark:bg-gray-800/80 pl-2 pr-1 py-1 rounded-md border border-border/50 group/copy hover:border-primary/30 transition-colors"
+              className="flex items-center gap-1.5 bg-surface-muted pl-2 pr-1 py-1 rounded-md border border-border/50 group/copy hover:border-primary/30 transition-colors"
               onClick={handleCopyId} // Allow clicking the whole box to copy
               title={t("common.click_to_copy")}
             >
               <span className="text-xs font-mono text-text-main font-medium">
                 #{order.id.slice(0, 8)}
               </span>
-              <button className="p-1 rounded bg-white dark:bg-gray-700 text-text-muted group-hover/copy:text-primary group-hover/copy:bg-primary/10 transition-all">
+              <button className="p-1 rounded bg-background-card text-text-muted group-hover/copy:text-primary group-hover/copy:bg-primary/10 transition-all">
                 <Copy className="w-3 h-3" />
               </button>
             </div>
@@ -181,8 +181,8 @@ const OrderCard: React.FC<OrderCardProps> = ({ order, onClick }) => {
           </div>
           {/* Driver Info Card */}
           {order.driverSnapshot && (
-            <div className="mt-3 flex items-center gap-3 bg-gray-50 dark:bg-gray-800/50 p-2.5 rounded-xl border border-border/50">
-              <div className="w-9 h-9 rounded-full bg-gray-200 dark:bg-gray-700 overflow-hidden shrink-0 border border-border relative">
+            <div className="mt-3 flex items-center gap-3 bg-surface-muted p-2.5 rounded-xl border border-border/50">
+              <div className="w-9 h-9 rounded-full bg-surface-hover overflow-hidden shrink-0 border border-border relative">
                 {order.driverSnapshot.photoUrl ? (
                   <img
                     src={order.driverSnapshot.photoUrl}
@@ -190,7 +190,7 @@ const OrderCard: React.FC<OrderCardProps> = ({ order, onClick }) => {
                     className="w-full h-full object-cover"
                   />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center text-gray-400">
+                  <div className="w-full h-full flex items-center justify-center text-text-subtle">
                     <Bike className="w-5 h-5" />
                   </div>
                 )}

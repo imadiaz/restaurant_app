@@ -84,9 +84,9 @@ const ManageCategoriesModal: React.FC<ManageCategoriesModalProps> = ({
              </AnatomyText.Label>
              
              {selectedIds.length === 0 ? (
-                <div className="text-center p-6 border border-dashed border-gray-300 rounded-2xl bg-gray-50 dark:bg-gray-900/50">
-                   <Tag className="w-8 h-8 text-gray-300 mx-auto mb-2" />
-                   <AnatomyText.Small className="text-gray-400">
+                <div className="text-center p-6 border border-dashed border-border-strong rounded-2xl bg-surface-muted">
+                   <Tag className="w-8 h-8 text-text-subtle mx-auto mb-2" />
+                   <AnatomyText.Small className="text-text-muted">
                       {t('categories.no_selection')}
                    </AnatomyText.Small>
                 </div>
@@ -115,14 +115,14 @@ const ManageCategoriesModal: React.FC<ManageCategoriesModalProps> = ({
                 placeholder={t('categories.search_placeholder')}
                 value={searchTerm}
                 onChange={e => setSearchTerm(e.target.value)}
-                icon={<Search className="w-4 h-4 text-gray-400"/>}
+                icon={<Search className="w-4 h-4 text-text-subtle"/>}
              />
 
              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                 {isLoadingCats ? (
                    <p>{t('common.loading')}</p>
                 ) : availableCategories.length === 0 ? (
-                   <p className="col-span-full text-center text-sm text-gray-400 py-4">
+                   <p className="col-span-full text-center text-sm text-text-muted py-4">
                       {searchTerm ? t('common.no_results') : t('categories.all_selected')}
                    </p>
                 ) : (
@@ -132,13 +132,13 @@ const ManageCategoriesModal: React.FC<ManageCategoriesModalProps> = ({
                          onClick={() => handleAdd(cat.id)}
                          className="flex items-center gap-3 p-3 rounded-xl border border-border hover:border-primary hover:bg-primary/5 transition-all group text-left"
                       >
-                         <span className="text-xl bg-gray-100 dark:bg-gray-800 w-8 h-8 flex items-center justify-center rounded-lg">
+                         <span className="text-xl bg-surface-muted w-8 h-8 flex items-center justify-center rounded-lg">
                             {cat.icon || "🍽️"}
                          </span>
                          <span className="text-sm font-medium text-text-primary truncate flex-1">
                             {cat.name}
                          </span>
-                         <Plus className="w-4 h-4 text-gray-400 group-hover:text-primary" />
+                         <Plus className="w-4 h-4 text-text-subtle group-hover:text-primary" />
                       </button>
                    ))
                 )}
@@ -148,7 +148,7 @@ const ManageCategoriesModal: React.FC<ManageCategoriesModalProps> = ({
         </div>
 
         {/* Footer */}
-        <div className="p-6 border-t border-border bg-gray-50/50 dark:bg-gray-900/20 shrink-0 flex justify-end gap-3 rounded-b-3xl">
+        <div className="p-6 border-t border-border bg-surface-muted shrink-0 flex justify-end gap-3 rounded-b-3xl">
           <AnatomyButton variant="secondary" onClick={onClose}>
             {t('common.cancel')}
           </AnatomyButton>
@@ -169,7 +169,7 @@ const CategoryChip = ({ category, onRemove, isRemovable }: { category: Category,
       {isRemovable && (
          <button 
             onClick={(e) => { e.stopPropagation(); onRemove?.(); }} 
-            className="ml-1 p-0.5 hover:bg-red-100 hover:text-red-600 rounded-full transition-colors"
+            className="ml-1 p-0.5 hover:bg-danger-surface hover:text-danger rounded-full transition-colors"
          >
             <X className="w-3.5 h-3.5" />
          </button>

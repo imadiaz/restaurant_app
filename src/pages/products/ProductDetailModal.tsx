@@ -128,8 +128,8 @@ const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
               <div
                 className={`flex items-center gap-2 px-4 py-2 rounded-full backdrop-blur-md border ${
                   product.isAvailable
-                    ? "bg-green-500/20 border-green-400/30 text-green-100"
-                    : "bg-red-500/20 border-red-400/30 text-red-100"
+                    ? "bg-success/20 border-success/30 text-white"
+                    : "bg-danger/20 border-danger/30 text-white"
                 }`}
               >
                 {product.isAvailable ? (
@@ -151,16 +151,16 @@ const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             <div className="space-y-4">
               <AnatomyText.Label>{t("common.description")}</AnatomyText.Label>
-              <AnatomyText.Body className="text-gray-600 dark:text-gray-300 leading-relaxed">
+              <AnatomyText.Body className="text-text-muted leading-relaxed">
                 {product.description || (
-                  <span className="italic text-gray-400">
+                  <span className="italic text-text-subtle">
                     {t("common.empty_description")}
                   </span>
                 )}
               </AnatomyText.Body>
             </div>
 
-            <div className="bg-gray-50 dark:bg-gray-800/50 p-5 rounded-2xl border border-border space-y-4">
+            <div className="bg-surface-muted p-5 rounded-2xl border border-border space-y-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center text-text-muted text-sm font-medium">
                   <DollarSign className="w-4 h-4 mr-2" /> {t("products.price")}
@@ -211,14 +211,14 @@ const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
                       key={group.id}
                       className={`bg-background-card border border-border rounded-2xl overflow-hidden ${!isGroupActive ? "opacity-75 grayscale-[0.5]" : ""}`}
                     >
-                      <div className="bg-gray-100/80 dark:bg-gray-800 p-4 flex flex-wrap items-center justify-between gap-3">
+                      <div className="bg-surface-muted p-4 flex flex-wrap items-center justify-between gap-3">
                         <div>
                           <div className="flex items-center gap-2">
                             <AnatomyText.H3 className="mb-0">
                               {group.name}
                             </AnatomyText.H3>
                             {!isGroupActive && (
-                              <span className="text-[10px] font-bold uppercase tracking-wider bg-gray-200 dark:bg-gray-700 px-2 py-0.5 rounded text-gray-500">
+                              <span className="text-[10px] font-bold uppercase tracking-wider bg-surface-hover px-2 py-0.5 rounded text-text-muted">
                                 {t("common.inactive")}
                               </span>
                             )}
@@ -245,10 +245,10 @@ const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
                         {group.options.map((opt) => (
                           <div
                             key={opt.id}
-                            className="p-3 pl-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
+                            className="p-3 pl-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-surface-hover transition-colors"
                           >
                             <div className="flex items-center gap-3">
-                              <div className="text-gray-400">
+                              <div className="text-text-subtle">
                                 {opt?.linkedProduct?.imageUrl ? (
                                   <img
                                     src={opt?.linkedProduct?.imageUrl}
@@ -259,8 +259,8 @@ const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
                                   <div
                                     className={`w-1.5 h-1.5 rounded-full shrink-0 transition-colors duration-300 ${
                                       opt.isAvailable
-                                        ? "bg-green-500 shadow-[0_0_6px_rgba(34,197,94,0.4)]"
-                                        : "bg-red-300"
+                                        ? "bg-success"
+                                        : "bg-danger"
                                     }`}
                                   />
                                 )}
@@ -269,7 +269,7 @@ const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
                                 <div
                                   className={`text-sm font-medium transition-colors ${
                                     !opt.isAvailable
-                                      ? "text-gray-400"
+                                      ? "text-text-subtle"
                                       : "text-text-main"
                                   }`}
                                 >

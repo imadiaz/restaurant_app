@@ -55,11 +55,11 @@ const ScheduleFormPage: React.FC = () => {
     >
       <div className="max-w-4xl mx-auto space-y-6 pb-20">
         
-        <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 p-4 rounded-2xl flex items-start gap-3">
-           <Clock className="w-5 h-5 text-blue-600 mt-0.5" />
+        <div className="bg-info-surface border border-info/20 p-4 rounded-2xl flex items-start gap-3">
+           <Clock className="w-5 h-5 text-info mt-0.5" />
            <div>
-              <AnatomyText.H3 className="text-blue-800 dark:text-blue-300 text-sm mb-1">{t('schedules.weakly_hours')}</AnatomyText.H3>
-              <AnatomyText.Small className="text-blue-600 dark:text-blue-400">
+              <AnatomyText.H3 className="text-info text-sm mb-1">{t('schedules.weakly_hours')}</AnatomyText.H3>
+              <AnatomyText.Small className="text-info">
                  {t('schedules.schedules_help_text')}
               </AnatomyText.Small>
            </div>
@@ -101,7 +101,7 @@ const DayRow: React.FC<DayRowProps> = ({
   const isClosed = slots.length === 0;
 
   return (
-    <div className="p-6 transition-colors hover:bg-gray-50/50 dark:hover:bg-gray-800/20">
+    <div className="p-6 transition-colors hover:bg-surface-hover">
        <div className="flex flex-col md:flex-row md:items-start gap-4 md:gap-8">
           
           <div className="md:w-48 shrink-0 flex flex-row md:flex-col items-center md:items-start justify-between">
@@ -132,7 +132,7 @@ const DayRow: React.FC<DayRowProps> = ({
 
           <div className="flex-1 space-y-3">
              {isClosed ? (
-                <div className="flex items-center text-text-muted h-10 bg-gray-50 dark:bg-gray-900/50 rounded-xl px-4 border border-dashed border-border w-full md:w-auto self-start">
+                <div className="flex items-center text-text-muted h-10 bg-surface-muted rounded-xl px-4 border border-dashed border-border w-full md:w-auto self-start">
                    <CalendarOff className="w-4 h-4 mr-2 opacity-50" />
                    <span className="text-sm italic">{t('no_shifts_configured')}</span>
                 </div>
@@ -140,7 +140,7 @@ const DayRow: React.FC<DayRowProps> = ({
                 slots.map((slot, idx) => (
                    <div key={idx} className="flex items-center gap-3 animate-in fade-in slide-in-from-left-2 duration-200">
                       
-                      <div className="flex items-center gap-2 bg-gray-50 dark:bg-gray-900/50 p-1.5 rounded-xl border border-border focus-within:ring-2 focus-within:ring-primary/20 transition-all">
+                      <div className="flex items-center gap-2 bg-surface-muted p-1.5 rounded-xl border border-border focus-within:ring-2 focus-within:ring-primary/20 transition-all">
                          <div className="relative group">
                             <input 
                                type="time" 
@@ -166,7 +166,7 @@ const DayRow: React.FC<DayRowProps> = ({
 
                       <button 
                          onClick={() => onRemove(idx)}
-                         className="w-8 h-8 flex items-center justify-center rounded-full text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all"
+                         className="w-8 h-8 flex items-center justify-center rounded-full text-text-subtle hover:text-danger hover:bg-danger-surface transition-all"
                       >
                          <Trash2 className="w-4 h-4" />
                       </button>

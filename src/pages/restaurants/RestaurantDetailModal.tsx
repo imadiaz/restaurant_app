@@ -50,7 +50,7 @@ const RestaurantDetailModal: React.FC<RestaurantDetailModalProps> = ({
     >
       <div ref={dialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby="restaurant-detail-title" className="bg-background-card rounded-3xl shadow-2xl w-full max-w-5xl overflow-hidden flex flex-col max-h-[90vh] border border-border">
         
-        <div className="relative h-48 bg-gray-100 dark:bg-gray-800">
+        <div className="relative h-48 bg-surface-muted">
            {restaurant.heroImageUrl && (
              <img src={restaurant.heroImageUrl} alt="Cover" className="w-full h-full object-cover opacity-80" />
            )}
@@ -65,12 +65,12 @@ const RestaurantDetailModal: React.FC<RestaurantDetailModalProps> = ({
            </button>
 
            <div className="absolute bottom-6 left-8 flex items-end gap-6">
-              <div className="w-24 h-24 rounded-2xl bg-white p-1 shadow-lg border border-gray-100 shrink-0">
+              <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-background-card p-1 shadow-lg border border-border shrink-0">
                  {restaurant.logoUrl ? (
                    <img src={restaurant.logoUrl} alt="Logo" className="w-full h-full object-cover rounded-xl" />
                  ) : (
-                   <div className="w-full h-full flex items-center justify-center bg-gray-50 rounded-xl">
-                      <Building2 className="w-8 h-8 text-gray-300" />
+                   <div className="w-full h-full flex items-center justify-center bg-surface-muted rounded-xl">
+                      <Building2 className="w-8 h-8 text-text-subtle" />
                    </div>
                  )}
               </div>
@@ -79,7 +79,7 @@ const RestaurantDetailModal: React.FC<RestaurantDetailModalProps> = ({
                    {restaurant.name}
                  </AnatomyText.H1>
                  
-                 <AnatomyText.Small className="!text-gray-200 flex items-center gap-2 mt-1">
+                 <AnatomyText.Small className="!text-white/80 flex items-center gap-2 mt-1">
                    <MapPin className="w-4 h-4" /> {restaurant.streetAddress}, {restaurant.city}
                  </AnatomyText.Small>
               </div>
@@ -163,7 +163,7 @@ const RestaurantDetailModal: React.FC<RestaurantDetailModalProps> = ({
             </div>
 
             <div className="space-y-6">
-               <div className="bg-gray-50 dark:bg-gray-900/50 p-6 rounded-3xl border border-border space-y-4">
+               <div className="bg-surface-muted p-6 rounded-3xl border border-border space-y-4">
                   <AnatomyText.H3 className="text-base">{t('restaurants.legal_contact')}</AnatomyText.H3>
                   
                   <div className="space-y-4">

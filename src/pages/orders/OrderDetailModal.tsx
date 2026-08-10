@@ -193,9 +193,9 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
 
                       {/* Note */}
                       {item.comment && (
-                        <div className="mt-2 text-xs bg-yellow-50 dark:bg-yellow-900/20 text-yellow-700 dark:text-yellow-400 px-2 py-1 rounded-lg border border-yellow-100 dark:border-yellow-900/30 inline-flex items-center gap-1">
+                        <div className="mt-2 text-xs bg-warning-surface text-warning px-2 py-1 rounded-lg border border-warning/20 inline-flex items-center gap-1">
                           <StickyNote className="w-3 h-3" />
-                          <AnatomyText.Small className="text-yellow-700 dark:text-yellow-400">
+                          <AnatomyText.Small className="text-warning">
                             "{item.comment}"
                           </AnatomyText.Small>
                         </div>
@@ -206,14 +206,14 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
               </div>
             </div>
 
-            <div className="w-full lg:w-96 bg-gray-50 dark:bg-gray-900/30 p-8 space-y-8 h-full border-t lg:border-t-0 border-border">
+            <div className="w-full lg:w-96 bg-surface-muted p-5 sm:p-8 space-y-8 h-full border-t lg:border-t-0 border-border">
               <div className="space-y-4">
                 <AnatomyText.Label className="uppercase tracking-wider text-xs font-bold text-text-muted">
                   {t("orders.customer_details")}
                 </AnatomyText.Label>
 
                 <div className="flex gap-3 items-start">
-                  <div className="p-2 bg-white dark:bg-gray-800 rounded-full text-text-muted shadow-sm border border-border">
+                  <div className="p-2 bg-background-card rounded-full text-text-muted shadow-sm border border-border">
                     <User className="w-4 h-4" />
                   </div>
                   <div>
@@ -228,7 +228,7 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
                 </div>
 
                 <div className="flex gap-3 items-start">
-                  <div className="p-2 bg-white dark:bg-gray-800 rounded-full text-text-muted shadow-sm border border-border">
+                  <div className="p-2 bg-background-card rounded-full text-text-muted shadow-sm border border-border">
                     <MapPin className="w-4 h-4" />
                   </div>
                   <div>
@@ -259,7 +259,7 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
                 </div>
 
                 <div className="flex gap-3 items-start">
-                  <div className="p-2 bg-white dark:bg-gray-800 rounded-full text-text-muted shadow-sm border border-border">
+                  <div className="p-2 bg-background-card rounded-full text-text-muted shadow-sm border border-border">
                     <CreditCard className="w-4 h-4" />
                   </div>
                   <div>
@@ -280,7 +280,7 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
                       </div>
                     )}
                     {order.changeFor && (
-                      <AnatomyText.Small className="text-orange-600 mt-1">
+                      <AnatomyText.Small className="text-warning mt-1">
                         {t("orders.change_for")}: ${order.changeFor}
                       </AnatomyText.Small>
                     )}
@@ -301,8 +301,8 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
                   )}
                 </div>
                 {order.driverSnapshot && (
-                  <div className="mt-3 flex items-center gap-3 bg-white dark:bg-gray-800 p-3 rounded-xl border border-border/60 shadow-sm">
-                    <div className="w-9 h-9 rounded-full bg-gray-200 dark:bg-gray-700 overflow-hidden shrink-0 border border-border flex items-center justify-center">
+                  <div className="mt-3 flex items-center gap-3 bg-background-card p-3 rounded-xl border border-border/60 shadow-sm">
+                    <div className="w-9 h-9 rounded-full bg-surface-hover overflow-hidden shrink-0 border border-border flex items-center justify-center">
                       {order.driverSnapshot.photoUrl ? (
                         <img
                           src={order.driverSnapshot.photoUrl}
@@ -310,7 +310,7 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
                           className="w-full h-full object-cover"
                         />
                       ) : (
-                        <Bike className="w-5 h-5 text-gray-400" />
+                        <Bike className="w-5 h-5 text-text-subtle" />
                       )}
                     </div>
 
@@ -336,21 +336,21 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
               <div className="border-t border-border"></div>
 
               {(order.restaurantNote || order.deliveryNote) && (
-                <div className="bg-yellow-100 dark:bg-yellow-900/20 p-4 rounded-xl border border-yellow-200 dark:border-yellow-800/50">
-                  <div className="flex items-center gap-2 text-yellow-800 dark:text-yellow-400 mb-1">
+                <div className="bg-warning-surface p-4 rounded-xl border border-warning/20">
+                  <div className="flex items-center gap-2 text-warning mb-1">
                     <StickyNote className="w-4 h-4" />
-                    <AnatomyText.Label className="font-bold text-xs uppercase text-yellow-800 dark:text-yellow-400">
+                    <AnatomyText.Label className="font-bold text-xs uppercase text-warning">
                       {t("orders.instructions")}
                     </AnatomyText.Label>
                   </div>
                   <div className="flex flex-col">
                     {order.restaurantNote && (
-                      <AnatomyText.Small className="text-yellow-900 dark:text-yellow-200 font-medium italic mb-1">
+                      <AnatomyText.Small className="text-text-main font-medium italic mb-1">
                         {t("orders.kitchen")}: "{order.restaurantNote}"
                       </AnatomyText.Small>
                     )}
                     {order.deliveryNote && (
-                      <AnatomyText.Small className="text-yellow-900 dark:text-yellow-200 font-medium italic">
+                      <AnatomyText.Small className="text-text-main font-medium italic">
                         {t("orders.delivery")}: "{order.deliveryNote}"
                       </AnatomyText.Small>
                     )}
@@ -453,9 +453,9 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
                   </button>
 
                   {isHistoryOpen && (
-                    <div className="mt-3 bg-white dark:bg-gray-800 rounded-xl border border-border overflow-hidden animate-in slide-in-from-top-2">
+                    <div className="mt-3 bg-background-card rounded-xl border border-border overflow-hidden animate-in slide-in-from-top-2">
                       <table className="w-full text-xs">
-                        <thead className="bg-gray-50 dark:bg-gray-700/50 text-text-muted font-medium">
+                        <thead className="bg-surface-muted text-text-muted font-medium">
                           <tr>
                             <th className="px-3 py-2 text-left">
                               {t("orders.status_label")}
@@ -472,7 +472,7 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
                           {order.statusHistory.map((entry, i) => (
                             <tr
                               key={i}
-                              className="hover:bg-gray-50 dark:hover:bg-gray-800/50"
+                              className="hover:bg-surface-hover"
                             >
                               <td className="px-3 py-2">
                                 <AnatomyTag
@@ -499,18 +499,18 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
         </div>
 
         {/* --- FOOTER ACTIONS --- */}
-        <div className="p-6 border-t border-border bg-background-card flex justify-between items-center z-10">
+        <div className="p-4 sm:p-6 border-t border-border bg-background-card flex flex-col sm:flex-row gap-3 justify-between items-stretch sm:items-center z-10">
           <AnatomyButton variant="secondary" onClick={() => window.print()}>
             <Printer className="w-4 h-4 mr-2" />
             {t("common.print_receipt")}
           </AnatomyButton>
 
-          <div className="flex gap-3">
+          <div className="flex flex-wrap gap-3">
             {/* PENDING -> PREPARING */}
             {order.status === OrderStatus.PENDING && (
               <AnatomyButton
                 onClick={handleAcceptOrder}
-                className="bg-orange-500 hover:bg-orange-600 text-white border-transparent"
+                className="bg-warning hover:bg-warning/90 text-white border-transparent"
               >
                 <Check className="w-4 h-4 mr-2" /> {t("common.acceptOrder")}
               </AnatomyButton>
@@ -522,12 +522,12 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
                     {t("orders.estimated_time")}:
                   </span>
 
-                  <div className="flex bg-gray-100 dark:bg-gray-800 rounded-lg p-1 gap-1">
+                  <div className="flex bg-surface-muted rounded-lg p-1 gap-1">
                     {[15, 20, 30, 45].map((min) => (
                       <button
                         key={min}
                         onClick={() => setPrepTime(min)}
-                        className={`px-3 py-1 text-xs font-bold rounded-md transition-all ${prepTime === min ? "bg-white dark:bg-gray-700 text-primary shadow-sm" : "text-text-muted hover:text-text-main"}`}
+                        className={`px-3 py-1 text-xs font-bold rounded-md transition-all ${prepTime === min ? "bg-background-card text-primary shadow-sm" : "text-text-muted hover:text-text-main"}`}
                       >
                         {min}m
                       </button>
@@ -548,13 +548,13 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
 
                   <AnatomyButton
                     onClick={handleStartCooking}
-                    className="bg-orange-500 hover:bg-orange-600 text-white border-transparent"
+                    className="bg-warning hover:bg-warning/90 text-white border-transparent"
                   >
                     <Check className="w-4 h-4 mr-2" /> {t("common.confirm")}
                   </AnatomyButton>
                   <button
                     onClick={() => setShowPrepTime(false)}
-                    className="p-2 text-text-muted hover:text-red-500 transition-colors"
+                    className="p-2 text-text-muted hover:text-danger transition-colors"
                   >
                     <X className="w-5 h-5" />
                   </button>
@@ -562,7 +562,7 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
               ) : (
                 <AnatomyButton
                   onClick={() => setShowPrepTime(true)}
-                  className="bg-orange-500 hover:bg-orange-600 text-white border-transparent"
+                  className="bg-warning hover:bg-warning/90 text-white border-transparent"
                 >
                   <ChefHat className="w-4 h-4 mr-2" />{" "}
                   {t("orders.actions.start_cooking")}
@@ -589,7 +589,7 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
                   </div>
                   <AnatomyButton
                     onClick={() => handleReady()}
-                    className="bg-blue-600 hover:bg-blue-700 text-white border-transparent"
+                    className="bg-info hover:bg-info/90 text-white border-transparent"
                     disabled={!selectedDriverId}
                   >
                     <ShoppingBag className="w-4 h-4 mr-2" />{" "}
@@ -599,7 +599,7 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
               ) : (
                 <AnatomyButton
                   onClick={() => onStatusChange(OrderStatus.READY)}
-                  className="bg-blue-600 hover:bg-blue-700 text-white border-transparent"
+                  className="bg-info hover:bg-info/90 text-white border-transparent"
                 >
                   <ShoppingBag className="w-4 h-4 mr-2" />{" "}
                   {t("orders.actions.mark_ready")}

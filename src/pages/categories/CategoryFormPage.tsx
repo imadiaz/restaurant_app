@@ -102,7 +102,7 @@ const CategoryFormPage: React.FC = () => {
           className="w-full h-full object-cover"
         />
       );
-    return <ImageIcon className="w-8 h-8 text-gray-300" />;
+    return <ImageIcon className="w-8 h-8 text-text-subtle" />;
   };
 
   return (
@@ -167,18 +167,18 @@ const CategoryFormPage: React.FC = () => {
 
               <div className="hidden md:flex flex-col gap-2">
                 <AnatomyText.Label>{t("common.preview")}</AnatomyText.Label>
-                <div className="w-32 h-32 rounded-2xl bg-gray-50 dark:bg-gray-900 border border-border flex items-center justify-center overflow-hidden shadow-sm">
+                <div className="w-32 h-32 rounded-2xl bg-surface-muted border border-border flex items-center justify-center overflow-hidden shadow-sm">
                   {renderPreview()}
                 </div>
               </div>
             </div>
           </div>
 
-          <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-xl border border-blue-100 dark:border-blue-800">
-            <AnatomyText.Label className="mb-1 block text-blue-800 dark:text-blue-300">
+          <div className="bg-info-surface p-4 rounded-xl border border-info/20">
+            <AnatomyText.Label className="mb-1 block text-info">
               {t("common.pro_tips")}
             </AnatomyText.Label>
-            <AnatomyText.Small className="leading-relaxed text-blue-700 dark:text-blue-400">
+            <AnatomyText.Small className="leading-relaxed text-info">
               {t("categories.tips_description")}
             </AnatomyText.Small>
           </div>
