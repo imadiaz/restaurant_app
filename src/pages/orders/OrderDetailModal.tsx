@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import {
   X,
   MapPin,
@@ -29,6 +29,7 @@ import { format } from "date-fns";
 import { useAppStore } from "../../store/app.store";
 import { useDrivers } from "../../hooks/drivers/use.drivers";
 import AnatomySelect from "../../components/anatomy/AnatomySelect";
+import { useDialogAccessibility } from "../../hooks/use.dialog.accessibility";
 
 type OrderStatusType = keyof typeof OrderStatus;
 
@@ -58,6 +59,8 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
   const [prepTime, setPrepTime] = useState<number>(activeRestaurant?.averagePrepTimeMin ?? 15);
   const [selectedDriverId, setSelectedDriverId] = useState<string>(order?.driverId || "");
   const [isHistoryOpen, setIsHistoryOpen] = useState(false); // Collapsible state
+  const dialogRef = useRef<HTMLDivElement>(null);
+  useDialogAccessibility(isOpen && Boolean(order), dialogRef, onClose);
 
   if (!isOpen || !order) return null;
 
@@ -108,13 +111,10 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
 
   return (
     <div
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="order-detail-title"
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200"
       onClick={handleBackdropClick}
     >
-      <div className="bg-background-card rounded-3xl shadow-2xl w-full max-w-5xl overflow-hidden flex flex-col max-h-[90vh] border border-border">
+      <div ref={dialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby="order-detail-title" className="bg-background-card rounded-3xl shadow-2xl w-full max-w-5xl overflow-hidden flex flex-col max-h-[90vh] border border-border">
         {/* --- HEADER --- */}
         <div className="px-8 py-6 border-b border-border flex justify-between items-start bg-background-card z-10">
           <div>
@@ -134,7 +134,8 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
 
           <button
             onClick={onClose}
-            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors text-text-muted hover:text-text-main"
+            aria-label={t("common.close")}
+            className="p-2 hover:bg-surface-hover rounded-full transition-colors text-text-muted hover:text-text-main"
           >
             <X className="w-6 h-6" />
           </button>

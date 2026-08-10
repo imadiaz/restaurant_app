@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { 
   X, MapPin, Phone, FileText, 
   User, Building2, ExternalLink, Edit 
@@ -11,6 +11,7 @@ import { Routes } from '../../config/routes';
 import { useAppStore } from '../../store/app.store';
 import { useTranslation } from 'react-i18next';
 import { STATUS } from '../../config/status.config';
+import { useDialogAccessibility } from '../../hooks/use.dialog.accessibility';
 
 
 
@@ -26,6 +27,8 @@ const RestaurantDetailModal: React.FC<RestaurantDetailModalProps> = ({
   const {t} = useTranslation();
   const { navigateTo } = useAppNavigation();
   const setActiveRestaurant = useAppStore((state) => state.setActiveRestaurant);
+  const dialogRef = useRef<HTMLDivElement>(null);
+  useDialogAccessibility(isOpen && Boolean(restaurant), dialogRef, onClose);
 
   if (!isOpen || !restaurant) return null;
 
@@ -45,7 +48,7 @@ const RestaurantDetailModal: React.FC<RestaurantDetailModalProps> = ({
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
-      <div className="bg-background-card rounded-3xl shadow-2xl w-full max-w-5xl overflow-hidden flex flex-col max-h-[90vh] border border-border">
+      <div ref={dialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby="restaurant-detail-title" className="bg-background-card rounded-3xl shadow-2xl w-full max-w-5xl overflow-hidden flex flex-col max-h-[90vh] border border-border">
         
         <div className="relative h-48 bg-gray-100 dark:bg-gray-800">
            {restaurant.heroImageUrl && (
@@ -55,6 +58,7 @@ const RestaurantDetailModal: React.FC<RestaurantDetailModalProps> = ({
 
            <button 
              onClick={onClose}
+             aria-label={t('common.close')}
              className="absolute top-4 right-4 z-10 p-2 bg-black/20 hover:bg-black/40 text-white rounded-full backdrop-blur-md transition-colors"
            >
              <X className="w-6 h-6" />
@@ -71,7 +75,7 @@ const RestaurantDetailModal: React.FC<RestaurantDetailModalProps> = ({
                  )}
               </div>
               <div className="pb-1">
-                 <AnatomyText.H1 className="text-3xl !text-white drop-shadow-md">
+                 <AnatomyText.H1 id="restaurant-detail-title" className="text-2xl sm:text-3xl !text-white drop-shadow-md">
                    {restaurant.name}
                  </AnatomyText.H1>
                  
@@ -88,31 +92,31 @@ const RestaurantDetailModal: React.FC<RestaurantDetailModalProps> = ({
             <div className="lg:col-span-2 space-y-8">
                
                <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-4">
-                  <div className="p-4 rounded-2xl bg-gray-50 dark:bg-gray-900/50 border border-border">
+                  <div className="p-4 rounded-2xl bg-surface-muted border border-border">
                      <AnatomyText.Label>{t('common.status')}</AnatomyText.Label>
-                     <AnatomyText.H3 className={`capitalize ${restaurant.status === STATUS.active ? '!text-green-600' : '!text-red-500'}`}>
+                     <AnatomyText.H3 className={`capitalize ${restaurant.status === STATUS.active ? '!text-success' : '!text-danger'}`}>
                         {restaurant.status}
                      </AnatomyText.H3>
                   </div>
 
-                  <div className="p-4 rounded-2xl bg-gray-50 dark:bg-gray-900/50 border border-border">
+                  <div className="p-4 rounded-2xl bg-surface-muted border border-border">
                      <AnatomyText.Label>{t('common.open')}</AnatomyText.Label>
-                     <AnatomyText.H3 className={restaurant.isOpen ? '!text-blue-600' : '!text-gray-500'}>
+                     <AnatomyText.H3 className={restaurant.isOpen ? '!text-info' : '!text-text-muted'}>
                         {restaurant.isOpen ? 'Open' : 'Closed'}
                      </AnatomyText.H3>
                   </div>
 
-                  <div className="p-4 rounded-2xl bg-gray-50 dark:bg-gray-900/50 border border-border">
+                  <div className="p-4 rounded-2xl bg-surface-muted border border-border">
                      <AnatomyText.Label>{t('restaurants.commission_rate')}</AnatomyText.Label>
                      <AnatomyText.H3>{restaurant.commissionType?.toString()}%</AnatomyText.H3>
                   </div>
 
-                  <div className="p-4 rounded-2xl bg-gray-50 dark:bg-gray-900/50 border border-border">
+                  <div className="p-4 rounded-2xl bg-surface-muted border border-border">
                      <AnatomyText.Label>{t('restaurants.preparation_time')}</AnatomyText.Label>
                      <AnatomyText.H3>{restaurant.averagePrepTimeMin} min</AnatomyText.H3>
                   </div>
 
-                  <div className="p-4 rounded-2xl bg-gray-50 dark:bg-gray-900/50 border border-border">
+                  <div className="p-4 rounded-2xl bg-surface-muted border border-border">
                      <AnatomyText.Label>{t('common.price')}</AnatomyText.Label>
                      <AnatomyText.H3 className="!text-primary">{getPriceSymbol(restaurant.priceRange)}</AnatomyText.H3>
                   </div>

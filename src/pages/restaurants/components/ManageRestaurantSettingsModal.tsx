@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { X, Save, DollarSign, Store, Shield, Link, Plus, Trash2, Receipt, Clock } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 // Assuming you have these exported from your hooks/services
@@ -9,6 +9,7 @@ import AnatomyText from '../../../components/anatomy/AnatomyText';
 import type { Restaurant } from '../../../data/models/restaurant/restaurant';
 import { Controller, useForm } from 'react-hook-form';
 import AnatomyTextField from '../../../components/anatomy/AnatomyTextField';
+import { useDialogAccessibility } from '../../../hooks/use.dialog.accessibility';
 
 interface ManageRestaurantSettingsModalProps {
   isOpen: boolean;
@@ -89,6 +90,8 @@ const ManageRestaurantSettingsModal: React.FC<ManageRestaurantSettingsModalProps
       averagePrepTimeMin: restaurant.averagePrepTimeMin,
     }
   });
+  const dialogRef = useRef<HTMLDivElement>(null);
+  useDialogAccessibility(isOpen, dialogRef, onClose);
 
   if (!isOpen) return null;
 
@@ -108,15 +111,15 @@ const ManageRestaurantSettingsModal: React.FC<ManageRestaurantSettingsModalProps
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-      <div className="bg-background-card w-full max-w-2xl rounded-3xl shadow-2xl border border-border flex flex-col max-h-[90vh]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-in fade-in duration-200" onClick={(event) => event.target === event.currentTarget && onClose()}>
+      <div ref={dialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby="restaurant-settings-title" className="bg-background-card w-full max-w-2xl rounded-3xl shadow-2xl border border-border flex flex-col max-h-[90vh]">
         
         {/* Header */}
         <div className={`p-6 border-b border-border flex justify-between items-center shrink-0 rounded-t-3xl ${isAdminMode ? 'bg-purple-50/50 dark:bg-purple-900/10' : ''}`}>
           <div>
             <div className="flex items-center gap-2">
               {isAdminMode ? <Shield className="w-5 h-5 text-purple-600" /> : <Store className="w-5 h-5 text-primary" />}
-              <AnatomyText.H3 className="text-lg">
+              <AnatomyText.H3 id="restaurant-settings-title" className="text-lg">
                 {isAdminMode ? t('settings.admin_title', 'Admin Settings') : t('settings.operational_title', 'Operational Settings')}
               </AnatomyText.H3>
             </div>
@@ -126,20 +129,20 @@ const ManageRestaurantSettingsModal: React.FC<ManageRestaurantSettingsModalProps
                 : t('settings.operational_subtitle', 'Manage your restaurant parameters')}
             </AnatomyText.Small>
           </div>
-          <button onClick={onClose} className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors">
+          <button onClick={onClose} aria-label={t('common.close')} className="p-2 hover:bg-surface-hover rounded-full transition-colors">
             <X className="w-5 h-5 text-text-muted" />
           </button>
         </div>
 
         <section className="flex flex-col p-6  overflow-y-auto space-y-4">
             <div className="flex items-center gap-2 mb-4">
-              <Clock className="w-4 h-4 text-gray-400" />
+              <Clock className="w-4 h-4 text-text-subtle" />
               <AnatomyText.Label className="text-primary">{t('settings.section_operations')}</AnatomyText.Label>
             </div>
             
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {/* Toggle Open/Close */}
-              <div className="col-span-full bg-gray-50 dark:bg-gray-800/50 p-4 rounded-xl flex items-center justify-between border border-border">
+              <div className="col-span-full bg-surface-muted p-4 rounded-xl flex items-center justify-between border border-border">
                 <div>
                   <AnatomyText.Body className="font-medium">{t('settings.store_status')}</AnatomyText.Body>
                   <AnatomyText.Small className="text-text-muted">

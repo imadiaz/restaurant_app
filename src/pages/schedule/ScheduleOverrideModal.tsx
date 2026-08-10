@@ -1,5 +1,5 @@
 import { X, Calendar, Clock, AlertCircle } from 'lucide-react';
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import AnatomyButton from '../../components/anatomy/AnatomyButton';
 import AnatomySwitcher from '../../components/anatomy/AnatomySwitcher';
@@ -7,6 +7,7 @@ import AnatomyText from '../../components/anatomy/AnatomyText';
 import AnatomyTextField from '../../components/anatomy/AnatomyTextField';
 import { useForm, useWatch } from 'react-hook-form';
 import { useToastStore } from '../../store/toast.store';
+import { useDialogAccessibility } from '../../hooks/use.dialog.accessibility';
 
 
 export interface ScheduleOverrideDto {
@@ -32,6 +33,8 @@ const ScheduleOverrideModal: React.FC<ScheduleOverrideModalProps> = ({
 }) => {
   const { t } = useTranslation();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const dialogRef = useRef<HTMLFormElement>(null);
+  useDialogAccessibility(isOpen, dialogRef, onClose);
 
   const getTodayString = () => {
     const d = new Date();
@@ -128,22 +131,27 @@ const ScheduleOverrideModal: React.FC<ScheduleOverrideModalProps> = ({
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity" onClick={onClose} />
 
       <form 
+        ref={dialogRef}
+        tabIndex={-1}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="schedule-override-title"
         onSubmit={handleSubmit(onSubmit)}
-        className="relative bg-white dark:bg-gray-900 w-full max-w-md rounded-3xl shadow-2xl flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200"
+        className="relative bg-background-card w-full max-w-md max-h-[90vh] rounded-3xl shadow-2xl flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200"
       >
         
-        <div className="p-6 border-b border-border bg-gray-50/50 dark:bg-gray-800/20 flex items-center justify-between">
+        <div className="p-6 border-b border-border bg-surface-muted flex items-center justify-between">
           <div>
-            <AnatomyText.H3 className="mb-1">{t('schedules.special_schedule')}</AnatomyText.H3>
+            <AnatomyText.H3 id="schedule-override-title" className="mb-1">{t('schedules.special_schedule')}</AnatomyText.H3>
             <AnatomyText.Small className="text-text-muted">
               {t('schedules.setup_events')}
             </AnatomyText.Small>
           </div>
-          <button type="button" onClick={onClose} className="text-text-muted hover:text-text-main">
+          <button type="button" onClick={onClose} aria-label={t('common.close')} className="text-text-muted hover:text-text-main">
             <X className="w-5 h-5" />
           </button>
         </div>
-        <div className="p-6 space-y-5">
+        <div className="p-6 space-y-5 overflow-y-auto">
           <div className="space-y-4">
              <div>
                 <AnatomyTextField
@@ -155,7 +163,7 @@ const ScheduleOverrideModal: React.FC<ScheduleOverrideModalProps> = ({
                 />
                 
                 {isDateInvalid && (
-                    <div className="flex items-center gap-2 mt-2 text-red-500 text-xs font-medium animate-in slide-in-from-top-1">
+                    <div className="flex items-center gap-2 mt-2 text-danger text-xs font-medium animate-in slide-in-from-top-1">
                         <AlertCircle className="w-3.5 h-3.5" />
                         {t('schedules.validation_past_date')}
                     </div>

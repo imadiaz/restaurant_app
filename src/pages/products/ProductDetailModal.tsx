@@ -15,8 +15,9 @@ import AnatomyText from "../../components/anatomy/AnatomyText";
 import type { Product } from "../../data/models/products/product";
 import { STATUS } from "../../config/status.config";
 import AnatomyCardActions from "../../components/anatomy/AnatomyCardActions";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import AnatomySwitcher from "../../components/anatomy/AnatomySwitcher";
+import { useDialogAccessibility } from "../../hooks/use.dialog.accessibility";
 
 interface ProductDetailModalProps {
   isOpen: boolean;
@@ -38,6 +39,8 @@ const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
 }) => {
   const { t } = useTranslation();
   const [togglingId, setTogglingId] = useState<string | null>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
+  useDialogAccessibility(isOpen && Boolean(product), dialogRef, onClose);
 
   if (!isOpen || !product) return null;
 
@@ -79,8 +82,8 @@ const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
         onClick={onClose}
       />
 
-      <div className="relative bg-white dark:bg-gray-900 w-full max-w-2xl max-h-[90vh] rounded-3xl shadow-2xl flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-        <div className="relative h-48 sm:h-64 shrink-0 bg-gray-100 dark:bg-gray-800">
+      <div ref={dialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby="product-detail-title" className="relative bg-background-card w-full max-w-2xl max-h-[90vh] rounded-3xl shadow-2xl flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+        <div className="relative h-48 sm:h-64 shrink-0 bg-surface-muted">
           {product.imageUrl ? (
             <>
               <img
@@ -91,13 +94,14 @@ const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
               <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
             </>
           ) : (
-            <div className="w-full h-full flex items-center justify-center bg-gray-100 dark:bg-gray-800">
-              <Tag className="w-16 h-16 text-gray-300 dark:text-gray-600" />
+            <div className="w-full h-full flex items-center justify-center bg-surface-muted">
+              <Tag className="w-16 h-16 text-text-subtle" />
             </div>
           )}
 
           <button
             onClick={onClose}
+            aria-label={t("common.close")}
             className="absolute top-4 right-4 w-10 h-10 rounded-full bg-black/40 hover:bg-black/60 text-white flex items-center justify-center backdrop-blur-md transition-colors z-10"
           >
             <X className="w-5 h-5" />
@@ -116,7 +120,7 @@ const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
                     </AnatomyTag>
                   ))}
                 </div>
-                <AnatomyText.H3 className="text-2xl sm:text-3xl font-bold text-white leading-tight drop-shadow-sm">
+                <AnatomyText.H3 id="product-detail-title" className="text-2xl sm:text-3xl font-bold text-white leading-tight drop-shadow-sm">
                   {product.name}
                 </AnatomyText.H3>
               </div>
@@ -319,7 +323,7 @@ const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
             icon: ExternalLink,
             onClick: () => onEdit(product.id),
           }}
-          className="p-4 bg-white dark:bg-gray-900 border-t border-border"
+          className="p-4 bg-background-card border-t border-border"
         />
       </div>
     </div>

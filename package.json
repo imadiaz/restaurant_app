@@ -8,6 +8,7 @@
     "build": "tsc -b && vite build",
     "deploy": "gh-pages -d dist",
     "lint": "eslint .",
+    "check:i18n": "node scripts/check-i18n.mjs",
     "preview": "vite preview"
   },
   "dependencies": {

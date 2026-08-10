@@ -1,4 +1,8 @@
 {
+  "theme": {
+    "switch_to_dark": "Cambiar al tema oscuro",
+    "switch_to_light": "Cambiar al tema claro"
+  },
   "common": {
     "save": "Guardar",
     "cancel": "Cancelar",
@@ -70,6 +74,142 @@
     "view_as_admin": "Vista como administrador",
     "back_global": "Regresar a vista global"
   },
+  "restaurants": {
+    "restaurant": "Restaurante", "restaurants": "Restaurantes", "email": "Correo electrónico",
+    "add": "Agregar restaurante", "fields_validation": "Revisa los campos obligatorios del restaurante",
+    "validation_select_location": "Selecciona una ubicación en el mapa", "validation_rfc": "Formato de RFC inválido",
+    "new": "Nuevo restaurante", "edit": "Editar restaurante", "managing": "Administrando",
+    "onboard_new": "Registrar un nuevo restaurante", "general_information": "Información general",
+    "field_name": "Nombre del restaurante", "field_owner": "Responsable del restaurante",
+    "field_owner_help": "Usuario encargado de administrar este restaurante.", "select_owner": "Selecciona un responsable",
+    "price_range": "Rango de precios", "commission_rate": "Comisión $",
+    "time_preparation": "Tiempo de preparación en minutos (ej. 30, 40)", "preparation_time": "Tiempo de preparación",
+    "location_and_coordinates": "Ubicación y coordenadas", "legal_contact": "Información legal y contacto",
+    "rfc": "RFC", "legal_name": "Razón social", "public_phone": "Teléfono público",
+    "private_phone": "Teléfono privado", "description": "Administra todos los restaurantes",
+    "empty": "No se encontraron restaurantes", "owner": "Responsable", "managed_by": "Administrado por"
+  },
+  "promotions": {
+    "title": "Promociones y ofertas", "subtitle": "Administra descuentos y campañas especiales.",
+    "add": "Nueva promoción", "search_placeholder": "Buscar por nombre o tipo...",
+    "empty": "No hay promociones. Crea una para impulsar las ventas.", "add_title": "Crear promoción",
+    "add_description": "Configura una nueva campaña de descuento para el menú.", "edit_title": "Editar promoción",
+    "section_details": "Detalles de la promoción", "section_duration": "Duración",
+    "section_products": "Productos aplicables", "field_name": "Nombre de la promoción",
+    "field_description": "Descripción", "field_type": "Tipo de descuento", "field_value": "Valor",
+    "field_value_percentage": "Porcentaje (%)", "field_value_amount": "Monto de descuento ($)",
+    "field_start_date": "Fecha y hora inicial", "field_end_date": "Fecha y hora final",
+    "type_percentage": "Descuento porcentual", "type_fixed": "Descuento de monto fijo",
+    "type_bogo": "Compra uno y recibe otro (2x1)",
+    "duration_warning": "La promoción vencerá automáticamente después de la fecha final.",
+    "products_helper": "Selecciona los productos que recibirán este descuento.",
+    "edit_products_disabled_note": "Para aplicar la promoción a otros productos, crea una nueva.",
+    "validation_name_required": "Ingresa un nombre para la promoción.",
+    "validation_dates_required": "Las fechas inicial y final son obligatorias.",
+    "validation_dates_invalid": "La fecha final debe ser posterior a la inicial.",
+    "validation_value_negative": "El descuento no puede ser negativo.",
+    "validation_products_required": "Selecciona al menos un producto.",
+    "status_active": "Activa", "status_paused": "Pausada"
+  },
+  "schedules": {
+    "title": "Horarios de atención", "subtitle": "Configura la disponibilidad semanal del restaurante",
+    "copy_to_all": "Copiar a todos los días", "add_hours": "Agregar horario", "closed": "Cerrado", "open": "Abierto",
+    "days": { "0": "Domingo", "1": "Lunes", "2": "Martes", "3": "Miércoles", "4": "Jueves", "5": "Viernes", "6": "Sábado" },
+    "weakly_hours": "Horario semanal", "no_shifts_configured": "Sin turnos configurados",
+    "schedules_help_text": "Define la apertura y cierre de cada día. Puedes agregar varios turnos, por ejemplo comida y cena.",
+    "open_until": "Abierto hasta", "closed_today": "Cerrado hoy", "add_exception": "Agregar excepción",
+    "special_dates_and_holidays": "Fechas especiales y días festivos",
+    "special_dates_and_holidays_empty": "No hay horarios especiales. Se aplicará el horario semanal.",
+    "special_schedule": "Horario especial", "setup_events": "Configura días festivos o eventos especiales.",
+    "validation_past_date": "No puedes seleccionar una fecha pasada.", "close_all_day": "Cerrar todo el día",
+    "special_hours": "Horario especial", "reason": "Motivo", "set_new_hours": "Establecer nuevo horario",
+    "validation_hours_later": "Debe ser posterior a la hora actual", "validation_hours_after": "Debe ser posterior a la apertura",
+    "validate_fields": "La fecha o el horario no es válido", "currently_closed": "Cerrado actualmente"
+  },
+  "users": {
+    "user": "Usuario", "description": "Administra miembros del equipo y permisos",
+    "empty": "No se encontraron usuarios.", "fields_validation": "Revisa los campos obligatorios del usuario",
+    "validation_role": "Selecciona un rol", "validation_phone": "El teléfono debe tener al menos 10 dígitos",
+    "validation_password": "La contraseña debe incluir mayúscula, minúscula, número y símbolo",
+    "add": "Agregar usuario", "edit": "Editar usuario", "update_details_for": "Actualizar datos de",
+    "create_account": "Crear credenciales de acceso", "personal_information": "Información personal",
+    "first_name": "Nombre", "last_name": "Apellidos", "phone_number": "Teléfono",
+    "email_address": "Correo electrónico", "role_and_security": "Rol y seguridad",
+    "assigne_restaurant": "Asignar restaurante", "assigne_role": "Asignar rol",
+    "select_restaurant": "Selecciona un restaurante", "role_description": "Este usuario tendrá acceso a los datos del restaurante.",
+    "email": "Correo electrónico"
+  },
+  "settings": {
+    "title": "Configuración del restaurante", "admin_title": "Configuración administrativa",
+    "operational_title": "Operación del restaurante",
+    "operational_subtitle": "Actualiza la configuración diaria, tarifas y estado de apertura.",
+    "admin_subtitle": "Configuración financiera de {{name}}", "section_operations": "Operación diaria",
+    "section_financials": "Configuración financiera", "store_status": "Estado del restaurante",
+    "store_status_desc": "Desactiva esta opción para dejar de recibir órdenes inmediatamente.",
+    "delivery_fee": "Costo de entrega", "delivery_fee_help": "Usa 0 para promociones con envío gratis.",
+    "prep_time": "Tiempo de preparación (min)", "commission_type": "Tipo de comisión",
+    "commission_value": "Valor de comisión", "comm_percentage": "Porcentaje (%)",
+    "comm_fixed": "Monto fijo ($)", "admin_config": "Configuración administrativa"
+  },
+  "categories": {
+    "title": "Cocinas globales", "description": "Administra categorías y tipos de cocina", "add_title": "Agregar categoría", "add": "Agregar categoría",
+    "add_description": "Define un nuevo tipo de cocina global para la plataforma.", "edit_title": "Editar categoría", "search_placeholder": "Buscar categorías...",
+    "empty": "No se encontraron categorías", "field_name": "Nombre de la categoría", "field_icon": "Icono emoji", "field_image_url": "URL de imagen",
+    "validation_name_required": "El nombre de la categoría es obligatorio", "tips_description": "Usa emojis para filtros rápidos e imágenes de calidad para banners.",
+    "delete_category": "Eliminar categoría", "delete_category_description": "¿Deseas eliminar la categoría? También se quitará de los restaurantes vinculados.",
+    "manage_title": "Administrar cocinas", "manage_description": "Selecciona las cocinas que describen mejor tu restaurante.",
+    "section_selected": "Cocinas activas", "section_available": "Disponibles para agregar", "no_selection": "Aún no hay cocinas seleccionadas.",
+    "all_selected": "Todas las cocinas disponibles están seleccionadas.", "edit_tooltip": "Editar cocinas del restaurante"
+  },
+  "payments": {
+    "verifying_stripe": "Verificando estado de Stripe...", "moment_please": "Esto tomará sólo un momento", "setup_complete": "¡Todo listo!",
+    "ready_desc": "El restaurante está verificado para recibir pagos y depósitos mediante Stripe.", "almost_ready": "Casi listo",
+    "pending_desc": "Necesitamos más información para verificar tu identidad. Completa el proceso de Stripe.",
+    "error_desc": "La verificación sigue en proceso. Te enviaremos un correo cuando termine.", "continue_setup": "Completar configuración",
+    "session_expired": "Sesión expirada", "expired_desc": "Por seguridad, los enlaces de Stripe expiran. Genera uno nuevo para continuar.",
+    "secure_connection": "Conexión segura de 256 bits", "generating_link": "Generando enlace seguro...", "try_again": "Continuar configuración",
+    "send_strip_link": "Enviar enlace de Stripe"
+  },
+  "confirm_modal": {
+    "change_status_group": "Cambiar estado del grupo", "change_status_group_description": "¿Deseas actualizar el estado? Afectará a todos los productos vinculados.",
+    "confirm": "Sí, confirmar", "delete_group": "Eliminar grupo", "delete_group_description": "El grupo se quitará de todos los productos vinculados.",
+    "update_modifier": "Editar modificador", "update_modifier_description": "Los cambios afectarán a todos los productos vinculados.",
+    "update_status": "Editar estado", "update_status_description": "¿Deseas cambiar el estado de todos los productos vinculados?",
+    "delete_promotion": "¿Eliminar promoción?", "delete_promotion_description": "Dejará de aplicarse a nuevas órdenes; las anteriores conservarán su historial.",
+    "delete": "Eliminar", "delete_title": "¿Eliminar cupón?", "delete_description": "¿Deseas eliminar el cupón «{{item}}»? Esta acción no se puede deshacer."
+  },
+  "statistics": {
+    "platform_debt": "Deuda con la plataforma", "total_debt": "Deuda total", "platform_debt_description": "Monto pendiente con la plataforma.",
+    "total_revenue": "Ingresos totales", "revenue_description": "Ingresos generados antes de comisiones y descuentos.", "total_orders": "Órdenes totales",
+    "generate_payment_link": "Generar enlace de pago", "sections": { "platform": "Resumen de plataforma", "financial": "Resumen financiero", "orders": "Órdenes y productos" },
+    "card_revenue": "Ingresos con tarjeta", "cash_revenue": "Ingresos en efectivo", "total_refunded": "Total reembolsado"
+  },
+  "modifiers": {
+    "title": "Grupos de modificadores", "subtitle": "Crea grupos de personalización para tus productos.", "validation_error": "El nombre del grupo es obligatorio",
+    "error_min_negative": "La selección mínima no puede ser negativa", "error_max_invalid": "La selección máxima debe ser al menos 1",
+    "error_max_low": "La selección máxima no puede ser menor que la mínima", "error_option_name": "Todas las opciones deben tener nombre",
+    "error_option_price": "El precio de «{{name}}» no puede ser negativo", "error_option_qty": "La cantidad máxima de «{{name}}» debe ser al menos 1",
+    "empty_list": "Aún no hay modificadores.", "update_main_modifier": "Editar el modificador principal para todos los productos"
+  },
+  "menuSections": {
+    "edit": "Editar sección", "menuSections": "Secciones del menú", "description": "Organiza las categorías del menú", "add": "Agregar sección",
+    "empty": "No hay secciones. Crea una para comenzar.", "visibility_status": "Estado de visibilidad", "validation_name": "El nombre es obligatorio",
+    "add_description": "Crea una categoría para los productos", "section_name": "Nombre de la sección", "sort_order": "Orden",
+    "sort_tips": "Los números menores aparecen primero. Usa incrementos de 10 para insertar secciones fácilmente."
+  },
+  "drivers": {
+    "title": "Repartidores", "driver": "Repartidor", "subtitle": "Administración del equipo de entrega", "add": "Agregar repartidor",
+    "edit": "Editar repartidor", "no_drivers": "No se encontraron repartidores.", "search_placeholder": "Buscar por nombre, correo o teléfono...",
+    "phone": "Teléfono de acceso a la aplicación", "status": "Estado del repartidor", "select_driver": "Seleccionar repartidor"
+  },
+  "stripe": {
+    "payment_success": "El pago a la plataforma se realizó correctamente.", "payment_success_desc": "Si tienes preguntas, contacta a soporte.",
+    "payment_status": "Estado del pago", "verified": "Verificado", "not_verified": "No verificado", "payment_failure": "El pago con Stripe falló",
+    "payment_failure_desc": "No fue posible verificar el pago. Contacta a soporte."
+  },
+  "roles": { "all": "Todos los roles", "select_role": "Selecciona un rol" },
+  "order": { "order": "Orden" },
+  "erros": { "error": "Error", "no_active_restaurant": "No hay un restaurante activo seleccionado.", "no_active_restaurant_description": "Abre el panel de un restaurante antes de crear esta sección." },
   "orders": {
     "new_order_received": "Nueva orden recibida",
     "more_items": "+ {{count}} artículos más...",
@@ -154,6 +294,9 @@
     "username_placeholder": "Ingresa tu usuario",
     "password_placeholder": "Ingresa tu contraseña",
     "forgot_password":"¿Olvidaste tu contraseña?",
+    "no_items_found": "No se encontraron elementos",
+    "change_password": "Cambiar contraseña",
+    "password_description": "Déjala vacía para conservar la contraseña actual",
     "show_password": "Mostrar contraseña",
     "hide_password": "Ocultar contraseña",
     "select_options": "Selecciona opciones...",
@@ -193,6 +336,7 @@
   "images": {
     "required_image": "Debes subir el logo y la portada",
     "upload_logo": "Subir logo",
+    "cover_image": "Imagen de portada",
     "upload_cover": "Subir portada",
     "image": "Imagen",
     "preview_alt": "Vista previa de {{label}}",
@@ -210,7 +354,9 @@
     "error_percentage_limit": "El porcentaje no puede superar 100",
     "error_zero_value": "El valor debe ser mayor que cero",
     "error_global_limit": "El límite global no puede ser menor al límite por usuario",
-    "minimum_one": "El valor debe ser al menos 1"
+    "minimum_one": "El valor debe ser al menos 1",
+    "required": "Este campo es obligatorio",
+    "min_length": "Debe tener al menos {{min}} caracteres"
   },
   "coupons": {
     "title": "Cupones y promociones",

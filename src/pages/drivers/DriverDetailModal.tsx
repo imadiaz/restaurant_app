@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import {  Mail, Phone, Edit, ShieldCheck, Store } from 'lucide-react';
 import AnatomyText from '../../components/anatomy/AnatomyText';
 import AnatomyButton from '../../components/anatomy/AnatomyButton';
@@ -7,6 +7,7 @@ import { Routes } from '../../config/routes';
 import { useTranslation } from 'react-i18next';
 import type { Driver } from '../../service/drivers.service';
 import AnatomyTag from '../../components/anatomy/AnatomyTag';
+import { useDialogAccessibility } from '../../hooks/use.dialog.accessibility';
 
 
 
@@ -23,6 +24,8 @@ const DriverDetailModal: React.FC<DriverDetailModalProps> = ({
 }) => {
   const {t} = useTranslation();
   const {navigateTo} = useAppNavigation();
+  const dialogRef = useRef<HTMLDivElement>(null);
+  useDialogAccessibility(isOpen && Boolean(driver), dialogRef, onClose);
   if (!isOpen || !driver) return null;
 
   const avatarFallback = `https://ui-avatars.com/api/?name=${driver.firstName}+${driver.lastName}&background=random`;
@@ -30,9 +33,9 @@ const DriverDetailModal: React.FC<DriverDetailModalProps> = ({
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4 animate-in fade-in duration-200"
-      onClick={onClose}
+      onClick={(event) => event.target === event.currentTarget && onClose()}
     >
-      <div className="bg-background rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden flex flex-col relative">
+      <div ref={dialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby="driver-detail-title" className="bg-background-card rounded-3xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto flex flex-col relative">
 
         <div className="h-32 bg-gradient-to-r from-primary/80 to-primary w-full absolute top-0 left-0 z-0" />
 
@@ -45,7 +48,7 @@ const DriverDetailModal: React.FC<DriverDetailModalProps> = ({
               className="w-full h-full object-cover"
             />
           </div>
-          <AnatomyText.H3 className="text-xl mb-1">
+          <AnatomyText.H3 id="driver-detail-title" className="text-xl mb-1">
             {driver.firstName} {driver.lastName}
           </AnatomyText.H3>
 
@@ -58,7 +61,7 @@ const DriverDetailModal: React.FC<DriverDetailModalProps> = ({
             </div>
 
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-white rounded-full text-gray-400 border border-gray-200">
+              <div className="p-2 bg-background-card rounded-full text-text-subtle border border-border">
                 <Mail className="w-4 h-4" />
               </div>
               <div className="flex-1">
@@ -70,7 +73,7 @@ const DriverDetailModal: React.FC<DriverDetailModalProps> = ({
             </div>
 
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-white rounded-full text-gray-400 border border-gray-200">
+              <div className="p-2 bg-background-card rounded-full text-text-subtle border border-border">
                 <Phone className="w-4 h-4" />
               </div>
               <div className="flex-1">

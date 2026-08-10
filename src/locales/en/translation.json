@@ -1,4 +1,8 @@
 {
+  "theme": {
+    "switch_to_dark": "Switch to dark theme",
+    "switch_to_light": "Switch to light theme"
+  },
   "common": {
     "save": "Save",
     "cancel": "Cancel",
@@ -7,7 +11,7 @@
     "delete": "Delete",
     "active": "Active",
     "inactive": "Inactive",
-    "need_help": "Need heelp? Contact support",
+    "need_help": "Need help? Contact support",
     "loading_data": "Loading data...",
     "exit": "Exit",
     "search": "Search...",
@@ -63,7 +67,7 @@
   },
   "login": {
     "login": "Login",
-    "login_description": "Morelos flavours is an a unique experience located in the center of the Morelos",
+    "login_description": "Morelos Flavours is a unique experience in the heart of Morelos",
     "logout": "Logouts"
   },
   "forms": {
@@ -217,7 +221,9 @@
     "error_percentage_limit": "A percentage cannot exceed 100",
     "error_zero_value": "The value must be greater than zero",
     "error_global_limit": "The global limit cannot be lower than the per-user limit",
-    "minimum_one": "The value must be at least 1"
+    "minimum_one": "The value must be at least 1",
+    "required": "This field is required",
+    "min_length": "Must be at least {{min}} characters"
   },
   "products": {
     "products": "Products",
@@ -574,10 +580,6 @@
       "restaurant": "Restaurant Only",
       "referral": "Referral Code"
     }
-  },
-  "validation": {
-    "required": "This field is required",
-    "min_length": "Must be at least {{min}} characters"
   },
   "statistics": {
     "platform_debt": "Platform Debt",

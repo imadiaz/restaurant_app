@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import {  Mail, Phone, Edit, AtSign, ShieldCheck, Store } from 'lucide-react';
 import AnatomyText from '../../components/anatomy/AnatomyText';
 import AnatomyButton from '../../components/anatomy/AnatomyButton';
@@ -6,6 +6,7 @@ import type { User } from '../../data/models/user/user';
 import { useAppNavigation } from '../../hooks/navigation/use.app.navigation';
 import { Routes } from '../../config/routes';
 import { useTranslation } from 'react-i18next';
+import { useDialogAccessibility } from '../../hooks/use.dialog.accessibility';
 
 
 
@@ -22,6 +23,8 @@ const UserDetailModal: React.FC<UserDetailModalProps> = ({
 }) => {
   const {t} = useTranslation();
   const {navigateTo} = useAppNavigation();
+  const dialogRef = useRef<HTMLDivElement>(null);
+  useDialogAccessibility(isOpen && Boolean(user), dialogRef, onClose);
   if (!isOpen || !user) return null;
 
   const avatarFallback = `https://ui-avatars.com/api/?name=${user.firstName}+${user.lastName}&background=random`;
@@ -29,9 +32,9 @@ const UserDetailModal: React.FC<UserDetailModalProps> = ({
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4 animate-in fade-in duration-200"
-      onClick={onClose}
+      onClick={(event) => event.target === event.currentTarget && onClose()}
     >
-      <div className="bg-background rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden flex flex-col relative">
+      <div ref={dialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby="user-detail-title" className="bg-background-card rounded-3xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto flex flex-col relative">
 
         <div className="h-32 bg-gradient-to-r from-primary/80 to-primary w-full absolute top-0 left-0 z-0" />
 
@@ -44,18 +47,18 @@ const UserDetailModal: React.FC<UserDetailModalProps> = ({
               className="w-full h-full object-cover"
             />
           </div>
-          <AnatomyText.H3 className="text-xl mb-1">
+          <AnatomyText.H3 id="user-detail-title" className="text-xl mb-1">
             {user.firstName} {user.lastName}
           </AnatomyText.H3>
 
-          <span className="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide mb-6 bg-gray-100 text-gray-700">
+          <span className="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide mb-6 bg-surface-muted text-text-muted">
             {user.role.name.replace("_", " ")}
           </span>
 
           <div className="w-full space-y-4 text-left bg-background-card p-6 rounded-2xl">
 
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-white rounded-full text-gray-400 border border-gray-200">
+              <div className="p-2 bg-background-card rounded-full text-text-subtle border border-border">
                 <AtSign className="w-4 h-4" />
               </div>
               <div className="flex-1">
@@ -67,7 +70,7 @@ const UserDetailModal: React.FC<UserDetailModalProps> = ({
             </div>
 
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-white rounded-full text-gray-400 border border-gray-200">
+              <div className="p-2 bg-background-card rounded-full text-text-subtle border border-border">
                 <Mail className="w-4 h-4" />
               </div>
               <div className="flex-1">
@@ -79,7 +82,7 @@ const UserDetailModal: React.FC<UserDetailModalProps> = ({
             </div>
 
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-white rounded-full text-gray-400 border border-gray-200">
+              <div className="p-2 bg-background-card rounded-full text-text-subtle border border-border">
                 <Phone className="w-4 h-4" />
               </div>
               <div className="flex-1">
