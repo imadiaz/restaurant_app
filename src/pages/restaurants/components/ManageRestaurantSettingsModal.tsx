@@ -72,7 +72,7 @@ const ManageRestaurantSettingsModal: React.FC<ManageRestaurantSettingsModalProps
     setLocalFees(newFees);
   };
 
-  const handleFeeChange = (index: number, field: keyof CreateRestaurantFeeDto, val: any) => {
+  const handleFeeChange = <K extends keyof CreateRestaurantFeeDto>(index: number, field: K, val: CreateRestaurantFeeDto[K]) => {
     const newFees = [...localFees];
     newFees[index] = { ...newFees[index], [field]: val };
     setLocalFees(newFees);

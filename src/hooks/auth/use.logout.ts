@@ -11,11 +11,11 @@ export const useLogout = () => {
 
   const mutation = useMutation({
     mutationFn: authService.logout,
-    onSuccess: (_) => {
-     logout();
+    onError: handleError,
+    onSettled: () => {
+      logout();
       navigate('/');
     },
-    onError: handleError
 });
 
   return {

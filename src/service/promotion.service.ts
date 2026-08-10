@@ -59,7 +59,7 @@ export const promotionsService = {
    * Obtiene todas las promociones activas de un restaurante específico.
    */
   async getAllByRestaurant(restaurantId: string): Promise<Promotion[]> {
-    const response = await axiosClient.get<any, ApiResponse<Promotion[]>>(`/promotions/restaurant/${restaurantId}`);
+    const response = await axiosClient.get<unknown, ApiResponse<Promotion[]>>(`/promotions/restaurant/${restaurantId}`);
     return response.data;
   },
 
@@ -67,7 +67,7 @@ export const promotionsService = {
    * Obtiene el detalle de una promoción por su ID.
    */
   async getById(id: string): Promise<Promotion> {
-    const response = await axiosClient.get<any, ApiResponse<Promotion>>(`/promotions/${id}`);
+    const response = await axiosClient.get<unknown, ApiResponse<Promotion>>(`/promotions/${id}`);
     return response.data;
   },
 
@@ -75,7 +75,7 @@ export const promotionsService = {
    * Crea una nueva promoción con sus productos asociados.
    */
   async create(data: CreatePromotionDto): Promise<Promotion> {
-    const response = await axiosClient.post<any, ApiResponse<Promotion>>('/promotions', data);
+    const response = await axiosClient.post<unknown, ApiResponse<Promotion>>('/promotions', data);
     return response.data;
   },
 
@@ -83,7 +83,7 @@ export const promotionsService = {
    * Actualiza datos básicos de la promoción (Nombre, fechas, valor) o la pausa.
    */
   async update(id: string, data: UpdatePromotionDto): Promise<Promotion> {
-    const response = await axiosClient.patch<any, ApiResponse<Promotion>>(`/promotions/${id}`, data);
+    const response = await axiosClient.patch<unknown, ApiResponse<Promotion>>(`/promotions/${id}`, data);
     return response.data;
   },
 
@@ -91,6 +91,6 @@ export const promotionsService = {
    * Realiza un Soft Delete (Desactiva la promoción y la quita de la lista principal).
    */
   async delete(id: string): Promise<void> {
-    await axiosClient.delete<any, ApiResponse<any>>(`/promotions/${id}`);
+    await axiosClient.delete<unknown, ApiResponse<void>>(`/promotions/${id}`);
   },
 };

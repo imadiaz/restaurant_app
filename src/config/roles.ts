@@ -78,5 +78,5 @@ export const getMenuForRole = (role: UserRole, isImpersonating: boolean) => {
 
   // Otherwise, look up the menu type in config
   const config = ROLE_CONFIG[role];
-  return MENUS[config.menuType];
+  return config ? MENUS[config.menuType] : [];
 };

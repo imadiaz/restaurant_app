@@ -46,7 +46,7 @@ const CategoryFormPage: React.FC = () => {
             setImageUrl(data.imageUrl || "");
             hasLoadedData.current = true;
           }
-        } catch (error) {
+        } catch {
           goBack();
         }
       };

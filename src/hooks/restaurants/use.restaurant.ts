@@ -30,7 +30,7 @@ export const useRestaurants = (restaurantId?: string) => {
   });
 
   const getRestaurantById = async (id: string): Promise<Restaurant | null> => {
-    const cachedRestaurants = queryClient.getQueryData<any[]>(['restaurants', 'all']);
+    const cachedRestaurants = queryClient.getQueryData<Restaurant[]>(['restaurants', 'all']);
     const foundRestaurant = cachedRestaurants?.find((u) => u.id === id);
 
     if (foundRestaurant) {

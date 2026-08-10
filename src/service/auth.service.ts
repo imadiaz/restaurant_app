@@ -10,17 +10,21 @@ interface LoginResponsePayload {
   refresh_token: string;
 }
 
+interface LogoutResponsePayload {
+  message: string;
+}
+
 export const authService = {
   async login(credentials: LoginCredentials): Promise<LoginResponsePayload> {
-    const response = await axiosClient.post<any, ApiResponse<LoginResponsePayload>>(
+    const response = await axiosClient.post<unknown, ApiResponse<LoginResponsePayload>>(
       '/auth/login-dashboard', 
       credentials
     );
     return response.data;
   },
 
-  async logout(): Promise<any> {
-    const response = await axiosClient.post<any, ApiResponse<LoginResponsePayload>>('/auth/logout');
+  async logout(): Promise<LogoutResponsePayload> {
+    const response = await axiosClient.post<unknown, ApiResponse<LogoutResponsePayload>>('/auth/logout');
     return response.data;
   },
 };

@@ -26,14 +26,14 @@ const AnatomyButton: React.FC<ButtonProps> = ({
   // We switch between 'flex w-full' (for full width) and 'inline-flex' (for auto width)
   const layoutStyles = fullWidth ? "flex w-full" : "inline-flex";
   
-  const baseStyles = `${layoutStyles} items-center justify-center px-6 py-3 rounded-xl font-bold text-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-70 disabled:cursor-not-allowed whitespace-nowrap`;
+  const baseStyles = `${layoutStyles} min-h-11 items-center justify-center px-6 py-2.5 rounded-control font-bold text-sm transition-colors duration-200 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:opacity-60 disabled:cursor-not-allowed whitespace-nowrap`;
 
   // 2. VARIANTS
   const variants: Record<ButtonVariant, string> = {
-    primary: "bg-primary hover:bg-primary-hover text-white shadow-md shadow-primary/30 border border-transparent focus:ring-primary",
-    secondary: "bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 shadow-sm focus:ring-gray-200",
-    ghost: "bg-transparent hover:bg-gray-100 text-gray-600 border border-transparent hover:text-gray-900",
-    danger: "bg-red-50 hover:bg-red-100 text-red-600 border border-transparent"
+    primary: "bg-primary hover:bg-primary-hover text-primary-contrast shadow-sm border border-transparent",
+    secondary: "bg-background-card hover:bg-surface-hover text-text-main border border-border shadow-sm",
+    ghost: "bg-transparent hover:bg-surface-muted text-text-muted border border-transparent hover:text-text-main",
+    danger: "bg-danger-surface hover:brightness-95 text-danger border border-danger/20"
   };
 
   return (

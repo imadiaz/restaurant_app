@@ -108,7 +108,7 @@ const CouponFormPage: React.FC = () => {
               setIsImageUploaded(true);
             }
           }
-        } catch (error) {
+        } catch {
           goBack();
         }
       };

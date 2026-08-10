@@ -75,6 +75,10 @@ export interface BulkCreateRestaurantFeesDto {
   fees: CreateRestaurantFeeDto[];
 }
 
+export interface PaymentLinkResponse {
+  url: string;
+}
+
 
 export interface UpdateRestaurantOperationalDto {
   isOpen?: boolean;
@@ -85,33 +89,33 @@ export interface UpdateRestaurantOperationalDto {
 export const restaurantService = {
   
   async getAll(): Promise<Restaurant[]> {
-    const response = await axiosClient.get<any, ApiResponse<Restaurant[]>>('/restaurants');
+    const response = await axiosClient.get<unknown, ApiResponse<Restaurant[]>>('/restaurants');
     return response.data; 
   },
 
   async getById(id: string): Promise<Restaurant> {
-    const response = await axiosClient.get<any, ApiResponse<Restaurant>>(`/restaurants/${id}`);
+    const response = await axiosClient.get<unknown, ApiResponse<Restaurant>>(`/restaurants/${id}`);
     return response.data;
   },
 
   async create(data: CreateRestaurantDto): Promise<Restaurant> {
-    const response = await axiosClient.post<any, ApiResponse<Restaurant>>('/restaurants', data);
+    const response = await axiosClient.post<unknown, ApiResponse<Restaurant>>('/restaurants', data);
     return response.data;
   },
 
   async update(id: string, data: UpdateRestaurantDto): Promise<Restaurant> {
-    const response = await axiosClient.patch<any, ApiResponse<Restaurant>>(`/restaurants/${id}`, data);
+    const response = await axiosClient.patch<unknown, ApiResponse<Restaurant>>(`/restaurants/${id}`, data);
     return response.data;
   },
 
 
   async toggleOpenStatus(id: string, isOpen: boolean): Promise<Restaurant> {
-    const response = await axiosClient.patch<any, ApiResponse<Restaurant>>(`/restaurants/${id}`, { isOpen });
+    const response = await axiosClient.patch<unknown, ApiResponse<Restaurant>>(`/restaurants/${id}`, { isOpen });
     return response.data;
   },
 
   async updateCategories(id: string, data: UpdateRestaurantCategoriesDto): Promise<Restaurant> {
-    const response = await axiosClient.patch<any, ApiResponse<Restaurant>>(
+    const response = await axiosClient.patch<unknown, ApiResponse<Restaurant>>(
       `/restaurants/${id}/categories`, 
       data
     );
@@ -119,11 +123,11 @@ export const restaurantService = {
   },
 
   async updateOperational(id: string, data: UpdateRestaurantOperationalDto): Promise<Restaurant> {
-    const response = await axiosClient.patch<ApiResponse<Restaurant>>(
+    const response = await axiosClient.patch<unknown, ApiResponse<Restaurant>>(
       `/restaurants/${id}/operational`,
       data
     );
-    return response.data.data ?? response.data;
+    return response.data;
   },
   // async updateAdminConfig(id: string, data: AdminUpdateRestaurantDto): Promise<Restaurant> {
   //   const response = await axiosClient.patch<ApiResponse<Restaurant>>(
@@ -133,21 +137,19 @@ export const restaurantService = {
   //   return response.data.data ?? response.data;
   // },
 
-  async setPaymentConfig(id: string) {
-    const response = await axiosClient.post<ApiResponse<any>>(
+  async setPaymentConfig(id: string): Promise<PaymentLinkResponse> {
+    const response = await axiosClient.post<unknown, ApiResponse<PaymentLinkResponse>>(
       `/payments/setup-restaurant/${id}`,
       {
         id: id
       }
     );
-    console.log('Payment config response:', response);
-    return response.data.data;
+    return response.data;
   },
 
-  async generatePaymentLink(restaurantId: string) {
-    const response = await axiosClient.get<ApiResponse<any>>(
-      `payments/restaurant/${restaurantId}/platform-debt-link`);
-    console.log('Payment link generated:', response);
+  async generatePaymentLink(restaurantId: string): Promise<PaymentLinkResponse> {
+    const response = await axiosClient.get<unknown, ApiResponse<PaymentLinkResponse>>(
+      `/payments/restaurant/${restaurantId}/platform-debt-link`);
     return response.data;
   },
 
@@ -155,7 +157,7 @@ export const restaurantService = {
    * Retrieves all additional fees (active and inactive) for a specific restaurant.
    */
   async getFees(id: string): Promise<RestaurantFee[]> {
-    const response = await axiosClient.get<any, ApiResponse<RestaurantFee[]>>(`/restaurants/${id}/fees`);
+    const response = await axiosClient.get<unknown, ApiResponse<RestaurantFee[]>>(`/restaurants/${id}/fees`);
     return response.data;
   },
 
@@ -164,7 +166,7 @@ export const restaurantService = {
    * Send an empty array to remove all fees.
    */
   async syncFees(id: string, data: BulkCreateRestaurantFeesDto): Promise<RestaurantFee[]> {
-    const response = await axiosClient.put<any, ApiResponse<RestaurantFee[]>>(`/restaurants/${id}/fees`, data);
+    const response = await axiosClient.put<unknown, ApiResponse<RestaurantFee[]>>(`/restaurants/${id}/fees`, data);
     return response.data;
   },
 };

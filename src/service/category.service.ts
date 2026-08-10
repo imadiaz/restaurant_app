@@ -17,34 +17,33 @@ export interface CreateCategoryDto {
   imageUrl?: string;
 }
 
-export interface UpdateCategoryDto extends Partial<CreateCategoryDto> {
-}
+export type UpdateCategoryDto = Partial<CreateCategoryDto>;
 
 
 export const categoryService = {
 
 
   async getAll(): Promise<Category[]> {
-    const response = await axiosClient.get<any, ApiResponse<Category[]>>('/categories');
+    const response = await axiosClient.get<unknown, ApiResponse<Category[]>>('/categories');
     return response.data;
   },
 
   async getById(id: string): Promise<Category> {
-    const response = await axiosClient.get<any, ApiResponse<Category>>(`/categories/${id}`);
+    const response = await axiosClient.get<unknown, ApiResponse<Category>>(`/categories/${id}`);
     return response.data;
   },
 
   async create(data: CreateCategoryDto): Promise<Category> {
-    const response = await axiosClient.post<any, ApiResponse<Category>>('/categories', data);
+    const response = await axiosClient.post<unknown, ApiResponse<Category>>('/categories', data);
     return response.data;
   },
 
   async update(id: string, data: UpdateCategoryDto): Promise<Category> {
-    const response = await axiosClient.patch<any, ApiResponse<Category>>(`/categories/${id}`, data);
+    const response = await axiosClient.patch<unknown, ApiResponse<Category>>(`/categories/${id}`, data);
     return response.data;
   },
 
   async delete(id: string): Promise<void> {
-    await axiosClient.delete<any, ApiResponse<any>>(`/categories/${id}`);
+    await axiosClient.delete<unknown, ApiResponse<void>>(`/categories/${id}`);
   },
 };

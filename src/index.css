@@ -7,29 +7,39 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  /* --- COLORS --- */
-  
-  /* Primary Color */
-  --color-primary: #EE8410;
-  --color-primary-hover: #ED9739;
+  /* Brand: changing these values updates every Anatomy component. */
+  --color-primary: #ee8410;
+  --color-primary-hover: #d97308;
+  --color-primary-contrast: #ffffff;
+  --color-accent: #c26d10;
 
-  /* Accent */
-  --color-accent: #C26D10;
+  /* Semantic surfaces. Components must consume these instead of palette colors. */
+  --color-background: #f8f9fb;
+  --color-background-card: #ffffff;
+  --color-background-sidebar: #ffffff;
+  --color-surface-muted: #f3f4f6;
+  --color-surface-hover: #f9fafb;
+  --color-input: #ffffff;
+  --color-border: #e5e7eb;
+  --color-border-strong: #d1d5db;
 
-  /* --- SEMANTIC COLORS (The Magic Part) --- */
-  /* We define variables for specific PARTS of the UI, not just colors. */
-  
-  /* Backgrounds */
-  --color-background: #F8F9FB;          /* Light Page BG */
-  --color-background-card: #FFFFFF;     /* Light Card BG */
-  --color-background-sidebar: #FFFFFF;  /* Light Sidebar BG */
-  
-  /* Borders */
-  --color-border: #E5E7EB;              /* Gray 200 */
+  /* Semantic text. */
+  --color-text-main: #111827;
+  --color-text-muted: #6b7280;
+  --color-text-subtle: #9ca3af;
 
-  /* Text */
-  --color-text-main: #111827;           /* Gray 900 (Black-ish) */
-  --color-text-muted: #6B7280;          /* Gray 500 */
+  /* Feedback colors. */
+  --color-success: #15803d;
+  --color-success-surface: #f0fdf4;
+  --color-warning: #a16207;
+  --color-warning-surface: #fefce8;
+  --color-danger: #dc2626;
+  --color-danger-surface: #fef2f2;
+  --color-info: #1d4ed8;
+  --color-info-surface: #eff6ff;
+
+  --radius-control: 0.75rem;
+  --radius-card: 1.5rem;
 }
 
 /* 2. DARK MODE OVERRIDES 
@@ -43,13 +53,27 @@
   /* Dark Card/Sidebar BG (Slightly lighter than page) */
   --color-background-card: #1e293b; 
   --color-background-sidebar: #1e293b;
+  --color-surface-muted: #172033;
+  --color-surface-hover: #263449;
+  --color-input: #1e293b;
 
   /* Dark Borders */
   --color-border: #334155;
+  --color-border-strong: #475569;
 
   /* Dark Text (White) */
   --color-text-main: #f8fafc;
   --color-text-muted: #94a3b8;
+  --color-text-subtle: #64748b;
+
+  --color-success: #4ade80;
+  --color-success-surface: #142b22;
+  --color-warning: #facc15;
+  --color-warning-surface: #302a13;
+  --color-danger: #f87171;
+  --color-danger-surface: #351a20;
+  --color-info: #60a5fa;
+  --color-info-surface: #172554;
 }
 
 /* 3. BASE STYLES 
@@ -57,4 +81,16 @@
 */
 body {
   @apply bg-background text-text-main font-sans antialiased transition-colors duration-300;
+  min-width: 320px;
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+button:not(:disabled), [role="button"]:not([aria-disabled="true"]) {
+  cursor: pointer;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
 }

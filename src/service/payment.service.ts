@@ -16,12 +16,12 @@ interface StripeAccountStatusDetails {
 export const paymentService = {
 
   async getAccountStatus(restaurantId: string) {
-    const res = await axiosClient.get<any, ApiResponse<StripeAccountStatus>>(`/payments/status/${restaurantId}`);
+    const res = await axiosClient.get<unknown, ApiResponse<StripeAccountStatus>>(`/payments/status/${restaurantId}`);
     return res.data;
   },
 
   async createAccountLink(restaurantId: string) {
-    const res = await axiosClient.post<any, ApiResponse<{ url: string }>>(
+    const res = await axiosClient.post<unknown, ApiResponse<{ url: string }>>(
       `/payments/setup-restaurant/${restaurantId}`
     );
     return res.data;

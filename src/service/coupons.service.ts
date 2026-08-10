@@ -72,31 +72,31 @@ export const couponService = {
     // Useful for Super Admins filtering a specific restaurant's coupons
     const params = restaurantId ? { restaurantId } : {};
     
-    const res = await axiosClient.get<any, ApiResponse<Coupon[]>>('/coupons', { params });
+    const res = await axiosClient.get<unknown, ApiResponse<Coupon[]>>('/coupons', { params });
     return res.data; 
   },
 
   // 2. Create Coupon
   async create(data: CreateCouponDto): Promise<Coupon> {
-    const res = await axiosClient.post<any, ApiResponse<Coupon>>('/coupons', data);
+    const res = await axiosClient.post<unknown, ApiResponse<Coupon>>('/coupons', data);
     return res.data;
   },
 
   // 3. Update Coupon
   async update(id: string, data: UpdateCouponDto): Promise<Coupon> {
-    const res = await axiosClient.patch<any, ApiResponse<Coupon>>(`/coupons/${id}`, data);
+    const res = await axiosClient.patch<unknown, ApiResponse<Coupon>>(`/coupons/${id}`, data);
     return res.data;
   },
 
   // 4. Delete Coupon (Soft Delete)
   async delete(id: string): Promise<void> {
-    await axiosClient.delete<any, ApiResponse<void>>(`/coupons/${id}`);
+    await axiosClient.delete<unknown, ApiResponse<void>>(`/coupons/${id}`);
   },
 
   // 5. Validate Coupon (Optional - useful for testing directly from admin panel)
   // This mirrors the validation logic if you want to check if a code works
   async checkValidity(code: string, restaurantId: string, orderTotal: number): Promise<Coupon> {
-    const res = await axiosClient.post<any, ApiResponse<Coupon>>('/coupons/validate', {
+    const res = await axiosClient.post<unknown, ApiResponse<Coupon>>('/coupons/validate', {
       code,
       restaurantId,
       orderTotal

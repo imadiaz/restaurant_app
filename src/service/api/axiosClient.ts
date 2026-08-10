@@ -1,6 +1,7 @@
 import axios, { AxiosError, type InternalAxiosRequestConfig } from "axios";
 import {
   AppError,
+  type ApiResponse,
   type ApiErrorResponse,
 } from "../../data/models/api/api.types";
 import { useAuthStore } from "../../store/auth.store";
@@ -14,10 +15,10 @@ let isRefreshing = false;
 
 let failedQueue: Array<{
   resolve: (token: string) => void;
-  reject: (error: any) => void;
+  reject: (error: unknown) => void;
 }> = [];
 
-const processQueue = (error: any, token: string | null = null) => {
+const processQueue = (error: unknown, token: string | null = null) => {
   failedQueue.forEach((prom) => {
     if (error) {
       prom.reject(error);
@@ -45,7 +46,7 @@ const refreshTokens = async (): Promise<string> => {
     if (!refreshToken) {
       throw new Error("No refresh token available");
     }
-    const response = await axios.post<any, any>(
+    const response = await axios.post<ApiResponse<{ accessToken: string; refreshToken: string }>>(
       `${import.meta.env.VITE_API_URL}/auth/refresh`,
       null,
       {
@@ -55,7 +56,7 @@ const refreshTokens = async (): Promise<string> => {
       },
     );
     const { accessToken: newAccessToken, refreshToken: newRefreshToken } =
-      response?.data?.data;
+      response.data.data;
     useAuthStore.getState().updateTokens(newAccessToken, newRefreshToken);
     processQueue(null, newAccessToken);
     return newAccessToken;

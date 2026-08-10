@@ -5,14 +5,14 @@ import type { CreateModifierGroup, CreateModifierOption } from "./products.servi
 
 export const modifierService = {
   async getAllByRestaurant(restaurantId: string) {
-    const res = await axiosClient.get<any, ApiResponse<ModifierGroup[]>>(
+    const res = await axiosClient.get<unknown, ApiResponse<ModifierGroup[]>>(
       `/modifiers/restaurant/${restaurantId}`
     );
     return res.data;
   },
 
   async createGroup(data: CreateModifierGroup) {
-    const res = await axiosClient.post<any, ApiResponse<ModifierGroup>>(
+    const res = await axiosClient.post<unknown, ApiResponse<ModifierGroup>>(
       '/modifiers/group',
       data
     );
@@ -20,7 +20,7 @@ export const modifierService = {
   },
 
   async updateGroup(id: string, data: Partial<CreateModifierGroup>) {
-    const res = await axiosClient.patch<any, ApiResponse<ModifierGroup>>(
+    const res = await axiosClient.patch<unknown, ApiResponse<ModifierGroup>>(
       `/modifiers/group/${id}`,
       data
     );
@@ -29,7 +29,7 @@ export const modifierService = {
 
   async toggleGroupStatus(id: string, isActive: boolean) {
     const status = isActive ? 'active' : 'inactive';
-    const res = await axiosClient.patch<any, ApiResponse<ModifierGroup>>(
+    const res = await axiosClient.patch<unknown, ApiResponse<ModifierGroup>>(
       `/modifiers/group/${id}/status`,
       { status }
     );
@@ -37,7 +37,7 @@ export const modifierService = {
   },
 
   async toggleOptionStatus(id: string, status: string) {
-    const res = await axiosClient.patch<any, ApiResponse<CreateModifierOption>>(
+    const res = await axiosClient.patch<unknown, ApiResponse<CreateModifierOption>>(
       `/modifiers/option/${id}/status`,
       { status }
     );

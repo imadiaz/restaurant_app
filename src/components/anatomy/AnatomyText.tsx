@@ -35,7 +35,7 @@ const Subtitle: React.FC<TextProps> = ({ children, className = "", ...props }) =
 // Old: text-gray-600 -> New: text-gray-600 dark:text-gray-300
 // Note: We use specific colors here because 'muted' might be too faint for long reading text.
 const Body: React.FC<TextProps> = ({ children, className = "", ...props }) => (
-  <p className={`text-sm text-gray-600 dark:text-gray-300 leading-relaxed ${className}`} {...props}>
+  <p className={`text-sm text-text-muted leading-relaxed ${className}`} {...props}>
     {children}
   </p>
 );

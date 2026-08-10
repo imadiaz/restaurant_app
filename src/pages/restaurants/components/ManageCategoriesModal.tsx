@@ -61,7 +61,7 @@ const ManageCategoriesModal: React.FC<ManageCategoriesModalProps> = ({
       await updateCategories({ restaurantId, categoryIds: selectedIds });
       onSuccess?.();
       onClose();
-    } catch (error) {
+    } catch {
       onClose();
     }
   };

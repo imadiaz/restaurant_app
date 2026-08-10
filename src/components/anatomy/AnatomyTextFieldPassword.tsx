@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
+import React, { useId, useState } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
-import AnatomyText from './AnatomyText';
 
 interface AnatomyTextFieldPasswordProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string;
@@ -14,6 +13,8 @@ const AnatomyTextFieldPassword: React.FC<AnatomyTextFieldPasswordProps> = ({
   ...props 
 }) => {
   const [showPassword, setShowPassword] = useState(false);
+  const generatedId = useId();
+  const inputId = props.id ?? generatedId;
 
   const toggleVisibility = () => {
     setShowPassword(!showPassword);
@@ -23,9 +24,9 @@ const AnatomyTextFieldPassword: React.FC<AnatomyTextFieldPasswordProps> = ({
     <div className={`w-full text-left space-y-1.5 ${className}`}>
       {/* Label */}
       {label && (
-        <AnatomyText.Label>
+        <label htmlFor={inputId} className="block text-xs font-bold text-text-muted uppercase tracking-wide">
           {label}
-        </AnatomyText.Label>
+        </label>
       )}
       
       <div className="relative">
@@ -39,15 +40,11 @@ const AnatomyTextFieldPassword: React.FC<AnatomyTextFieldPasswordProps> = ({
         {/* INPUT FIELD */}
         <input
           {...props}
+          id={inputId}
           type={showPassword ? "text" : "password"}
           className={`
-            w-full py-3 border rounded-full font-medium transition-colors
-            
-            /* Light Mode */
-            bg-white border-gray-200 text-gray-900 placeholder-gray-400
-            
-            /* Dark Mode */
-            dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:placeholder-gray-500
+            w-full py-3 border rounded-control font-medium transition-colors
+            bg-input border-border text-text-main placeholder:text-text-subtle
             
             /* Focus */
             focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary
@@ -61,8 +58,8 @@ const AnatomyTextFieldPassword: React.FC<AnatomyTextFieldPasswordProps> = ({
         <button
           type="button" // Important: prevents form submission
           onClick={toggleVisibility}
-          className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 transition-colors focus:outline-none"
-          tabIndex={-1} // Skip tab index for smoother form navigation
+          className="absolute inset-y-0 right-0 px-4 flex items-center text-text-subtle hover:text-text-main transition-colors"
+          aria-label={showPassword ? "Hide password" : "Show password"}
         >
           {showPassword ? (
             <EyeOff className="h-5 w-5" />

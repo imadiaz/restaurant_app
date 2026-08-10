@@ -34,7 +34,7 @@ import { useToastStore } from "../../store/toast.store";
 import ProductPickerModal from "../products/components/ProductPickerModal";
 import { useAppNavigation } from "../../hooks/navigation/use.app.navigation";
 import { useConfirm } from "../../hooks/use.confirm.modal";
-import type { ModifierOption } from "../../data/models/products/product";
+import type { ModifierOption, Product } from "../../data/models/products/product";
 
 const ModifierFormPage: React.FC = () => {
   const { goBack } = useAppNavigation();
@@ -129,7 +129,7 @@ const ModifierFormPage: React.FC = () => {
     ]);
   };
 
-  const handleProductSelect = (product: any) => {
+  const handleProductSelect = (product: Product) => {
     // Check duplicates
     if (options.some((o) => o.productId === product.id)) {
       addToast(t("products.product_already_added"), "warning");
@@ -151,10 +151,10 @@ const ModifierFormPage: React.FC = () => {
     setProductPickerOpen(false);
   };
 
-  const updateOption = (
+  const updateOption = <K extends keyof CreateModifierOption>(
     idx: number,
-    field: keyof CreateModifierOption,
-    val: any,
+    field: K,
+    val: CreateModifierOption[K],
   ) => {
     const newOptions = [...options];
     newOptions[idx] = { ...newOptions[idx], [field]: val };
@@ -434,7 +434,7 @@ const ModifierFormPage: React.FC = () => {
                                 className="w-full bg-transparent text-sm text-right border-none focus:ring-0 outline-none p-0 text-text-main"
                                 value={opt.price}
                                 onChange={(e) =>
-                                  updateOption(idx, "price", e.target.value)
+                                  updateOption(idx, "price", Number(e.target.value))
                                 }
                               />
                             </div>

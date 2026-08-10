@@ -36,7 +36,7 @@ const MenuSectionFormPage: React.FC = () => {
             setSortOrder(data.sortOrder || 0);
             hasLoadedData.current = true;
           }
-        } catch (error) {
+        } catch {
            goBack();
         }
       };

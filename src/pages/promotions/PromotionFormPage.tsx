@@ -78,7 +78,7 @@ const PromotionsFormPage: React.FC = () => {
              setSelectedProductIds(data.products?.map((v) => v.product)?.map(p => p.id) || []);
             hasLoadedData.current = true;
           }
-        } catch (error) {
+        } catch {
           goBack();
         }
       };

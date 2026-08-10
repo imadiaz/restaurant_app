@@ -4,7 +4,7 @@ import { Edit, Tag, Calendar, Trash2, Layers } from 'lucide-react';
 import { format } from 'date-fns'; // Recommended for date formatting
 import AnatomyCardActions from '../../../components/anatomy/AnatomyCardActions';
 import AnatomySelect from '../../../components/anatomy/AnatomySelect';
-import AnatomyTag from '../../../components/anatomy/AnatomyTag';
+import AnatomyTag, { type TagVariant } from '../../../components/anatomy/AnatomyTag';
 import AnatomyText from '../../../components/anatomy/AnatomyText';
 import { PromotionType, type Promotion } from '../../../service/promotion.service';
 
@@ -39,9 +39,8 @@ const PromotionCard: React.FC<PromotionCardProps> = ({
   };
 
   // Helper for badge color
-  const getBadgeVariant = () => {
-    return promotion.type === PromotionType.BOGO ? 'purple' : 'success'; 
-    // Assuming 'purple' or 'success' are valid variants in AnatomyTag
+  const getBadgeVariant = (): TagVariant => {
+    return promotion.type === PromotionType.BOGO ? 'primary' : 'success';
   };
 
   return (
@@ -61,7 +60,7 @@ const PromotionCard: React.FC<PromotionCardProps> = ({
           
           <div className="flex flex-wrap gap-2 mt-1">
             {/* Discount Badge */}
-            <AnatomyTag variant={getBadgeVariant() as any} className="font-bold">
+            <AnatomyTag variant={getBadgeVariant()} className="font-bold">
               {getBadgeContent()}
             </AnatomyTag>
 

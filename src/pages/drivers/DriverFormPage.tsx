@@ -76,7 +76,7 @@ const DriverFormPage: React.FC = () => {
             setSelectedRestaurantId(driver.restaurantId || "");
             hasLoadedData.current = true;
           }
-        } catch (error) {
+        } catch {
           goBack();
         }
       };

@@ -4,9 +4,9 @@ import { useNavigate } from "react-router-dom";
 
 interface PageHeaderProps {
   
-title: String;
+title: string;
 showNavBack?: boolean;
-subtitle?: String;
+subtitle?: string;
 actions?: React.ReactNode;
 }
 
@@ -25,6 +25,7 @@ const PageHeader: React.FC<PageHeaderProps> = ({ title, subtitle, actions, showN
               hover:bg-background-card hover:shadow-sm hover:border-border
               text-text-muted hover:text-text-main"
             title="Go Back"
+            aria-label="Go back"
           >
             <ArrowLeft className="w-5 h-5" />
           </button>

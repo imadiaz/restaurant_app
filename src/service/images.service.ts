@@ -11,7 +11,7 @@ export const imagesService = {
   const formData = new FormData();
   formData.append('file', file);
   formData.append('path', folderPath); 
-  const response = await axiosClient.post<any, ApiResponse<ImagesResponse>>(
+  const response = await axiosClient.post<unknown, ApiResponse<ImagesResponse>>(
     '/images/upload/file',
     formData, 
     {

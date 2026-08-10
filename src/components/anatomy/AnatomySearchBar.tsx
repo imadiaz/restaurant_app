@@ -9,14 +9,14 @@ const AnatomySearchBar: React.FC<SearchBarProps> = ({ className = "", ...props }
   return (
     <div className={`relative w-full ${className}`}>
       <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-        <Search className="h-5 w-5 text-gray-400" />
+        <Search className="h-5 w-5 text-text-subtle" />
       </div>
       <input
         type="text"
         className="
           w-full py-3 pl-12 pr-4 
-          bg-background border border-gray-200 rounded-xl 
-          text-gray-700 placeholder-gray-400
+          bg-input border border-border rounded-control 
+          text-text-main placeholder:text-text-subtle
           focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary
           transition-colors shadow-sm
         "

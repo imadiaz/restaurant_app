@@ -36,17 +36,10 @@ export const useSocketStore = create<SocketState>((set, get) => {
 
       console.log("🔌 Initializing Socket Connection...");
 
-      const storage = localStorage.getItem("auth-storage");
-      let token = "";
-      if (storage) {
-        const parsed = JSON.parse(storage);
-        token = parsed.state?.user?.token || "";
-      }
-
       const newSocket = io(
         import.meta.env.VITE_API_URL || "http://localhost:3000",
         {
-          auth: { token },
+          auth: { token: userToken },
           transports: ["websocket"],
           autoConnect: true,
         },

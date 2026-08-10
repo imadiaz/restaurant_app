@@ -23,10 +23,11 @@ interface RestaurantDetailModalProps {
 const RestaurantDetailModal: React.FC<RestaurantDetailModalProps> = ({ 
   restaurant, isOpen, onClose
 }) => {
-  if (!isOpen || !restaurant) return null;
   const {t} = useTranslation();
   const { navigateTo } = useAppNavigation();
   const setActiveRestaurant = useAppStore((state) => state.setActiveRestaurant);
+
+  if (!isOpen || !restaurant) return null;
 
   const getPriceSymbol = (range: PriceRange) => {
     const map = { inexpensive: '$', moderate: '$$', expensive: '$$$', very_expensive: '$$$$' };

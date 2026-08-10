@@ -43,7 +43,7 @@ export interface FinancialSummary {
 export const statisticsService = {
   
   async getKpiSummary(filters?: StatisticsFilterDto): Promise<KpiSummary> {
-    const response = await axiosClient.get<any, ApiResponse<KpiSummary>>(
+    const response = await axiosClient.get<unknown, ApiResponse<KpiSummary>>(
       '/statistics/summary', 
       { params: filters }
     );
@@ -51,7 +51,7 @@ export const statisticsService = {
   },
 
   async getEarningsChart(filters?: StatisticsFilterDto): Promise<ChartDataPoint[]> {
-    const response = await axiosClient.get<any, ApiResponse<ChartDataPoint[]>>(
+    const response = await axiosClient.get<unknown, ApiResponse<ChartDataPoint[]>>(
       '/statistics/chart', 
       { params: filters }
     );
@@ -59,7 +59,7 @@ export const statisticsService = {
   },
 
   async getTopProducts(filters?: StatisticsFilterDto): Promise<TopProduct[]> {
-    const response = await axiosClient.get<any, ApiResponse<TopProduct[]>>(
+    const response = await axiosClient.get<unknown, ApiResponse<TopProduct[]>>(
       '/statistics/top-products', 
       { params: filters }
     );
@@ -67,14 +67,14 @@ export const statisticsService = {
   },
 
   async getPlatformDebt(id: string): Promise<PlatformDebt> {
-    const response = await axiosClient.get<any, ApiResponse<PlatformDebt>>(
+    const response = await axiosClient.get<unknown, ApiResponse<PlatformDebt>>(
       `/statistics/${id}/platform-debt`
     );
     return response.data;
   },
 
   async getFinancialSummary(filters?: StatisticsFilterDto): Promise<FinancialSummary> {
-    const response = await axiosClient.get<any, ApiResponse<FinancialSummary>>(
+    const response = await axiosClient.get<unknown, ApiResponse<FinancialSummary>>(
       '/statistics/financials', 
       { params: filters }
     );

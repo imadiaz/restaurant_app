@@ -24,28 +24,28 @@ export interface UpdateUserDto extends Partial<CreateUserDto> {
 export const userService = {
   
   async getAll(): Promise<User[]> {
-    const response = await axiosClient.get<any, ApiResponse<User[]>>('/users');
+    const response = await axiosClient.get<unknown, ApiResponse<User[]>>('/users');
     return response.data;
   },
 
   async getAllByRestaurantId(restaurantId: string): Promise<User[]> {
-    const response = await axiosClient.get<any, ApiResponse<User[]>>(`/users/restaurant/all/${restaurantId}`);
+    const response = await axiosClient.get<unknown, ApiResponse<User[]>>(`/users/restaurant/all/${restaurantId}`);
     return response.data;
   },
 
   async getUserById(userId: string): Promise<User> {
-    const response = await axiosClient.get<any, ApiResponse<User>>(`/users/${userId}`);
+    const response = await axiosClient.get<unknown, ApiResponse<User>>(`/users/${userId}`);
     return response.data;
   },
 
 
   async create(data: CreateUserDto): Promise<User> {
-    const response = await axiosClient.post<any, ApiResponse<User>>('/users', data);
+    const response = await axiosClient.post<unknown, ApiResponse<User>>('/users', data);
     return response.data;
   },
 
   async update(id: string, data: UpdateUserDto): Promise<User> {
-    const response = await axiosClient.patch<any, ApiResponse<User>>(`/users/${id}`, data);
+    const response = await axiosClient.patch<unknown, ApiResponse<User>>(`/users/${id}`, data);
     return response.data;
   }
 };

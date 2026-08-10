@@ -36,27 +36,27 @@ export interface UpdateDriverStatusDto {
 }
 export const driverService = {
   async getAllByRestaurantId(restaurantId: string): Promise<Driver[]> {
-    const res = await axiosClient.get<any,ApiResponse<Driver[]>>(`/drivers/restaurant/${restaurantId}`);
+    const res = await axiosClient.get<unknown, ApiResponse<Driver[]>>(`/drivers/restaurant/${restaurantId}`);
     return res.data;
   },
 
   async getAll(): Promise<Driver[]> {
-    const res = await axiosClient.get<any, ApiResponse<Driver[]>>(`/drivers`);
+    const res = await axiosClient.get<unknown, ApiResponse<Driver[]>>(`/drivers`);
     return res.data;
   },
 
   async getDriverById(driverId: string): Promise<Driver> {
-    const response = await axiosClient.get<any, ApiResponse<Driver>>(`/drivers/${driverId}`);
+    const response = await axiosClient.get<unknown, ApiResponse<Driver>>(`/drivers/${driverId}`);
     return response.data;
   },
 
-  async create(data: CreateDriverDto): Promise<any> {
-    const res = await axiosClient.post<any, ApiResponse<Driver>>('/drivers', data);
+  async create(data: CreateDriverDto): Promise<Driver> {
+    const res = await axiosClient.post<unknown, ApiResponse<Driver>>('/drivers', data);
     return res.data;
   },
 
-  async update(id: string, data: Partial<CreateDriverDto>): Promise<any> {
-    const res = await axiosClient.patch<any, ApiResponse<Driver>>(`/drivers/${id}`, data);
+  async update(id: string, data: Partial<CreateDriverDto>): Promise<Driver> {
+    const res = await axiosClient.patch<unknown, ApiResponse<Driver>>(`/drivers/${id}`, data);
     return res.data;
   },
 

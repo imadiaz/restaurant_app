@@ -68,7 +68,8 @@ const LoginPage: React.FC = () => {
               placeholder={t('forms.username_placeholder')} 
               icon={<User />}
               required 
-              onChange={(e) => setUsername(e.target.value.trim())}
+              autoComplete="username"
+              onChange={(e) => setUsername(e.target.value)}
             />
 
             <AnatomyTextFieldPassword 
@@ -77,7 +78,8 @@ const LoginPage: React.FC = () => {
               placeholder={t('forms.password_placeholder')} 
               icon={<Lock />}
               required
-              onChange={(e) => setPassword(e.target.value.trim())}
+              autoComplete="current-password"
+              onChange={(e) => setPassword(e.target.value)}
             />
 
             <div className="w-full flex justify-start">

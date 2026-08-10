@@ -1,5 +1,4 @@
-import React from 'react';
-import AnatomyText from './AnatomyText';
+import React, { useId } from 'react';
 
 interface AnatomyTextFieldProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'size' | 'prefix'> {
   label?: string;
@@ -16,6 +15,8 @@ const AnatomyTextField: React.FC<AnatomyTextFieldProps> = ({
   size = 'md', 
   ...props 
 }) => {
+  const generatedId = useId();
+  const inputId = props.id ?? generatedId;
   
   const sizeConfig = {
     sm: {
@@ -49,9 +50,9 @@ const AnatomyTextField: React.FC<AnatomyTextFieldProps> = ({
   return (
     <div className={`w-full text-left space-y-1.5 ${className}`}>
       {label && (
-        <AnatomyText.Label className={size === 'sm' ? 'text-xs' : 'text-sm'}>
+        <label htmlFor={inputId} className={`block font-bold text-text-muted uppercase tracking-wide ${size === 'sm' ? 'text-xs' : 'text-sm'}`}>
           {label}
-        </AnatomyText.Label>
+        </label>
       )}
       
       <div className="relative">
@@ -77,14 +78,11 @@ const AnatomyTextField: React.FC<AnatomyTextFieldProps> = ({
         
         <input
           className={`
-            w-full pr-4 border rounded-full font-medium transition-colors
+            w-full pr-4 border rounded-control font-medium transition-colors
             ${currentSize.input}
 
             /* Light Mode */
-            bg-white border-gray-200 text-gray-900 placeholder-gray-400
-            
-            /* Dark Mode */
-            dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:placeholder-gray-500
+            bg-input border-border text-text-main placeholder:text-text-subtle
             
             /* Focus */
             focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary
@@ -93,6 +91,7 @@ const AnatomyTextField: React.FC<AnatomyTextFieldProps> = ({
             ${getPaddingClass()} 
           `}
           {...props}
+          id={inputId}
         />
       </div>
     </div>

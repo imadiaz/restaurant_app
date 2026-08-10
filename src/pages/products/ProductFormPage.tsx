@@ -52,6 +52,8 @@ import ProductPickerModal from "./components/ProductPickerModal";
 import type { Product } from "../../data/models/products/product";
 import { Routes } from "../../config/routes";
 
+let temporaryIdSequence = 0;
+const createTemporaryId = (prefix: string) => `${prefix}-${++temporaryIdSequence}`;
 
 const ProductFormPage: React.FC = () => {
   const { t } = useTranslation();
@@ -85,7 +87,7 @@ const {navigateTo} = useAppNavigation();
   const [menuSectionIds, setMenuSectionIds] = useState<string[]>([]);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const [isImageUploaded, setIsImageUploaded] = useState<Boolean>(false);
+  const [isImageUploaded, setIsImageUploaded] = useState<boolean>(false);
   const [requirePrepTime, setRequirePrepTime] = useState<boolean>(true);
   // Modifiers State
   const [modifierGroups, setModifierGroups] = useState<CreateModifierGroup[]>(
@@ -124,7 +126,7 @@ const {navigateTo} = useAppNavigation();
             setMenuSectionIds(data.menuSections.map((e) => e.id));
           }
 
-          setModifierGroups((data.modifierGroups as any[]) || []);
+          setModifierGroups(data.modifierGroups || []);
           hasLoaded.current = true;
         }
       };
@@ -191,20 +193,20 @@ const {navigateTo} = useAppNavigation();
     setModifierGroups([
       ...modifierGroups,
       {
-        id: `new-group-${Date.now()}`,
+        id: createTemporaryId("new-group"),
         name: "",
         minSelected: 0,
         maxSelected: 1,
         isRequired: false,
         options: [],
-      } as any,
+      },
     ]);
   };
 
   const addGroupFromLibrary = () => {
     if (!selectedLibraryId) return;
     const found = availableModifiers.find(
-      (m: any) => m.id === selectedLibraryId,
+      (m) => m.id === selectedLibraryId,
     );
     if (found) {
       setModifierGroups([...modifierGroups, found]);
@@ -224,7 +226,7 @@ const {navigateTo} = useAppNavigation();
   const confirmDetachGroup = (idx: number) => {
     const newGroups = [...modifierGroups];
     // 1. Generate new temp ID
-    const newId = `new-group-${Date.now()}`;
+    const newId = createTemporaryId("new-group");
 
     const originalGroup = newGroups[idx];
     
@@ -234,7 +236,7 @@ const {navigateTo} = useAppNavigation();
       name: `${originalGroup.name} (Copy)`,
       options: originalGroup.options.map(opt => ({
           ...opt,
-          id: `new-opt-${Date.now()}-${Math.random()}`,
+          id: createTemporaryId("new-opt"),
       }))
   };
 
@@ -248,10 +250,10 @@ const {navigateTo} = useAppNavigation();
   };
 
   // --- Group Updates ---
-  const updateGroup = (
+  const updateGroup = <K extends keyof CreateModifierGroup>(
     idx: number,
-    field: keyof CreateModifierGroup,
-    val: any,
+    field: K,
+    val: CreateModifierGroup[K],
   ) => {
     if (isGroupLinked(modifierGroups[idx])) return;
     const newGroups = [...modifierGroups];
@@ -295,7 +297,7 @@ const {navigateTo} = useAppNavigation();
     group.options = [
       ...group.options,
       {
-        id: `new-opt-${Date.now()}`,
+        id: createTemporaryId("new-opt"),
         name: "",
         price: 0,
         maxQuantity: 1,
@@ -331,7 +333,7 @@ const {navigateTo} = useAppNavigation();
     group.options = [
       ...group.options,
       {
-        id: `new-opt-${Date.now()}`,
+        id: createTemporaryId("new-opt"),
         name: product.name,
         price: product.price ?? 0,
         maxQuantity: 1,
@@ -347,11 +349,11 @@ const {navigateTo} = useAppNavigation();
     setActiveGroupIndex(null);
   };
 
-  const updateOption = (
+  const updateOption = <K extends keyof CreateModifierOption>(
     groupIdx: number,
     optIdx: number,
-    field: keyof CreateModifierOption,
-    val: any,
+    field: K,
+    val: CreateModifierOption[K],
   ) => {
     if (isGroupLinked(modifierGroups[groupIdx])) return;
     const newGroups = [...modifierGroups];
@@ -395,7 +397,7 @@ const {navigateTo} = useAppNavigation();
 
     const cleanedModifiers = modifierGroups.map((g) => {
       if (isGroupLinked(g)) {
-        return { id: g.id };
+        return { id: g.id! };
       }
       return {
         id: undefined,
@@ -403,7 +405,7 @@ const {navigateTo} = useAppNavigation();
         maxSelected: Number(g.maxSelected || 1),
         name: g.name,
         isRequired: g.isRequired,
-        options: g.options.map((o: any) => ({
+        options: g.options.map((o) => ({
           id: o.id?.startsWith("new-") ? undefined : o.id,
           name: o.name,
           price: Number(o.price),
@@ -423,7 +425,7 @@ const {navigateTo} = useAppNavigation();
       prepTimeMin: prepMin,
       prepTimeMax: prepMax,
       menuSectionIds: menuSectionIds,
-      modifierGroups: cleanedModifiers as any,
+      modifierGroups: cleanedModifiers,
     };
 
     console.log(payload);
@@ -536,7 +538,7 @@ const {navigateTo} = useAppNavigation();
                         <option value="">
                           {t("products.select_from_library")}
                         </option>
-                        {availableModifiers.map((m: any) => (
+                        {availableModifiers.map((m) => (
                           <option key={m.id} value={m.id}>
                             {m.name}
                           </option>
@@ -735,7 +737,7 @@ const {navigateTo} = useAppNavigation();
                                     </AnatomyText.Label>
 
                                     {group.options.map(
-                                      (opt: any, optIdx: number) => (
+                                      (opt, optIdx: number) => (
                                         <Draggable
                                           key={opt.id || `o-${idx}-${optIdx}`}
                                           draggableId={
@@ -838,7 +840,7 @@ const {navigateTo} = useAppNavigation();
                                                         idx,
                                                         optIdx,
                                                         "price",
-                                                        e.target.value,
+                                                        Number(e.target.value),
                                                       )
                                                     }
                                                     disabled={isLinked}

@@ -11,6 +11,8 @@ import {
   Tooltip,
   Filler,
   Legend,
+  type ChartOptions,
+  type TooltipItem,
 } from "chart.js";
 import { Line } from "react-chartjs-2";
 import BasePageLayout from "../../components/layout/BaseLayout";
@@ -81,13 +83,13 @@ const StatisticsPage: React.FC = () => {
   };
 
   // --- Chart.js Configuration ---
-  const chartOptions = {
+  const chartOptions: ChartOptions<"line"> = {
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
       legend: { display: false },
       tooltip: {
-        callbacks: { label: (context: any) => ` ${formatCurrency(context.raw)}` },
+        callbacks: { label: (context: TooltipItem<"line">) => ` ${formatCurrency(Number(context.raw))}` },
         backgroundColor: "rgba(0, 0, 0, 0.8)",
         padding: 12,
         cornerRadius: 8,
@@ -95,7 +97,7 @@ const StatisticsPage: React.FC = () => {
     },
     scales: {
       x: { grid: { display: false }, ticks: { color: "#888" } },
-      y: { border: { display: false }, grid: { color: "#eee" }, ticks: { color: "#888", callback: (value: any) => `$${value}` } },
+      y: { border: { display: false }, grid: { color: "#eee" }, ticks: { color: "#888", callback: (value) => `$${value}` } },
     },
   };
 
@@ -120,7 +122,7 @@ const StatisticsPage: React.FC = () => {
 
   const handleGeneratePaymentLink = async (restaurantId: string) => {
     try {
-      const data: any = await generatePaymentLink({ id: restaurantId });
+      const data = await generatePaymentLink({ id: restaurantId });
       if(data != null && data?.url) {
         window.open(data.url, '_blank');
       }

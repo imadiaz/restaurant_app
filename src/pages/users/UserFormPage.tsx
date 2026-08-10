@@ -85,7 +85,7 @@ const hasLoadedData = useRef(false);
             setSelectedRestaurantId(user.restaurantId || "");
             hasLoadedData.current = true;
           }
-        } catch (error) {
+        } catch {
           goBack();
         }
       };

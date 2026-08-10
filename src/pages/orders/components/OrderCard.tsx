@@ -13,6 +13,7 @@ import {
   Copy,
   Check,
 } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import AnatomyTag, {
   type TagVariant,
 } from "../../../components/anatomy/AnatomyTag";
@@ -37,7 +38,7 @@ const OrderCard: React.FC<OrderCardProps> = ({ order, onClick }) => {
   const { t } = useTranslation();
   const getStatusConfig = (
     status: OrderStatusType,
-  ): { variant: TagVariant; icon: any; textKey: string } => {
+  ): { variant: TagVariant; icon: LucideIcon; textKey: string } => {
     switch (status) {
       case OrderStatus.PENDING:
         return {

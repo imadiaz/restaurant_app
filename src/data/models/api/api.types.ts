@@ -8,7 +8,7 @@ export interface ApiErrorResponse {
   statusCode: number;
   errorCode: string; 
   message: string | string[]; 
-  data: any;
+  data: unknown;
 }
 
 export class AppError extends Error {
@@ -27,9 +27,5 @@ export class AppError extends Error {
     this.errorCode = errorCode;
     this.validationErrors = validationErrors;
     
-    // Mantiene el stack trace correcto
-    if ((Error as any).captureStackTrace) {
-      (Error as any).captureStackTrace(this, AppError);
-    }
   }
 }

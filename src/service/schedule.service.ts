@@ -50,23 +50,23 @@ export interface CreateOverrideDto {
 
 export const scheduleService = {
   async getSchedules(restaurantId: string): Promise<ScheduleItem[]> {
-    const res = await axiosClient.get<any, ApiResponse<ScheduleItem[]>>(`/restaurants/${restaurantId}/schedules`);
+    const res = await axiosClient.get<unknown, ApiResponse<ScheduleItem[]>>(`/restaurants/${restaurantId}/schedules`);
     return res.data || [];
   },
 
   async saveSchedules(restaurantId: string, schedules: CreateScheduleItemDto[]): Promise<ScheduleSyncResponse> {
     const payload: BulkScheduleDto = { schedules };
-    const res= await axiosClient.put<any,ApiResponse<ScheduleSyncResponse>>(`/restaurants/${restaurantId}/schedules`, payload);
+    const res= await axiosClient.put<unknown, ApiResponse<ScheduleSyncResponse>>(`/restaurants/${restaurantId}/schedules`, payload);
     return res.data;
   },
 
   async getOverrides(restaurantId: string): Promise<ScheduleOverride[]> {
-    const res = await axiosClient.get<any,ApiResponse<ScheduleOverride[]>>(`/restaurants/${restaurantId}/schedules/overrides`);
+    const res = await axiosClient.get<unknown, ApiResponse<ScheduleOverride[]>>(`/restaurants/${restaurantId}/schedules/overrides`);
     return res.data || [];
   },
 
   async createOverride(restaurantId: string, data: CreateOverrideDto): Promise<ScheduleOverride> {
-    const res = await axiosClient.post<any, ApiResponse<ScheduleOverride>>(`/restaurants/${restaurantId}/schedules/overrides`, data);
+    const res = await axiosClient.post<unknown, ApiResponse<ScheduleOverride>>(`/restaurants/${restaurantId}/schedules/overrides`, data);
     return res.data;
   },
 
