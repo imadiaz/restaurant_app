@@ -24,6 +24,7 @@ const MenuSectionFormPage: React.FC = () => {
   const addToast = useToastStore((state) => state.addToast);
   const [name, setName] = useState("");
   const [sortOrder, setSortOrder] = useState<number>(0);
+  const [nameError, setNameError] = useState<string>();
   const hasLoadedData = useRef(false);
 
   useEffect(() => {
@@ -46,9 +47,11 @@ const MenuSectionFormPage: React.FC = () => {
 
   const handleSave = async () => {
     if (!name.trim()) {
+      setNameError(t('menuSections.validation_name'));
       addToast(t('menuSections.validation_name'), "error");
       return;
     }
+    setNameError(undefined);
 
     if (!activeRestaurant?.id) {
        addToast(t('errors.no_active_restaurant'), "error");
@@ -111,7 +114,8 @@ const MenuSectionFormPage: React.FC = () => {
                 label={t('menuSections.section_name')}
                 placeholder="e.g. Starters, Breakfast, Drinks" 
                 value={name} 
-                onChange={e => setName(e.target.value)} 
+                onChange={e => { setName(e.target.value); if (e.target.value.trim()) setNameError(undefined); }}
+                error={nameError}
                 required 
                 disabled={!activeRestaurant}
               />

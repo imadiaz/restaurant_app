@@ -29,6 +29,7 @@ import { isSuperAdmin } from "../../data/models/user/utils/user.utils";
 import { useTranslation } from "react-i18next";
 import { useAppStore } from "../../store/app.store";
 import { formatMxPhone, stripMxPrefix } from "../../utils/format.phone.utils";
+import { hasMinimumDigits, isBlank, isStrongPassword } from "../../utils/validation.utils";
 
 
 
@@ -96,15 +97,13 @@ const hasLoadedData = useRef(false);
 
   const handleSave = async () => {
     const nextErrors: Record<string, string> = {};
-    if (!firstName.trim()) nextErrors.firstName = t('forms.required');
-    if (!lastName.trim()) nextErrors.lastName = t('forms.required');
-    if (!username.trim()) nextErrors.username = t('forms.required');
-    if (!phone.trim()) nextErrors.phone = t('forms.required');
+    if (isBlank(firstName)) nextErrors.firstName = t('forms.required');
+    if (isBlank(lastName)) nextErrors.lastName = t('forms.required');
+    if (isBlank(username)) nextErrors.username = t('forms.required');
+    if (isBlank(phone)) nextErrors.phone = t('forms.required');
     if (roleId === undefined || Number.isNaN(roleId)) nextErrors.roleId = t('users.validation_role');
-    if (phone && phone.length < 10) nextErrors.phone = t('users.validation_phone');
-
-    const passwordRegex = /((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/;
-    if ((!isEditMode || password.length > 0) && !passwordRegex.test(password)) {
+    if (phone && !hasMinimumDigits(phone, 10)) nextErrors.phone = t('users.validation_phone');
+    if ((!isEditMode || password.length > 0) && !isStrongPassword(password)) {
       nextErrors.password = t('users.validation_password');
     }
 

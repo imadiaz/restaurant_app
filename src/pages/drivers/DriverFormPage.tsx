@@ -21,6 +21,7 @@ import { useToastStore } from "../../store/toast.store";
 import type { CreateDriverDto } from "../../service/drivers.service";
 import { useAppStore } from "../../store/app.store";
 import { formatMxPhone, stripMxPrefix } from "../../utils/format.phone.utils";
+import { hasMinimumDigits, isBlank, isStrongPassword, isValidEmail } from "../../utils/validation.utils";
 
 const DriverFormPage: React.FC = () => {
   const { t } = useTranslation();
@@ -48,6 +49,7 @@ const DriverFormPage: React.FC = () => {
   const [password, setPassword] = useState("");
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   
   const [selectedRestaurantId, setSelectedRestaurantId] = useState<string>(
       activeRestaurant?.id || ''
@@ -85,22 +87,21 @@ const DriverFormPage: React.FC = () => {
   }, [isEditMode, id, getDriverById, goBack]);
 
   const handleSave = async () => {
-    if (!firstName || !lastName || !phone || !email) {
+    const nextErrors: Record<string, string> = {};
+    if (isBlank(firstName)) nextErrors.firstName = t('forms.required');
+    if (isBlank(lastName)) nextErrors.lastName = t('forms.required');
+    if (isBlank(phone)) nextErrors.phone = t('forms.required');
+    if (isBlank(email)) nextErrors.email = t('forms.required');
+    else if (!isValidEmail(email)) nextErrors.email = t('forms.invalid_email');
+    if (phone && !hasMinimumDigits(phone, 10)) nextErrors.phone = t('users.validation_phone');
+    if ((!isEditMode || password.length > 0) && !isStrongPassword(password)) {
+      nextErrors.password = t('users.validation_password');
+    }
+
+    setFieldErrors(nextErrors);
+    if (Object.keys(nextErrors).length > 0) {
       addToast(t('users.fields_validation'), "error");
       return;
-    }
-
-    if (phone.length < 10) {
-      addToast(t('users.validation_phone'), "error");
-      return;
-    }
-
-    if (!isEditMode || (isEditMode && password.length > 0)) {
-       const passwordRegex = /((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/;
-       if (!passwordRegex.test(password)) {
-         addToast(t('users.validation_password'), "error");
-         return;
-       }
     }
 
     let finalImageUrl = imagePreview || "";
@@ -127,10 +128,8 @@ const DriverFormPage: React.FC = () => {
       };
 
       if (isEditMode && id) {
-        console.log("Updating Driver:", payload);
         await updateDriver({ id, data: payload });
       } else {
-        console.log("Creating Driver:", payload);
         await createDriver(payload);
       }
       goBack();
@@ -175,14 +174,16 @@ const DriverFormPage: React.FC = () => {
                 label={t('users.first_name')} 
                 placeholder="e.g. Juan"
                 value={firstName}
-                onChange={(e) => setFirstName(e.target.value)}
+                onChange={(e) => { setFirstName(e.target.value); setFieldErrors((errors) => ({ ...errors, firstName: '' })); }}
+                error={fieldErrors.firstName}
                 required
               />
               <AnatomyTextField
                 label={t('users.last_name')}
                 placeholder="e.g. Pérez"
                 value={lastName}
-                onChange={(e) => setLastName(e.target.value)}
+                onChange={(e) => { setLastName(e.target.value); setFieldErrors((errors) => ({ ...errors, lastName: '' })); }}
+                error={fieldErrors.lastName}
                 required
               />
 
@@ -191,7 +192,8 @@ const DriverFormPage: React.FC = () => {
                 prefix="+52"
                 placeholder="55 1234 5678"
                 value={phone}
-                onChange={(e) => setPhone(e.target.value)}
+                onChange={(e) => { setPhone(e.target.value); setFieldErrors((errors) => ({ ...errors, phone: '' })); }}
+                error={fieldErrors.phone}
                 icon={<Phone className="w-4 h-4 text-text-muted" />}
                 required
                 maxLength={15}
@@ -204,7 +206,8 @@ const DriverFormPage: React.FC = () => {
                 label={t('users.email')}
                 placeholder="driver@email.com"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => { setEmail(e.target.value); setFieldErrors((errors) => ({ ...errors, email: '' })); }}
+                error={fieldErrors.email}
                 icon={<Mail className="w-4 h-4 text-text-muted" />}
                 required
               />
@@ -227,14 +230,11 @@ const DriverFormPage: React.FC = () => {
                 <AnatomyTextFieldPassword
                   placeholder={isEditMode ? t('forms.password_description') : "Pass1234!"}
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={(e) => { setPassword(e.target.value); setFieldErrors((errors) => ({ ...errors, password: '' })); }}
+                  error={fieldErrors.password}
+                  helperText={isEditMode ? t('forms.password_description') : t('users.validation_password')}
                   required={!isEditMode} 
                 />
-                {!isEditMode && (
-                  <AnatomyText.Small className="text-xs text-text-muted mt-1 block">
-                    {t('users.validation_password')}
-                  </AnatomyText.Small>
-                )}
               </div>
             </div>
           </div>

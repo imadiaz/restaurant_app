@@ -58,6 +58,7 @@ const PromotionsFormPage: React.FC = () => {
 
   const [selectedProductIds, setSelectedProductIds] = useState<string[]>([]);
   const [selectAll, setSelectAll] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
   const hasLoadedData = useRef(false);
 
@@ -89,6 +90,7 @@ const PromotionsFormPage: React.FC = () => {
   // --- Handlers ---
 
   const handleToggleProduct = (productId: string) => {
+    setFieldErrors((errors) => ({ ...errors, products: '' }));
     setSelectedProductIds((prev) =>
       prev.includes(productId)
         ? prev.filter((id) => id !== productId)
@@ -97,6 +99,7 @@ const PromotionsFormPage: React.FC = () => {
   };
 
   const handleToggleSelectAll = () => {
+    setFieldErrors((errors) => ({ ...errors, products: '' }));
     if (selectAll) {
       setSelectedProductIds([]);
     } else {
@@ -111,17 +114,22 @@ const PromotionsFormPage: React.FC = () => {
       return addToast(t("common.error_no_restaurant_selected"), "error");
     }
 
-    // Validations
-    if (!name.trim())
-      return addToast(t("promotions.validation_name_required"), "error");
-    if (!startDate || !endDate)
-      return addToast(t("promotions.validation_dates_required"), "error");
-    if (new Date(startDate) >= new Date(endDate))
-      return addToast(t("promotions.validation_dates_invalid"), "error");
-    if (Number(value) < 0)
-      return addToast(t("promotions.validation_value_negative"), "error");
-    if (selectedProductIds.length === 0 && !isEditMode)
-      return addToast(t("promotions.validation_products_required"), "error");
+    const nextErrors: Record<string, string> = {};
+    if (!name.trim()) nextErrors.name = t("promotions.validation_name_required");
+    if (!startDate) nextErrors.startDate = t("forms.required");
+    if (!endDate) nextErrors.endDate = t("forms.required");
+    if (startDate && endDate && new Date(startDate) >= new Date(endDate)) {
+      nextErrors.endDate = t("promotions.validation_dates_invalid");
+    }
+    if (Number(value) < 0) nextErrors.value = t("promotions.validation_value_negative");
+    if (selectedProductIds.length === 0 && !isEditMode) {
+      nextErrors.products = t("promotions.validation_products_required");
+    }
+    setFieldErrors(nextErrors);
+    if (Object.keys(nextErrors).length > 0) {
+      addToast(t("forms.correct_errors"), "error");
+      return;
+    }
 
     try {
       const numericValue = parseFloat(value);
@@ -197,7 +205,8 @@ const PromotionsFormPage: React.FC = () => {
               label={t("promotions.field_name")}
               placeholder="e.g. Summer Sale 2026"
               value={name}
-              onChange={(e) => setName(e.target.value)}
+              onChange={(e) => { setName(e.target.value); setFieldErrors((errors) => ({ ...errors, name: '' })); }}
+              error={fieldErrors.name}
               required
             />
 
@@ -240,6 +249,7 @@ const PromotionsFormPage: React.FC = () => {
                     const val = parseFloat(e.target.value);
                     if (type === PromotionType.PERCENTAGE && val > 100) return;
                     setValue(e.target.value);
+                    setFieldErrors((errors) => ({ ...errors, value: '' }));
                   }}
                   icon={
                     type === PromotionType.PERCENTAGE ? (
@@ -252,6 +262,7 @@ const PromotionsFormPage: React.FC = () => {
                     type === PromotionType.PERCENTAGE ? "20" : "50.00"
                   }
                   min={0}
+                  error={fieldErrors.value}
     
                 />
               )}
@@ -267,7 +278,8 @@ const PromotionsFormPage: React.FC = () => {
                 label={t("promotions.field_start_date")}
                 type="datetime-local"
                 value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
+                onChange={(e) => { setStartDate(e.target.value); setFieldErrors((errors) => ({ ...errors, startDate: '', endDate: '' })); }}
+                error={fieldErrors.startDate}
                 icon={<Calendar className="w-4 h-4 text-text-muted" />}
                 required
               />
@@ -275,7 +287,8 @@ const PromotionsFormPage: React.FC = () => {
                 label={t("promotions.field_end_date")}
                 type="datetime-local"
                 value={endDate}
-                onChange={(e) => setEndDate(e.target.value)}
+                onChange={(e) => { setEndDate(e.target.value); setFieldErrors((errors) => ({ ...errors, endDate: '' })); }}
+                error={fieldErrors.endDate}
                 icon={<Calendar className="w-4 h-4 text-text-muted" />}
                 required
               />
@@ -305,6 +318,11 @@ const PromotionsFormPage: React.FC = () => {
             <AnatomyText.Small className="text-muted-foreground mb-4 block">
               {t("promotions.products_helper")}
             </AnatomyText.Small>
+            {fieldErrors.products && (
+              <p role="alert" className="mb-3 text-xs font-medium text-danger">
+                {fieldErrors.products}
+              </p>
+            )}
 
             <div className="flex-1 overflow-y-auto pr-2 space-y-2 border-t border-border pt-4">
               {isLoadingProducts ? (

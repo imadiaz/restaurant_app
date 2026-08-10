@@ -80,7 +80,9 @@
     "search_options": "Search options",
     "remove_option": "Remove {{option}}",
     "no_results": "No results found",
-    "required": "This field is required"
+    "required": "This field is required",
+    "invalid_email": "Enter a valid email address",
+    "correct_errors": "Review the highlighted fields"
   },
   "restaurants": {
     "restaurant": "Restaurant",
