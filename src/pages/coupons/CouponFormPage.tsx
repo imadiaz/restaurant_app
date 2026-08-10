@@ -61,7 +61,7 @@ const CouponFormPage: React.FC = () => {
   } = useCoupons();
 
   // Form Setup
-  const { register, handleSubmit, control, reset } = useForm<CreateCouponDto>({
+  const { register, handleSubmit, control, reset, setError, clearErrors, formState: { errors } } = useForm<CreateCouponDto>({
     defaultValues: {
       code: "",
       description: "",
@@ -131,12 +131,15 @@ const CouponFormPage: React.FC = () => {
 
     // Check if dates are valid objects
     if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+      setError("startDate", { message: t("validation.invalid_dates") });
+      setError("endDate", { message: t("validation.invalid_dates") });
       addToast(t("validation.invalid_dates"), "error");
       return;
     }
 
     // Check if End Date is before Start Date
     if (end < start) {
+      setError("endDate", { message: t("validation.error_date_range") });
       addToast(t("validation.error_date_range"), "error");
       return;
     }
@@ -145,20 +148,24 @@ const CouponFormPage: React.FC = () => {
     const discountValue = Number(data.value);
 
     if (discountValue < 0) {
+      setError("value", { message: t("validation.error_negative_value") });
       addToast(t("validation.error_negative_value"), "error");
       return;
     }
     if (data.type === CouponType.PERCENTAGE && discountValue > 100) {
+      setError("value", { message: t("validation.error_percentage_limit") });
       addToast(t("validation.error_percentage_limit"), "error");
       return;
     }
 
     if (discountValue === 0 && data.type !== CouponType.FREE_DELIVERY) {
+      setError("value", { message: t("validation.error_zero_value") });
       addToast(t("validation.error_zero_value"), "warning");
       return;
     }
 
     if (Number(data.usageLimitGlobal) < Number(data.usageLimitPerUser)) {
+      setError("usageLimitGlobal", { message: t("validation.error_global_limit") });
       addToast(t("validation.error_global_limit"), "error"); // Global limit can't be smaller than per-user limit
       return;
     }
@@ -234,7 +241,10 @@ const CouponFormPage: React.FC = () => {
       showNavBack={true}
       headerActions={
         <div className="flex gap-3">
-          <AnatomyButton onClick={handleSubmit(onSubmit)} disabled={isLoading}>
+          <AnatomyButton
+            onClick={handleSubmit(onSubmit, () => addToast(t('forms.correct_errors'), 'error'))}
+            disabled={isLoading}
+          >
             {isLoading ? (
               t("common.loading")
             ) : (
@@ -273,7 +283,11 @@ const CouponFormPage: React.FC = () => {
               <AnatomyTextField
                 label={t("coupons.code")}
                 placeholder="e.g. SUMMER2024"
-                {...register("code", { required: true, minLength: 3 })}
+                {...register("code", {
+                  required: t('forms.required'),
+                  minLength: { value: 3, message: t('coupons.code_min_length') },
+                })}
+                error={errors.code?.message}
                 icon={<Tag className="w-4 h-4 text-gray-400" />}
               />
 
@@ -293,7 +307,10 @@ const CouponFormPage: React.FC = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Type Selector */}
                 <div>
-                  <AnatomySelect label={t("coupons.discount_type")}>
+                  <AnatomySelect
+                    label={t("coupons.discount_type")}
+                    {...register("type", { onChange: () => clearErrors("value") })}
+                  >
                     <option value={CouponType.PERCENTAGE}>
                       {t("coupons.type_percentage")}
                     </option>
@@ -310,7 +327,11 @@ const CouponFormPage: React.FC = () => {
                 <AnatomyTextField
                   label={t("coupons.discount_value")}
                   type="number"
-                  {...register("value", { min: 0, required: true })}
+                  {...register("value", {
+                    required: t('forms.required'),
+                    onChange: () => clearErrors("value"),
+                  })}
+                  error={errors.value?.message}
                   icon={
                     couponType === CouponType.PERCENTAGE ? (
                       <Percent className="w-4 h-4" />
@@ -326,7 +347,10 @@ const CouponFormPage: React.FC = () => {
                 <AnatomyTextField
                   label={t("coupons.min_order")}
                   type="number"
-                  {...register("minOrderAmount", { min: 0 })}
+                  {...register("minOrderAmount", {
+                    min: { value: 0, message: t('validation.error_negative_value') },
+                  })}
+                  error={errors.minOrderAmount?.message}
                   icon={<DollarSign className="w-4 h-4" />}
                   placeholder="0.00"
                 />
@@ -336,7 +360,10 @@ const CouponFormPage: React.FC = () => {
                   <AnatomyTextField
                     label={t("coupons.max_discount")}
                     type="number"
-                    {...register("maxDiscountAmount", { min: 0 })}
+                    {...register("maxDiscountAmount", {
+                      min: { value: 0, message: t('validation.error_negative_value') },
+                    })}
+                    error={errors.maxDiscountAmount?.message}
                     icon={<DollarSign className="w-4 h-4" />}
                     placeholder="0.00"
                   />
@@ -356,14 +383,22 @@ const CouponFormPage: React.FC = () => {
               <AnatomyTextField
                 label={t("coupons.start_date")}
                 type="date"
-                {...register("startDate", { required: true })}
+                {...register("startDate", {
+                  required: t('forms.required'),
+                  onChange: () => clearErrors(["startDate", "endDate"]),
+                })}
+                error={errors.startDate?.message}
                 icon={<Calendar className="w-4 h-4 text-gray-400" />}
               />
 
               <AnatomyTextField
                 label={t("coupons.end_date")}
                 type="date"
-                {...register("endDate", { required: true })}
+                {...register("endDate", {
+                  required: t('forms.required'),
+                  onChange: () => clearErrors("endDate"),
+                })}
+                error={errors.endDate?.message}
                 icon={<Calendar className="w-4 h-4 text-gray-400" />}
               />
             </div>
@@ -377,14 +412,22 @@ const CouponFormPage: React.FC = () => {
               <AnatomyTextField
                 label={t("coupons.limit_global")}
                 type="number"
-                {...register("usageLimitGlobal", { min: 1 })}
+                {...register("usageLimitGlobal", {
+                  min: { value: 1, message: t('validation.minimum_one') },
+                  onChange: () => clearErrors("usageLimitGlobal"),
+                })}
+                error={errors.usageLimitGlobal?.message}
                 icon={<Hash className="w-4 h-4 text-gray-400" />}
               />
 
               <AnatomyTextField
                 label={t("coupons.limit_user")}
                 type="number"
-                {...register("usageLimitPerUser", { min: 1 })}
+                {...register("usageLimitPerUser", {
+                  min: { value: 1, message: t('validation.minimum_one') },
+                  onChange: () => clearErrors("usageLimitGlobal"),
+                })}
+                error={errors.usageLimitPerUser?.message}
                 icon={<Users className="w-4 h-4 text-gray-400" />}
               />
             </div>

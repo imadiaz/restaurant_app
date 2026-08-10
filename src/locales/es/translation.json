@@ -40,5 +40,17 @@
     "error": "Error",
     "no_active_restaurant": "Error del sistema: no hay un restaurante activo seleccionado.",
     "no_active_restaurant_description": "Abre el panel de un restaurante antes de crear este recurso."
+  },
+  "validation": {
+    "invalid_dates": "Ingresa fechas válidas",
+    "error_date_range": "La fecha final no puede ser anterior a la inicial",
+    "error_negative_value": "El valor no puede ser negativo",
+    "error_percentage_limit": "El porcentaje no puede superar 100",
+    "error_zero_value": "El valor debe ser mayor que cero",
+    "error_global_limit": "El límite global no puede ser menor al límite por usuario",
+    "minimum_one": "El valor debe ser al menos 1"
+  },
+  "coupons": {
+    "code_min_length": "El código debe tener al menos 3 caracteres"
   }
 }

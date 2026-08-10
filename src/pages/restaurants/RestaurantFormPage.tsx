@@ -21,6 +21,7 @@ import type { AddressResult } from "../../utils/maps/google.maps.utils";
 import GoogleMapsLocationPicker from "../../components/common/GoogleMapsLocationPicker";
 import { ROLES } from "../../config/roles";
 import { useTranslation } from "react-i18next";
+import { isBlank, isValidEmail } from "../../utils/validation.utils";
 
 
 
@@ -68,6 +69,7 @@ const RestaurantFormPage: React.FC = () => {
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
   const [heroFile, setHeroFile] = useState<File | null>(null);
   const [heroPreview, setHeroPreview] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const hasLoadedData = useRef(false);
     useEffect(() => {
       hasLoadedData.current = false;
@@ -113,6 +115,7 @@ const RestaurantFormPage: React.FC = () => {
   }, [isEditMode, id, getRestaurantById]);
 
   const handleLocationSelect = (data: AddressResult) => {
+    setFieldErrors((errors) => ({ ...errors, location: '' }));
     setStreetAddress(data.streetAddress);
     setColony(data.colony);
     setCity(data.city);
@@ -123,19 +126,23 @@ const RestaurantFormPage: React.FC = () => {
   };
 
   const handleSave = async () => {
-    if (!name || !userId || !streetAddress || !zipCode || !city || !description || !email) {
+    const nextErrors: Record<string, string> = {};
+    if (isBlank(name)) nextErrors.name = t('forms.required');
+    if (isBlank(userId)) nextErrors.userId = t('forms.required');
+    if (isBlank(description)) nextErrors.description = t('forms.required');
+    if (isBlank(streetAddress)) nextErrors.streetAddress = t('forms.required');
+    if (isBlank(zipCode)) nextErrors.zipCode = t('forms.required');
+    if (isBlank(city)) nextErrors.city = t('forms.required');
+    if (isBlank(stateGeo)) nextErrors.state = t('forms.required');
+    if (isBlank(email)) nextErrors.email = t('forms.required');
+    else if (!isValidEmail(email)) nextErrors.email = t('forms.invalid_email');
+    if (lat === 0 && lng === 0) nextErrors.location = t('restaurants.validation_select_location');
+    if (isBlank(rfc) || rfc.trim().length < 10) nextErrors.rfc = t('restaurants.validation_rfc');
+    setFieldErrors(nextErrors);
+
+    if (Object.keys(nextErrors).length > 0) {
       addToast(t('restaurants.fields_validation'), "error");
       return;
-    }
-    
-    if (lat === 0 && lng === 0) {
-      addToast(t('restaurants.validation_select_location'), "warning");
-      return;
-    }
-
-    if(rfc == "" || rfc == null || rfc.length < 10) {
-        addToast(t('restaurants.validation_rfc'),"error");
-        return;
     }
 
     let finalLogoUrl = logoPreview || "";
@@ -143,7 +150,6 @@ const RestaurantFormPage: React.FC = () => {
 
     if (logoFile != null && !isLogoUploaded) {
       const url = await uploadFile(logoFile, FILES_PATHS.RestaurantsLogo);
-      console.log("URL LOGO", url);
       if (url) {
         finalLogoUrl = url;
         setLogoPreview(url);
@@ -153,16 +159,12 @@ const RestaurantFormPage: React.FC = () => {
     
     if (heroFile != null && !isBannerUploaded) {
       const url = await uploadFile(heroFile, FILES_PATHS.RestaurantsBanner);
-      console.log("URL BANNER", url);
       if (url) {
         finalHeroUrl = url;
         setHeroPreview(url);
         setIsBannerUploaded(true);
       }
     }
-
-    console.log("Hero File", logoFile && !isLogoUploaded);
-    console.log("Banner File", heroFile && !isBannerUploaded);
 
     try {
       const payloadBase = {
@@ -181,7 +183,6 @@ const RestaurantFormPage: React.FC = () => {
       if (isEditMode && id) {
         // UPDATE
         const payload: UpdateRestaurantDto = { ...payloadBase, status };
-        console.log("Payload", payload);
         await updateRestaurant({id, data: payload});
       } else {
          if(finalLogoUrl == null || finalLogoUrl == "" || finalHeroUrl == null || finalHeroUrl == "") {
@@ -189,7 +190,6 @@ const RestaurantFormPage: React.FC = () => {
             return;
         }
         const payload: CreateRestaurantDto = payloadBase;
-        console.log("Payload", payload);
         await createRestaurant(payload);
       }
       goBack();
@@ -228,7 +228,8 @@ const RestaurantFormPage: React.FC = () => {
                  <AnatomyTextField 
                    label={t('restaurants.field_name')}
                    value={name} 
-                   onChange={e => setName(e.target.value)} 
+                   onChange={e => { setName(e.target.value); setFieldErrors((errors) => ({ ...errors, name: '' })); }}
+                   error={fieldErrors.name}
                    placeholder="e.g. Burger King"
                    required
                  />
@@ -239,7 +240,8 @@ const RestaurantFormPage: React.FC = () => {
                  <AnatomySelect 
                      label={t('restaurants.field_owner')}
                     value={userId}
-                    onChange={e => setUserId(e.target.value)}
+                    onChange={e => { setUserId(e.target.value); setFieldErrors((errors) => ({ ...errors, userId: '' })); }}
+                    error={fieldErrors.userId}
                  >
                     <option value="">{t('restaurants.select_owner')}</option>
                     {filteredUsers?.map(user => (
@@ -268,7 +270,8 @@ const RestaurantFormPage: React.FC = () => {
                  <AnatomyTextField 
                    label={t('common.description')}
                    value={description}
-                   onChange={e => setDescription(e.target.value)}
+                   onChange={e => { setDescription(e.target.value); setFieldErrors((errors) => ({ ...errors, description: '' })); }}
+                   error={fieldErrors.description}
                    placeholder="Best burgers in town..."
                  />
                </div>
@@ -296,16 +299,17 @@ const RestaurantFormPage: React.FC = () => {
                     initialLng={lng}
                     onLocationSelect={handleLocationSelect}
                 />
+                {fieldErrors.location && <p role="alert" className="mt-2 text-xs font-medium text-danger">{fieldErrors.location}</p>}
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="md:col-span-2">
-                <AnatomyTextField label={t('common.street_address')} value={streetAddress} onChange={e => setStreetAddress(e.target.value)} required />
+                <AnatomyTextField label={t('common.street_address')} value={streetAddress} onChange={e => { setStreetAddress(e.target.value); setFieldErrors((errors) => ({ ...errors, streetAddress: '' })); }} error={fieldErrors.streetAddress} required />
               </div>
               <AnatomyTextField label={t('common.colony')} value={colony} onChange={e => setColony(e.target.value)} />
-              <AnatomyTextField label={t('common.zip_code')} value={zipCode} onChange={e => setZipCode(e.target.value)} required />
-              <AnatomyTextField label={t('common.city')} value={city} onChange={e => setCity(e.target.value)} required />
-              <AnatomyTextField label={t('common.state')} value={stateGeo} onChange={e => setStateGeo(e.target.value)} required />
+              <AnatomyTextField label={t('common.zip_code')} value={zipCode} onChange={e => { setZipCode(e.target.value); setFieldErrors((errors) => ({ ...errors, zipCode: '' })); }} error={fieldErrors.zipCode} required />
+              <AnatomyTextField label={t('common.city')} value={city} onChange={e => { setCity(e.target.value); setFieldErrors((errors) => ({ ...errors, city: '' })); }} error={fieldErrors.city} required />
+              <AnatomyTextField label={t('common.state')} value={stateGeo} onChange={e => { setStateGeo(e.target.value); setFieldErrors((errors) => ({ ...errors, state: '' })); }} error={fieldErrors.state} required />
 
               <div className="opacity-80">
                 <AnatomyTextField 
@@ -334,11 +338,11 @@ const RestaurantFormPage: React.FC = () => {
               <AnatomyText.H3 className="mb-0">{t('restaurants.legal_contact')}</AnatomyText.H3>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-               <AnatomyTextField label={t('restaurants.rfc')} value={rfc} onChange={e => setRfc(e.target.value)} placeholder="XAXX010101000" minLength={10} maxLength={15} />
+               <AnatomyTextField label={t('restaurants.rfc')} value={rfc} onChange={e => { setRfc(e.target.value.toUpperCase()); setFieldErrors((errors) => ({ ...errors, rfc: '' })); }} error={fieldErrors.rfc} placeholder="XAXX010101000" minLength={10} maxLength={15} />
                <AnatomyTextField label={t('restaurants.legal_name')} value={legalName} onChange={e => setLegalName(e.target.value)} />
                <AnatomyTextField label={t('restaurants.public_phone')} value={publicPhone} onChange={e => setPublicPhone(e.target.value)} icon={<Phone className="w-4 h-4"/>} />
                <AnatomyTextField label={t('restaurants.private_phone')} value={privatePhone} onChange={e => setPrivatePhone(e.target.value)} icon={<Phone className="w-4 h-4"/>} />
-                <AnatomyTextField label={t('restaurants.email')} value={email} onChange={e => setEmail(e.target.value)} placeholder="example@example.com" icon={<Mail className="w-4 h-4"/>} />
+                <AnatomyTextField type="email" label={t('restaurants.email')} value={email} onChange={e => { setEmail(e.target.value); setFieldErrors((errors) => ({ ...errors, email: '' })); }} error={fieldErrors.email} placeholder="example@example.com" icon={<Mail className="w-4 h-4"/>} />
 
             </div>
            </div>

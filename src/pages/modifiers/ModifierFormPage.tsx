@@ -71,6 +71,8 @@ const ModifierFormPage: React.FC = () => {
   const [isSingle, setIsSingle] = useState(false);
   const [productPickerOpen, setProductPickerOpen] = useState(false);
   const [loadedGroupId, setLoadedGroupId] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+  const [optionErrors, setOptionErrors] = useState<Record<number, Partial<Record<'name' | 'price' | 'maxQuantity', string>>>>({});
 
   const editGroup = isEditMode ? modifiers.find((group) => group.id === id) : undefined;
   if (editGroup && loadedGroupId !== editGroup.id) {
@@ -154,6 +156,10 @@ const ModifierFormPage: React.FC = () => {
     const newOptions = [...options];
     newOptions[idx] = { ...newOptions[idx], [field]: val };
     setOptions(newOptions);
+    setOptionErrors((errors) => ({
+      ...errors,
+      [idx]: { ...errors[idx], [field]: undefined },
+    }));
   };
 
   const removeOption = (idx: number) => {
@@ -164,39 +170,42 @@ const ModifierFormPage: React.FC = () => {
 
   const handleSave = async () => {
     if (!name || !activeRestaurant) {
+      if (!name.trim()) setFieldErrors((errors) => ({ ...errors, name: t("modifiers.validation_error") }));
       addToast(t("modifiers.validation_error"), "error");
       return;
     }
 
+    const nextFieldErrors: Record<string, string> = {};
     if (Number(minSelection) < 0) {
-      addToast(t("modifiers.error_min_negative"), "error");
-      return;
+      nextFieldErrors.maxSelection = t("modifiers.error_min_negative");
     }
     if (Number(maxSelection) < 1) {
-      addToast(t("modifiers.error_max_invalid"), "error");
-      return;
+      nextFieldErrors.maxSelection = t("modifiers.error_max_invalid");
     }
     if (Number(maxSelection) < Number(minSelection)) {
-      addToast(t("modifiers.error_max_low"), "error");
-      return;
+      nextFieldErrors.maxSelection = t("modifiers.error_max_low");
     }
 
-    for (const opt of options) {
+    const nextOptionErrors: typeof optionErrors = {};
+    options.forEach((opt, index) => {
+      const errors: Partial<Record<'name' | 'price' | 'maxQuantity', string>> = {};
       if (!opt.name.trim()) {
-        addToast(t("modifiers.error_option_name"), "error");
-        return;
+        errors.name = t("modifiers.error_option_name");
       }
       if (Number(opt.price) < 0) {
-        addToast(
-          t("modifiers.error_option_price", { name: opt.price }),
-          "error",
-        );
-        return;
+        errors.price = t("modifiers.error_option_price", { name: opt.name });
       }
       if (Number(opt.maxQuantity) < 1) {
-        addToast(t("modifiers.error_option_qty", { name: opt.price }), "error");
-        return;
+        errors.maxQuantity = t("modifiers.error_option_qty", { name: opt.name });
       }
+      if (Object.keys(errors).length > 0) nextOptionErrors[index] = errors;
+    });
+
+    setFieldErrors(nextFieldErrors);
+    setOptionErrors(nextOptionErrors);
+    if (Object.keys(nextFieldErrors).length > 0 || Object.keys(nextOptionErrors).length > 0) {
+      addToast(t('forms.correct_errors'), 'error');
+      return;
     }
 
     const cleanedOptions = options.map((o) => ({
@@ -217,7 +226,6 @@ const ModifierFormPage: React.FC = () => {
     };
 
     try {
-      console.log(payload);
       if (isEditMode && id) {
         await updateGroup({ id, data: payload });
       } else {
@@ -269,7 +277,8 @@ const ModifierFormPage: React.FC = () => {
               label={t("products.group_name")}
               placeholder="e.g. Sauces, Choice of Side"
               value={name}
-              onChange={(e) => setName(e.target.value)}
+              onChange={(e) => { setName(e.target.value); setFieldErrors((errors) => ({ ...errors, name: '' })); }}
+              error={fieldErrors.name}
             />
 
             <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center bg-gray-50 dark:bg-gray-900/40 p-3 rounded-xl border border-border/50">
@@ -311,7 +320,8 @@ const ModifierFormPage: React.FC = () => {
                     label={t("products.max_help")}
                     size="sm"
                     value={maxSelection}
-                    onChange={(e) => setMaxSelection(Number(e.target.value))}
+                    onChange={(e) => { setMaxSelection(Number(e.target.value)); setFieldErrors((errors) => ({ ...errors, maxSelection: '' })); }}
+                    error={fieldErrors.maxSelection}
                   />
                 </div>
               </div>
@@ -346,7 +356,7 @@ const ModifierFormPage: React.FC = () => {
                         <div
                           ref={provided.innerRef}
                           {...provided.draggableProps}
-                          className="flex gap-2 items-center bg-background-card p-2 rounded-lg border border-border shadow-sm group"
+                          className={`flex flex-wrap gap-2 items-center bg-background-card p-2 rounded-lg border shadow-sm group ${optionErrors[idx] ? 'border-danger' : 'border-border'}`}
                         >
                           <div
                             {...provided.dragHandleProps}
@@ -385,6 +395,8 @@ const ModifierFormPage: React.FC = () => {
                             <input
                               className="w-full bg-transparent border-none p-0 text-sm focus:ring-0 text-text-main"
                               placeholder="Option Name"
+                              aria-label={t('products.group_name')}
+                              aria-invalid={!!optionErrors[idx]?.name}
                               value={opt.name}
                               onChange={(e) =>
                                 updateOption(idx, "name", e.target.value)
@@ -401,6 +413,8 @@ const ModifierFormPage: React.FC = () => {
                               <input
                                 type="number"
                                 min="1"
+                                aria-label={t("products.max_quantity")}
+                                aria-invalid={!!optionErrors[idx]?.maxQuantity}
                                 className="w-full bg-transparent text-sm font-medium border-none focus:ring-0 outline-none p-0 text-text-main"
                                 value={opt.maxQuantity || 1}
                                 onChange={(e) =>
@@ -425,6 +439,9 @@ const ModifierFormPage: React.FC = () => {
                               </span>
                               <input
                                 type="number"
+                                min="0"
+                                aria-label={t("products.extra_price")}
+                                aria-invalid={!!optionErrors[idx]?.price}
                                 placeholder="0.00"
                                 className="w-full bg-transparent text-sm text-right border-none focus:ring-0 outline-none p-0 text-text-main"
                                 value={opt.price}
@@ -439,11 +456,18 @@ const ModifierFormPage: React.FC = () => {
                           </div>
 
                           <button
+                            type="button"
                             onClick={() => removeOption(idx)}
+                            aria-label={t('forms.remove_option', { option: opt.name || idx + 1 })}
                             className="text-text-muted hover:text-red-500 p-1"
                           >
                             <Trash2 className="w-4 h-4" />
                           </button>
+                          {optionErrors[idx] && (
+                          <p role="alert" className="w-full px-2 text-xs font-medium text-danger">
+                            {Object.values(optionErrors[idx]).filter(Boolean).join(' · ')}
+                          </p>
+                        )}
                         </div>
                       )}
                     </Draggable>

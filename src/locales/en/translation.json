@@ -180,6 +180,15 @@
     "no_active_restaurant": "System error: no active restaurant selected.",
     "no_active_restaurant_description": "Open a restaurant dashboard before creating this resource."
   },
+  "validation": {
+    "invalid_dates": "Enter valid dates",
+    "error_date_range": "The end date cannot be before the start date",
+    "error_negative_value": "The value cannot be negative",
+    "error_percentage_limit": "A percentage cannot exceed 100",
+    "error_zero_value": "The value must be greater than zero",
+    "error_global_limit": "The global limit cannot be lower than the per-user limit",
+    "minimum_one": "The value must be at least 1"
+  },
   "products": {
     "products": "Products",
     "descriptions": "Manage your food items and availability",
@@ -503,6 +512,7 @@
     "section_limits": "Usage Limits",
 
     "code": "Coupon Code",
+    "code_min_length": "The code must contain at least 3 characters",
     "code_help": "Unique code users will enter (e.g. SAVE20)",
     "description": "Description",
     "description_placeholder": "Internal note or customer facing description...",
