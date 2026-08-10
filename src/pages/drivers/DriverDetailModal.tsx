@@ -41,7 +41,7 @@ const DriverDetailModal: React.FC<DriverDetailModalProps> = ({
 
         <div className="z-10 px-8 pt-16 pb-8 flex flex-col items-center text-center">
 
-          <div className="w-24 h-24 rounded-full border-4 border-white shadow-md overflow-hidden bg-white mb-4">
+          <div className="w-24 h-24 rounded-full border-4 border-background-card shadow-md overflow-hidden bg-background-card mb-4">
             <img
               src={driver.profileImageUrl || avatarFallback}
               alt={`${driver.firstName} ${driver.lastName}`}
@@ -85,7 +85,7 @@ const DriverDetailModal: React.FC<DriverDetailModalProps> = ({
             </div>
 
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-white rounded-full text-gray-400 border border-gray-200">
+              <div className="p-2 bg-background-card rounded-full text-text-subtle border border-border">
                 <ShieldCheck className="w-4 h-4" />
               </div>
               <div className="flex-1">
@@ -98,7 +98,7 @@ const DriverDetailModal: React.FC<DriverDetailModalProps> = ({
 
             {driver.restaurant && (
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-white rounded-full text-gray-400 border border-gray-200">
+                <div className="p-2 bg-background-card rounded-full text-text-subtle border border-border">
                   <Store className="w-4 h-4" />
                 </div>
                 <div className="flex-1">

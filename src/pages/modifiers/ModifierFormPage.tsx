@@ -3,7 +3,7 @@ import {
   DragDropContext,
   Draggable,
   Droppable,
-} from "@hello-pangea/dnd";
+} from "../../components/common/SimpleDragDrop";
 import {
   Save,
   CircleDot,
@@ -282,7 +282,7 @@ const ModifierFormPage: React.FC = () => {
               error={fieldErrors.name}
             />
 
-            <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center bg-gray-50 dark:bg-gray-900/40 p-3 rounded-xl border border-border/50">
+            <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center bg-surface-muted p-3 rounded-xl border border-border/50">
               <div className="w-full sm:w-auto">
                 <AnatomySwitcher
                   value={isSingle ? "single" : "multi"}
@@ -376,12 +376,12 @@ const ModifierFormPage: React.FC = () => {
                                   className="w-8 h-8 rounded-md object-cover border border-border"
                                 />
                               ) : (
-                                <div className="w-8 h-8 rounded-md bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center text-purple-600">
+                                <div className="w-8 h-8 rounded-md bg-primary/10 flex items-center justify-center text-primary">
                                   <Package className="w-4 h-4" />
                                 </div>
                               )
                             ) : (
-                              <div className="text-gray-300">
+                              <div className="text-text-subtle">
                                 {isSingle ? (
                                   <CircleDot className="w-5 h-5" />
                                 ) : (
@@ -460,7 +460,7 @@ const ModifierFormPage: React.FC = () => {
                             type="button"
                             onClick={() => removeOption(idx)}
                             aria-label={t('forms.remove_option', { option: opt.name || idx + 1 })}
-                            className="text-text-muted hover:text-red-500 p-1"
+                            className="text-text-muted hover:text-danger p-1"
                           >
                             <Trash2 className="w-4 h-4" />
                           </button>
@@ -490,7 +490,7 @@ const ModifierFormPage: React.FC = () => {
 
             <button
               onClick={() => setProductPickerOpen(true)}
-              className="flex-1 py-2 border border-dashed border-purple-500/30 bg-purple-500/5 rounded-lg text-purple-600 text-xs font-bold flex items-center justify-center hover:bg-purple-500/10 transition-colors"
+              className="flex-1 py-2 border border-dashed border-primary/30 bg-primary/5 rounded-lg text-primary text-xs font-bold flex items-center justify-center hover:bg-primary/10 transition-colors"
             >
               <PackageSearch className="w-3 h-3 mr-2" />{" "}
               {t("products.add_product_option")}

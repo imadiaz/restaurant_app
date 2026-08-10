@@ -25,9 +25,9 @@ const CouponCard: React.FC<CouponCardProps> = ({
     const now = new Date();
     const end = new Date(coupon.endDate);
     
-    if (!coupon.isActive) return 'bg-gray-100 text-gray-500';
-    if (now > end) return 'bg-red-50 text-red-600 border-red-100'; // Expired
-    return 'bg-green-50 text-green-600 border-green-100'; // Active
+    if (!coupon.isActive) return 'bg-surface-muted text-text-muted';
+    if (now > end) return 'bg-danger-surface text-danger border-danger/20'; // Expired
+    return 'bg-success-surface text-success border-success/20'; // Active
   };
 
   // Helper to format discount (e.g., "20%" or "$100.00")
@@ -38,7 +38,7 @@ const CouponCard: React.FC<CouponCardProps> = ({
   return (
     <div className="bg-background-card rounded-3xl  border border-border shadow-sm hover:shadow-md transition-all group flex flex-col h-full relative overflow-hidden">
       {coupon.imageUrl && (
-        <div className="h-32 w-full relative bg-gray-100 shrink-0">
+        <div className="h-32 w-full relative bg-surface-muted shrink-0">
            <img 
              src={coupon.imageUrl} 
              alt={coupon.code} 

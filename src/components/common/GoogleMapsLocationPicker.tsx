@@ -3,6 +3,7 @@ import { GoogleMap, useJsApiLoader, MarkerF, Autocomplete } from "@react-google-
 import { Crosshair, Loader2, MapPin, Search } from "lucide-react";
 import { extractAddressComponents, type AddressResult } from "../../utils/maps/google.maps.utils";
 import AnatomyText from "../anatomy/AnatomyText";
+import { useTranslation } from "react-i18next";
 
 
 
@@ -22,6 +23,7 @@ const LocationPicker: React.FC<LocationPickerProps> = ({
   onLocationSelect,
   apiKey,
 }) => {
+  const { t } = useTranslation();
   const { isLoaded } = useJsApiLoader({
     googleMapsApiKey: apiKey,
     libraries: LIBRARIES,
@@ -139,7 +141,7 @@ const LocationPicker: React.FC<LocationPickerProps> = ({
                 {/* Solid Background Container */}
                 <div className="relative shadow-xl rounded-control bg-input ring-1 ring-border group focus-within:ring-2 focus-within:ring-primary transition-all">
                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                        <Search className="h-5 w-5 text-gray-400 group-focus-within:text-primary" />
+                        <Search className="h-5 w-5 text-text-subtle group-focus-within:text-primary" />
                     </div>
                     <input
                         type="text"
@@ -176,14 +178,14 @@ const LocationPicker: React.FC<LocationPickerProps> = ({
       </GoogleMap>
       
       {/* Footer Instruction */}
-      <div className="absolute bottom-4 left-4 right-14 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md p-3 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-800 flex items-start gap-3 text-xs">
+      <div className="absolute bottom-4 left-4 right-14 bg-background-card/95 backdrop-blur-md p-3 rounded-2xl shadow-lg border border-border flex items-start gap-3 text-xs">
          <div className="p-1.5 bg-primary/10 rounded-full text-primary shrink-0">
             <MapPin className="w-4 h-4" />
          </div>
          <div>
             <AnatomyText.Label className="text-primary mb-0.5">Como usar</AnatomyText.Label>
-            <p className="text-gray-600 dark:text-gray-400 leading-snug">
-                Arrastra el <span className="text-red-500 font-bold">Pin Rojo</span> al lugar, la información se cargara automaticamente.
+            <p className="text-text-muted leading-snug">
+                {t('maps.drag_pin_before')} <span className="text-danger font-bold">{t('maps.red_pin')}</span> {t('maps.drag_pin_after')}
             </p>
          </div>
       </div>

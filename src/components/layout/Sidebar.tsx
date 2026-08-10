@@ -61,7 +61,7 @@ const Sidebar: React.FC<SidebarProps> = ({ mobile = false, onNavigate }) => {
           <img 
             src={activeRestaurant.logoUrl} 
             alt={activeRestaurant.name}
-            className="w-10 h-10 rounded-full object-cover shadow-lg border-2 border-white dark:border-gray-600 bg-gray-100 shrink-0"
+            className="w-10 h-10 rounded-full object-cover shadow-lg border-2 border-background-card bg-surface-muted shrink-0"
           />
         ) : (
           <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-primary/30 shadow-lg shrink-0">
@@ -121,7 +121,7 @@ const Sidebar: React.FC<SidebarProps> = ({ mobile = false, onNavigate }) => {
           disabled={isLoading}
           onClick={handleLogout}
           className={`
-            w-full flex items-center p-3 rounded-xl text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors
+            w-full flex items-center p-3 rounded-xl text-danger hover:bg-danger-surface transition-colors
             ${isSidebarCollapsed && !mobile ? 'justify-center' : ''}
           `}
         >

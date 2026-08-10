@@ -34,7 +34,7 @@ const AnatomyCheckbox: React.FC<AnatomyCheckboxProps> = ({
             peer-focus-visible:ring-2 peer-focus-visible:ring-primary peer-focus-visible:ring-offset-2 peer-focus-visible:ring-offset-background
             ${checked 
               ? 'bg-primary border-primary' 
-              : 'bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 hover:border-primary/50'}
+              : 'bg-input border-border-strong hover:border-primary/50'}
           `}
         >
           <Check 

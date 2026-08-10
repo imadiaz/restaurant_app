@@ -172,7 +172,7 @@ const ScheduleOverrideModal: React.FC<ScheduleOverrideModalProps> = ({
 
              <div>
                 <AnatomyText.Label className="mb-1.5 block">{t('common.status')}</AnatomyText.Label>
-                <div className="dark:bg-gray-900/50 p-1 rounded-xl">
+                <div className="bg-surface-muted p-1 rounded-xl">
                    <AnatomySwitcher 
                       value={isClosed ? 'true' : 'false'}
                       onChange={(val) => setValue('isClosed', val === 'true')}
@@ -193,8 +193,8 @@ const ScheduleOverrideModal: React.FC<ScheduleOverrideModalProps> = ({
           />
 
           {!isClosed && (
-            <div className="animate-in slide-in-from-top-2 fade-in duration-200 bg-blue-50/50 dark:bg-blue-900/10 p-4 rounded-2xl border border-blue-100 dark:border-blue-800/30 space-y-3">
-               <div className="flex items-center gap-2 text-blue-600 dark:text-blue-400 mb-1">
+            <div className="animate-in slide-in-from-top-2 fade-in duration-200 bg-info-surface p-4 rounded-2xl border border-info/20 space-y-3">
+               <div className="flex items-center gap-2 text-info mb-1">
                   <AlertCircle className="w-4 h-4" />
                   <span className="text-xs font-bold uppercase tracking-wide">{t('schedules.set_new_hours')}</span>
                </div>
@@ -208,7 +208,7 @@ const ScheduleOverrideModal: React.FC<ScheduleOverrideModalProps> = ({
                         {...register('openTime', { required: !isClosed })}
                     />
                     {isOpenTimeInvalid && (
-                        <span className="text-[10px] text-red-500 font-medium block mt-1">
+                        <span className="text-[10px] text-danger font-medium block mt-1">
                            {t('schedules.validation_hours_later')} ({currentTimeStr})
                         </span>
                     )}
@@ -221,7 +221,7 @@ const ScheduleOverrideModal: React.FC<ScheduleOverrideModalProps> = ({
                         {...register('closeTime', { required: !isClosed })}
                     />
                     {isRangeInvalid && !isOpenTimeInvalid && (
-                        <span className="text-[10px] text-red-500 font-medium block mt-1">
+                        <span className="text-[10px] text-danger font-medium block mt-1">
                            {t('schedules.validation_hours_after')}
                         </span>
                     )}
@@ -231,7 +231,7 @@ const ScheduleOverrideModal: React.FC<ScheduleOverrideModalProps> = ({
           )}
         </div>
 
-        <div className="p-4 sm:p-6 border-t border-border bg-gray-50 dark:bg-gray-900 flex gap-3">
+        <div className="p-4 sm:p-6 border-t border-border bg-surface-muted flex gap-3">
            <AnatomyButton type="button" variant="secondary" onClick={onClose} fullWidth>
               {t('common.cancel')}
            </AnatomyButton>

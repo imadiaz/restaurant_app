@@ -49,7 +49,7 @@ const Header: React.FC<HeaderProps> = ({ onMobileMenuClick, isMobileMenuOpen = f
         <div className="flex items-center gap-1 sm:gap-3 md:gap-4 border-r border-border pr-2 sm:pr-4 md:pr-6">
           <button aria-label={t('notifications.title', 'Notifications')} className="relative p-2 text-text-muted hover:bg-background hover:text-text-main rounded-full transition-colors">
             <Bell className="w-5 h-5" />
-            <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-background-card"></span>
+            <span className="absolute top-2 right-2 w-2 h-2 bg-danger rounded-full border-2 border-background-card"></span>
           </button>
           
           <button aria-label={t('common.information', 'Information')} className="p-2 text-text-muted hover:bg-background hover:text-text-main rounded-full transition-colors">
@@ -58,7 +58,7 @@ const Header: React.FC<HeaderProps> = ({ onMobileMenuClick, isMobileMenuOpen = f
         </div>
 
         <div className="flex items-center gap-3 cursor-pointer p-2 -mr-2 hover:bg-background rounded-xl transition-colors">
-          <div className="w-8 h-8 rounded-full overflow-hidden border border-border bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
+          <div className="w-8 h-8 rounded-full overflow-hidden border border-border bg-surface-muted flex items-center justify-center">
              {currentUser?.profileImageUrl ? (
                <img 
                  src={currentUser.profileImageUrl} 

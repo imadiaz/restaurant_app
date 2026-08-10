@@ -107,7 +107,7 @@ const SchedulesPage: React.FC = () => {
         <div className="bg-background-card p-6 rounded-3xl border border-border shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-4">
             <div
-              className={`w-12 h-12 rounded-full flex items-center justify-center ${currentStatus.isOpen ? "bg-green-100 text-green-600" : "bg-red-100 text-red-600"}`}
+              className={`w-12 h-12 rounded-full flex items-center justify-center ${currentStatus.isOpen ? "bg-success-surface text-success" : "bg-danger-surface text-danger"}`}
             >
               {currentStatus.isOpen ? (
                 <CheckCircle className="w-6 h-6" />
@@ -121,7 +121,7 @@ const SchedulesPage: React.FC = () => {
               </AnatomyText.Label>
               <AnatomyText.H3
                 className={
-                  currentStatus.isOpen ? "text-green-600" : "text-red-500"
+                  currentStatus.isOpen ? "text-success" : "text-danger"
                 }
               >
                 {currentStatus.text}
@@ -141,12 +141,12 @@ const SchedulesPage: React.FC = () => {
 
           <div className="space-y-4 animate-in slide-in-from-bottom-4 duration-500">
             <div className="flex items-center gap-2 px-2">
-               <Calendar className="w-5 h-5 text-red-500" />
+               <Calendar className="w-5 h-5 text-danger" />
                <AnatomyText.H3 className="mb-0">{t('schedules.special_dates_and_holidays')}</AnatomyText.H3>
             </div>
 
             {overrides.length === 0 ? (
-          <div className="text-center p-8 bg-gray-50 dark:bg-gray-900/30 rounded-3xl border border-dashed border-border">
+          <div className="text-center p-8 bg-surface-muted rounded-3xl border border-dashed border-border">
              <AnatomyText.Small className="text-text-muted">
                 {t('schedules.special_dates_and_holidays_empty')}
              </AnatomyText.Small>
@@ -165,7 +165,7 @@ const SchedulesPage: React.FC = () => {
          </div>
 
         <div className="bg-background-card rounded-3xl border border-border shadow-sm overflow-hidden">
-          <div className="p-6 border-b border-border bg-gray-50/50 dark:bg-gray-900/20">
+          <div className="p-6 border-b border-border bg-surface-muted">
             <div className="flex items-center gap-2">
               <Calendar className="w-5 h-5 text-primary" />
               <AnatomyText.H3 className="mb-0">

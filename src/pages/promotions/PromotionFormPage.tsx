@@ -337,13 +337,13 @@ const PromotionsFormPage: React.FC = () => {
                              ${
                                selectedProductIds.includes(product.id)
                                  ? "bg-primary/5 border-primary"
-                                 : "bg-background hover:bg-gray-50 border-transparent hover:border-gray-200"
+                                 : "bg-background hover:bg-surface-hover border-transparent hover:border-border"
                              }
                           `}
                   >
                     <input
                       type="checkbox"
-                      className="w-5 h-5 rounded border-gray-300 text-primary focus:ring-primary mr-3"
+                      className="w-5 h-5 rounded border-border-strong text-primary focus:ring-primary mr-3"
                       checked={selectedProductIds.includes(product.id)}
                       onChange={() => handleToggleProduct(product.id)}
                       disabled={isEditMode}
@@ -365,7 +365,7 @@ const PromotionsFormPage: React.FC = () => {
             </div>
 
             {isEditMode && (
-              <div className="mt-4 text-xs text-center text-muted-foreground bg-gray-100 p-2 rounded">
+              <div className="mt-4 text-xs text-center text-text-muted bg-surface-muted p-2 rounded">
                 {t("promotions.edit_products_disabled_note")}
               </div>
             )}

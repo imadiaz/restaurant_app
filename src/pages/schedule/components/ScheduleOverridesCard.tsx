@@ -20,8 +20,8 @@ const SchedulesOverrideCard: React.FC<SchedulesOverrideCardProps> = ({ override,
        className={`
           relative p-5 rounded-2xl border flex flex-col gap-3 transition-shadow hover:shadow-md
           ${override.isClosed 
-             ? 'bg-red-50/50 border-red-100 dark:bg-red-900/10 dark:border-red-900/30' 
-             : 'bg-blue-50/50 border-blue-100 dark:bg-blue-900/10 dark:border-blue-900/30'
+             ? 'bg-danger-surface border-danger/20' 
+             : 'bg-info-surface border-info/20'
           }
        `}
     >
@@ -43,7 +43,7 @@ const SchedulesOverrideCard: React.FC<SchedulesOverrideCardProps> = ({ override,
           </div>
           
           {!override.isClosed && (
-             <div className="flex items-center text-sm text-text-muted bg-white dark:bg-gray-800 w-fit px-2 py-1 rounded-lg border border-border/50">
+             <div className="flex items-center text-sm text-text-muted bg-background-card w-fit px-2 py-1 rounded-lg border border-border/50">
                 <Clock className="w-3.5 h-3.5 mr-2" />
                 {formatTime(override.openTime)} - {formatTime(override.closeTime)}
              </div>
@@ -52,7 +52,7 @@ const SchedulesOverrideCard: React.FC<SchedulesOverrideCardProps> = ({ override,
 
        <button 
           onClick={() => onDelete(override.id)}
-          className="absolute top-4 right-4 text-gray-400 hover:text-red-500 transition-colors p-1"
+          className="absolute top-4 right-4 text-text-subtle hover:text-danger transition-colors p-1"
           title="Remove Exception"
        >
           <Trash2 className="w-4 h-4" />

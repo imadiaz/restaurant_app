@@ -57,8 +57,8 @@ const ManageRestaurantSettingsSection: React.FC<ManageRestaurantSettingsSectionP
         className={`
             w-full flex items-center p-3 rounded-xl transition-colors
             ${canAccessAdminMode 
-              ? "text-purple-600 bg-purple-50 hover:bg-purple-100 dark:text-purple-400 dark:bg-purple-900/20 dark:hover:bg-purple-900/40" 
-              : "text-gray-500 hover:text-white hover:bg-primary dark:hover:bg-primary"
+              ? "text-primary bg-primary/10 hover:bg-primary/20" 
+              : "text-text-muted hover:text-white hover:bg-primary"
             }
             ${isSidebarCollapsed && !mobile ? "justify-center" : ""}
           `}

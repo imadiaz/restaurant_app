@@ -95,11 +95,11 @@ const MenuSectionFormPage: React.FC = () => {
     >
       <div className="max-w-2xl mx-auto">
           {!activeRestaurant && (
-           <div className="mb-6 bg-red-50 border border-red-200 rounded-2xl p-4 flex items-start gap-3">
-              <AlertCircle className="w-5 h-5 text-red-600 mt-0.5" />
+           <div className="mb-6 bg-danger-surface border border-danger/20 rounded-2xl p-4 flex items-start gap-3">
+              <AlertCircle className="w-5 h-5 text-danger mt-0.5" />
               <div>
-                 <AnatomyText.H3 className="!text-red-700 text-sm">{t('errors.error')}</AnatomyText.H3>
-                 <AnatomyText.Body className="!text-red-600 text-xs">
+                 <AnatomyText.H3 className="!text-danger text-sm">{t('errors.error')}</AnatomyText.H3>
+                 <AnatomyText.Body className="!text-danger text-xs">
                     {t('errors.no_active_restaurant_description')}
                  </AnatomyText.Body>
               </div>
@@ -131,7 +131,7 @@ const MenuSectionFormPage: React.FC = () => {
                    disabled={!activeRestaurant}
                  />
                  
-                 <div className="bg-gray-50 dark:bg-gray-900/50 p-4 rounded-xl border border-border">
+                 <div className="bg-surface-muted p-4 rounded-xl border border-border">
                     <AnatomyText.Label className="mb-1 block">{t('common.pro_tips')}</AnatomyText.Label>
                     <AnatomyText.Small className="leading-relaxed">
                        {t('menuSections.sort_tips')}

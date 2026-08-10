@@ -52,13 +52,13 @@ const AnatomySwitcher: React.FC<AnatomySwitcherProps> = ({
                 ${!isInteractive ? 'cursor-not-allowed' : 'cursor-pointer'}
                 ${isActive 
                   ? 'text-primary bg-background-card shadow-sm ring-1 ring-black/5 dark:ring-white/10' 
-                  : 'text-text-muted hover:text-text-main hover:bg-gray-200/50 dark:hover:bg-gray-700/50'}
+                  : 'text-text-muted hover:text-text-main hover:bg-surface-hover'}
               `}
             >
               {isLoading && isActive ? (
                  <Loader2 aria-hidden="true" className="w-3.5 h-3.5 animate-spin text-primary" />
               ) : (
-                 option.icon && <span className={isActive ? "text-primary" : "text-gray-400"}>{option.icon}</span>
+                 option.icon && <span className={isActive ? "text-primary" : "text-text-subtle"}>{option.icon}</span>
               )}
 
               <span>{option.label}</span>

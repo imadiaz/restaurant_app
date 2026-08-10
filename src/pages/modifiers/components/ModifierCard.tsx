@@ -34,7 +34,7 @@ const ModifierGroupCard: React.FC<ModifierGroupCardProps> = ({
     <div className="bg-background-card rounded-3xl p-5 border border-border shadow-sm hover:shadow-md transition-all group flex flex-col h-full relative">
       <div className="flex items-start gap-4 mb-4">
         <div
-          className={`w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 ${isSingle ? "bg-blue-50 text-blue-600 dark:bg-blue-900/20" : "bg-purple-50 text-purple-600 dark:bg-purple-900/20"}`}
+          className={`w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 ${isSingle ? "bg-info-surface text-info" : "bg-primary/10 text-primary"}`}
         >
           {isSingle ? (
             <CircleDot className="w-6 h-6" />
@@ -68,7 +68,7 @@ const ModifierGroupCard: React.FC<ModifierGroupCardProps> = ({
 
             <AnatomyTag
               variant="default"
-              className="text-xs text-text-muted bg-gray-100 dark:bg-gray-800 border-transparent"
+              className="text-xs text-text-muted bg-surface-muted border-transparent"
             >
               {optionsCount}{" "}
               {t("modifiers.options_label", {

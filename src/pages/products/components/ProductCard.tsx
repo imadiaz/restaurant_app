@@ -33,7 +33,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
 
   return (
     <div className="bg-background-card rounded-3xl overflow-hidden border border-border shadow-sm hover:shadow-md transition-all group flex flex-col h-full relative">
-       <div className="h-44 relative overflow-hidden bg-gray-100 dark:bg-gray-800">
+       <div className="h-44 relative overflow-hidden bg-surface-muted">
           {product.imageUrl ? (
              <>
                 <img 
@@ -82,7 +82,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
           </div>
 
           <div className="mt-auto space-y-4">
-             <div className="bg-gray-50 dark:bg-gray-900/50 p-1 rounded-xl">
+             <div className="bg-surface-muted p-1 rounded-xl">
                 <AnatomySwitcher
                   isLoading={isLoading}
                   disabled={isLoading}

@@ -48,15 +48,15 @@ const PaymentSuccessPage: React.FC = () => {
         <div className="w-full max-w-lg">
           {isActive ? (
             <div className="bg-background-card border border-border rounded-3xl p-8 shadow-xl text-center space-y-6 relative overflow-hidden">
-              <div className="absolute top-0 left-0 w-full h-2 bg-green-500"></div>
-              <div className="absolute -top-10 -right-10 w-32 h-32 bg-green-500/10 rounded-full blur-3xl"></div>
+              <div className="absolute top-0 left-0 w-full h-2 bg-success"></div>
+              <div className="absolute -top-10 -right-10 w-32 h-32 bg-success/10 rounded-full blur-3xl"></div>
 
-              <div className="w-20 h-20 bg-green-100 dark:bg-green-900/30 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4 animate-in zoom-in duration-300">
+              <div className="w-20 h-20 bg-success-surface text-success rounded-full flex items-center justify-center mx-auto mb-4 animate-in zoom-in duration-300">
                 <CheckCircle className="w-10 h-10" />
               </div>
 
               <div className="space-y-2">
-                <AnatomyText.H3 className="text-green-700 dark:text-green-400">
+                <AnatomyText.H3 className="text-success">
                   {t('payments.setup_complete')}
                 </AnatomyText.H3>
                 <AnatomyText.Body className="text-text-muted text-lg">
@@ -64,13 +64,13 @@ const PaymentSuccessPage: React.FC = () => {
                 </AnatomyText.Body>
               </div>
 
-              <div className="bg-gray-50 dark:bg-gray-800/50 p-4 rounded-2xl border border-border text-left flex items-center gap-4">
-                <div className="p-2 bg-white dark:bg-gray-700 rounded-lg shadow-sm">
+              <div className="bg-surface-muted p-4 rounded-2xl border border-border text-left flex items-center gap-4">
+                <div className="p-2 bg-background-card rounded-lg shadow-sm">
                    <CreditCard className="w-6 h-6 text-primary" />
                 </div>
                 <div>
                   <p className="font-bold text-sm text-text-main">Stripe Connect</p>
-                  <p className="text-xs text-text-muted">Status: <span className="text-green-500 font-bold">Active</span></p>
+                  <p className="text-xs text-text-muted">Status: <span className="text-success font-bold">Active</span></p>
                 </div>
               </div>
 

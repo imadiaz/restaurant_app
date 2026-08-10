@@ -278,7 +278,7 @@ const hasLoadedData = useRef(false);
                 </div>
 
                 {loadingRestaurants ? (
-                  <p className="text-sm text-gray-500">{t('loading')}</p>
+                  <p className="text-sm text-text-muted">{t('loading')}</p>
                 ) : (
                   <AnatomySelect 
                     className="w-full p-3 border rounded-lg bg-background"
@@ -293,7 +293,7 @@ const hasLoadedData = useRef(false);
                     ))}
                   </AnatomySelect>
                 )}
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-text-muted">
                   {t('users.role_description')}
                 </p>
              </div>

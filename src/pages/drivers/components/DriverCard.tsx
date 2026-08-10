@@ -26,7 +26,7 @@ const DriverCard = ({
 
   return (
     <div className="bg-background-card p-6 rounded-3xl shadow-sm border border-border flex flex-col items-center text-center hover:shadow-md transition-all cursor-pointer group relative">
-      <div className="w-20 h-20 rounded-full mb-4 border-2 border-background-card shadow-sm overflow-hidden group-hover:scale-105 transition-transform duration-300 ring-2 ring-gray-100 dark:ring-gray-700">
+      <div className="w-20 h-20 rounded-full mb-4 border-2 border-background-card shadow-sm overflow-hidden group-hover:scale-105 transition-transform duration-300 ring-2 ring-border">
         <img
           src={driver.profileImageUrl || avatarUrl}
           alt={driver.firstName}
@@ -63,13 +63,13 @@ const DriverCard = ({
     inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold capitalize border
     ${
       driver.status === "active"
-        ? "bg-green-100 text-green-700 border-green-200 dark:bg-green-900/30 dark:text-green-400 dark:border-green-800"
-        : "bg-red-100 text-red-700 border-red-200 dark:bg-red-900/30 dark:text-red-400 dark:border-red-800"
+        ? "bg-success-surface text-success border-success/20"
+        : "bg-danger-surface text-danger border-danger/20"
     }
   `}
           >
             <span
-              className={`w-1.5 h-1.5 rounded-full mr-1.5 ${driver.status === STATUS.active ? "bg-green-500" : "bg-red-500"}`}
+              className={`w-1.5 h-1.5 rounded-full mr-1.5 ${driver.status === STATUS.active ? "bg-success" : "bg-danger"}`}
             ></span>
             {driver.status}
           </span>

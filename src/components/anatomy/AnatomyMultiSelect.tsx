@@ -87,7 +87,7 @@ const AnatomyMultiSelect: React.FC<AnatomyMultiSelectProps> = ({
         aria-label={label ?? resolvedPlaceholder}
         className={`
           min-h-[42px] px-3 py-1.5 rounded-xl border bg-background-card transition-all cursor-pointer flex flex-wrap items-center gap-2
-          ${isOpen ? 'border-primary ring-1 ring-primary' : 'border-border hover:border-gray-400 dark:hover:border-gray-500'}
+          ${isOpen ? 'border-primary ring-1 ring-primary' : 'border-border hover:border-border-strong'}
         `}
         onClick={() => setIsOpen(!isOpen)}
         onKeyDown={handleTriggerKeyDown}
@@ -106,7 +106,7 @@ const AnatomyMultiSelect: React.FC<AnatomyMultiSelectProps> = ({
               type="button"
               onClick={(e) => removeOption(e, opt.value)}
               aria-label={t('forms.remove_option', { option: opt.label })}
-              className="ml-1 hover:text-red-500 focus:outline-none"
+              className="ml-1 hover:text-danger focus:outline-none"
             >
               <X className="w-3 h-3" />
             </button>
@@ -130,7 +130,7 @@ const AnatomyMultiSelect: React.FC<AnatomyMultiSelectProps> = ({
                 type="text"
                 aria-label={t('forms.search_options')}
                 placeholder={t('common.search')}
-                className="w-full pl-9 pr-3 py-2 bg-gray-50 dark:bg-gray-900 rounded-lg text-sm border-none focus:ring-1 focus:ring-primary outline-none"
+                className="w-full pl-9 pr-3 py-2 bg-input rounded-lg text-sm border-none focus:ring-1 focus:ring-primary outline-none"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 autoFocus
@@ -153,7 +153,7 @@ const AnatomyMultiSelect: React.FC<AnatomyMultiSelectProps> = ({
                     aria-selected={isSelected}
                     className={`
                       w-full flex items-center justify-between px-3 py-2.5 rounded-lg cursor-pointer text-sm transition-colors
-                      ${isSelected ? 'bg-primary/5 text-primary font-medium' : 'text-text-main hover:bg-gray-50 dark:hover:bg-gray-800'}
+                      ${isSelected ? 'bg-primary/5 text-primary font-medium' : 'text-text-main hover:bg-surface-hover'}
                     `}
                   >
                     <span>{option.label}</span>

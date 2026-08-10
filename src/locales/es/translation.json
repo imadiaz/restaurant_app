@@ -3,6 +3,11 @@
     "switch_to_dark": "Cambiar al tema oscuro",
     "switch_to_light": "Cambiar al tema claro"
   },
+  "maps": {
+    "drag_pin_before": "Arrastra el",
+    "red_pin": "pin rojo",
+    "drag_pin_after": "al lugar; la dirección se actualizará automáticamente."
+  },
   "common": {
     "save": "Guardar",
     "cancel": "Cancelar",

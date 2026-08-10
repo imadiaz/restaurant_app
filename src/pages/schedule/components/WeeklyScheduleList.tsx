@@ -30,7 +30,7 @@ const WeeklyScheduleList: React.FC<WeeklyScheduleListProps> = ({
             key={day}
             className={`
                p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-colors
-               ${isToday ? "bg-primary/5" : "hover:bg-gray-50 dark:hover:bg-gray-800/30"}
+               ${isToday ? "bg-primary/5" : "hover:bg-surface-hover"}
             `}
           >
             <div className="flex items-center gap-3 w-40 shrink-0">
@@ -58,7 +58,7 @@ const WeeklyScheduleList: React.FC<WeeklyScheduleListProps> = ({
                   {slots.map((slot, idx) => (
                     <div
                       key={idx}
-                      className="flex items-center bg-white dark:bg-gray-800 border border-border px-3 py-1.5 rounded-lg shadow-sm"
+                      className="flex items-center bg-background-card border border-border px-3 py-1.5 rounded-lg shadow-sm"
                     >
                       <Clock className="w-3.5 h-3.5 mr-2 text-text-muted" />
                       <span className="text-sm font-medium text-text-main">

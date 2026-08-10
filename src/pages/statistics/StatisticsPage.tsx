@@ -1,20 +1,6 @@
 import { BarChart3 } from "lucide-react";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title as ChartTitle,
-  Tooltip,
-  Filler,
-  Legend,
-  type ChartOptions,
-  type TooltipItem,
-} from "chart.js";
-import { Line } from "react-chartjs-2";
 import BasePageLayout from "../../components/layout/BaseLayout";
 import { useStatistics } from "../../hooks/statistics/use.statistics";
 import AnatomyButton from "../../components/anatomy/AnatomyButton";
@@ -22,18 +8,7 @@ import { useRestaurantOperations } from "../../hooks/restaurants/use.operations"
 import { useAppStore } from "../../store/app.store";
 import { useAuthStore } from "../../store/auth.store";
 import { isRestaurantAdmin, isSuperAdmin } from "../../data/models/user/utils/user.utils";
-import { useThemeStore } from "../../store/theme.store";
-
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  ChartTitle,
-  Tooltip,
-  Filler,
-  Legend,
-);
+import RevenueLineChart from "../../components/charts/RevenueLineChart";
 
 // 🆕 Helper component to create clean dividers between sections
 const SectionHeader = ({ title }: { title: string }) => (
@@ -47,13 +22,6 @@ const StatisticsPage: React.FC = () => {
   const { t } = useTranslation();
   const { activeRestaurant } = useAppStore();
   const { user } = useAuthStore();
-  const theme = useThemeStore((state) => state.theme);
-  const themeStyles = getComputedStyle(document.documentElement);
-  const themeColor = (name: string, fallback: string) =>
-    themeStyles.getPropertyValue(name).trim() || fallback;
-  const chartTextColor = themeColor("--color-text-muted", theme === "dark" ? "#94a3b8" : "#6b7280");
-  const chartGridColor = themeColor("--color-border", theme === "dark" ? "#334155" : "#e5e7eb");
-  const chartPrimaryColor = themeColor("--color-primary", "#ee8410");
   
   const [dates, setDates] = useState(() => {
     const today = new Date();
@@ -88,44 +56,6 @@ const StatisticsPage: React.FC = () => {
     const [year, month, day] = dateString.split("-");
     const date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
     return new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric" }).format(date);
-  };
-
-  // --- Chart.js Configuration ---
-  const chartOptions: ChartOptions<"line"> = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: { display: false },
-      tooltip: {
-        callbacks: { label: (context: TooltipItem<"line">) => ` ${formatCurrency(Number(context.raw))}` },
-        backgroundColor: "rgba(0, 0, 0, 0.8)",
-        padding: 12,
-        cornerRadius: 8,
-      },
-    },
-    scales: {
-      x: { grid: { display: false }, ticks: { color: chartTextColor } },
-      y: { border: { display: false }, grid: { color: chartGridColor }, ticks: { color: chartTextColor, callback: (value) => `$${value}` } },
-    },
-  };
-
-  const chartJsData = {
-    labels: chartData.map((d) => formatDate(d.date)),
-    datasets: [
-      {
-        fill: true,
-        label: "Revenue",
-        data: chartData.map((d) => d.dailyEarnings),
-        borderColor: chartPrimaryColor,
-        backgroundColor: `color-mix(in srgb, ${chartPrimaryColor} 15%, transparent)`,
-        tension: 0.4, 
-        pointBackgroundColor: chartPrimaryColor,
-        pointBorderColor: themeColor("--color-background-card", "#fff"),
-        pointBorderWidth: 2,
-        pointRadius: 4,
-        pointHoverRadius: 6,
-      },
-    ],
   };
 
   const handleGeneratePaymentLink = async (restaurantId: string) => {
@@ -286,8 +216,16 @@ const StatisticsPage: React.FC = () => {
               <h3 className="text-lg font-semibold text-text-main mb-6">
                 {t("statistics.revenue_over_time", "Revenue Over Time")}
               </h3>
-              <div className="h-[320px] w-full">
-                <Line data={chartJsData} options={chartOptions} />
+              <div className="h-[320px] w-full overflow-x-auto">
+                <div className="h-full min-w-[560px]">
+                  <RevenueLineChart
+                    labels={chartData.map((item) => formatDate(item.date))}
+                    values={chartData.map((item) => item.dailyEarnings)}
+                    formatValue={formatCurrency}
+                    accessibleLabel={t("statistics.revenue_chart_label", "Revenue by date")}
+                    emptyLabel={t("statistics.no_sales_data", "No sales data for this period.")}
+                  />
+                </div>
               </div>
             </div>
 

@@ -48,10 +48,10 @@ export const PaymentRefreshPage = () => {
           
           <div className="bg-background-card border border-border rounded-3xl p-8 shadow-xl text-center space-y-6 relative overflow-hidden">
             
-            <div className="absolute top-0 left-0 w-full h-2 bg-blue-500"></div>
-            <div className="absolute -top-10 -left-10 w-32 h-32 bg-blue-500/10 rounded-full blur-3xl"></div>
+            <div className="absolute top-0 left-0 w-full h-2 bg-info"></div>
+            <div className="absolute -top-10 -left-10 w-32 h-32 bg-info/10 rounded-full blur-3xl"></div>
 
-            <div className="w-20 h-20 bg-blue-50 dark:bg-blue-900/30 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 animate-in zoom-in duration-300">
+            <div className="w-20 h-20 bg-info-surface text-info rounded-full flex items-center justify-center mx-auto mb-4 animate-in zoom-in duration-300">
               <RefreshCw className={`w-10 h-10 ${isCreatingLink ? 'animate-spin' : ''}`} />
             </div>
 
@@ -65,8 +65,8 @@ export const PaymentRefreshPage = () => {
             </div>
 
             {/* Security Badge */}
-            <div className="bg-gray-50 dark:bg-gray-800/50 p-3 rounded-xl border border-border inline-flex items-center gap-2 mx-auto">
-               <ShieldCheck className="w-4 h-4 text-green-500" />
+            <div className="bg-surface-muted p-3 rounded-xl border border-border inline-flex items-center gap-2 mx-auto">
+               <ShieldCheck className="w-4 h-4 text-success" />
                <span className="text-xs text-text-muted font-medium">
                  {t('payments.secure_connection',)}
                </span>

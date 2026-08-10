@@ -37,7 +37,7 @@ const ManageCategoriesSection: React.FC<ManageCategoriesSectionProps> = ({
         disabled={isLoading}
         onClick={() => setIsOpen(true)}
         className={`
-            w-full flex items-center p-3 rounded-xl text-gray-500 hover:text-white hover:bg-primary dark:hover:bg-primary transition-colors
+            w-full flex items-center p-3 rounded-xl text-text-muted hover:text-white hover:bg-primary transition-colors
             ${isSidebarCollapsed && !mobile ? "justify-center" : ""}
           `}
       >

@@ -3,7 +3,7 @@ import {
   DragDropContext,
   Draggable,
   Droppable,
-} from "@hello-pangea/dnd";
+} from "../../components/common/SimpleDragDrop";
 import {
   Save,
   Plus,
@@ -171,6 +171,18 @@ const {navigateTo} = useAppNavigation();
       }
 
       const newGroups = [...modifierGroups];
+      if (sourceGroupIdx === destGroupIdx) {
+        const reorderedGroup = {
+          ...newGroups[sourceGroupIdx],
+          options: [...newGroups[sourceGroupIdx].options],
+        };
+        const [movedOption] = reorderedGroup.options.splice(source.index, 1);
+        reorderedGroup.options.splice(destination.index, 0, movedOption);
+        newGroups[sourceGroupIdx] = reorderedGroup;
+        setModifierGroups(newGroups);
+        return;
+      }
+
       const sourceGroup = {
         ...newGroups[sourceGroupIdx],
         options: [...newGroups[sourceGroupIdx].options],
@@ -599,7 +611,7 @@ const {navigateTo} = useAppNavigation();
                                         
                                         <button 
                                             onClick={() => setDetachWarningIdx(idx)}
-                                            className="absolute top-2 right-2  text-primary hover:text-primary-dark p-2 bg-white dark:bg-gray-800 rounded-full shadow-sm hover:shadow-md transition-all z-20 border border-primary/20"
+                                            className="absolute top-2 right-2 text-primary hover:text-primary-hover p-2 bg-background-card rounded-full shadow-sm hover:shadow-md transition-all z-20 border border-primary/20"
                                             title={t("products.edit_detach_group")}
                                         >
                                             <Pencil className="w-4 h-4" />
@@ -628,7 +640,7 @@ const {navigateTo} = useAppNavigation();
                                                 {t("products.confirm_detach")}
                                             </AnatomyButton>
                                         </div>
-                                        <button onClick={cancelDetach} className="absolute top-4 right-4 text-text-muted hover:text-text-main">
+                                        <button onClick={cancelDetach} aria-label={t('common.close')} className="absolute top-4 right-4 text-text-muted hover:text-text-main">
                                             <X className="w-5 h-5" />
                                         </button>
                                     </div>
@@ -653,7 +665,7 @@ const {navigateTo} = useAppNavigation();
                                   }
                                   disabled={isLinked}
                                 />
-                                <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center bg-gray-50 dark:bg-gray-900/40 p-3 rounded-xl">
+                                <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center bg-surface-muted p-3 rounded-xl">
                                   <div className="w-full sm:w-auto">
                                     <AnatomySwitcher
                                       value={isSingle ? "single" : "multi"}
@@ -715,7 +727,7 @@ const {navigateTo} = useAppNavigation();
 
                               <button
                                 onClick={() => removeGroup(idx)}
-                                className="absolute top-12 right-2  text-primary hover:text-primary-dark p-2 bg-white dark:bg-gray-800 rounded-full shadow-sm hover:shadow-md transition-all z-20 border border-primary/20"
+                                className="absolute top-12 right-2 text-primary hover:text-primary-hover p-2 bg-background-card rounded-full shadow-sm hover:shadow-md transition-all z-20 border border-primary/20"
                               >
                                 <Trash2 className="w-5 h-5" />
                               </button>
@@ -730,7 +742,7 @@ const {navigateTo} = useAppNavigation();
                                   <div
                                     ref={provided.innerRef}
                                     {...provided.droppableProps}
-                                    className={`bg-gray-50 dark:bg-gray-900/50 p-4 rounded-xl space-y-2 ml-8 border border-border/50 ${isLinked ? 'opacity-70 pointer-events-none' : ''}`}
+                                    className={`bg-surface-muted p-4 rounded-xl space-y-2 ml-8 border border-border/50 ${isLinked ? 'opacity-70 pointer-events-none' : ''}`}
                                   >
                                     <AnatomyText.Label className="mb-2 block text-xs">
                                       {t("products.options_list")}
@@ -760,7 +772,7 @@ const {navigateTo} = useAppNavigation();
                                               </div>
 
                                               {/* Icon Indicator: Product vs Text */}
-                                              <div className="text-gray-400">
+                                              <div className="text-text-subtle">
                                                 {opt.productId ? (
                                                   opt.imageUrl || opt?.linkedProduct?.imageUrl ? (
                                                     <img
@@ -769,7 +781,7 @@ const {navigateTo} = useAppNavigation();
                                                       className="w-8 h-8 rounded-md object-cover border border-border"
                                                     />
                                                   ) : (
-                                                    <div className="w-8 h-8 rounded-md bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center text-purple-600">
+                                                    <div className="w-8 h-8 rounded-md bg-primary/10 flex items-center justify-center text-primary">
                                                       <Package className="w-4 h-4" />
                                                     </div>
                                                   )
@@ -856,7 +868,7 @@ const {navigateTo} = useAppNavigation();
                                                   onClick={() =>
                                                     removeOption(idx, optIdx)
                                                   }
-                                                  className="text-text-muted hover:text-red-500 p-1"
+                                                  className="text-text-muted hover:text-danger p-1"
                                                 >
                                                   <Trash2 className="w-4 h-4" />
                                                 </button>
@@ -881,7 +893,7 @@ const {navigateTo} = useAppNavigation();
 
                                         <button
                                           onClick={() => openProductPicker(idx)}
-                                          className="flex-1 py-2 border border-dashed border-purple-500/30 bg-purple-500/5 rounded-lg text-purple-600 text-xs font-bold flex items-center justify-center hover:bg-purple-500/10 transition-colors"
+                                          className="flex-1 py-2 border border-dashed border-primary/30 bg-primary/5 rounded-lg text-primary text-xs font-bold flex items-center justify-center hover:bg-primary/10 transition-colors"
                                         >
                                           <PackageSearch className="w-3 h-3 mr-2" />{" "}
                                           {t("products.add_product_option")}

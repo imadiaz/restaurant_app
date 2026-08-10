@@ -46,7 +46,7 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({
     <div
       className="bg-background-card rounded-3xl overflow-hidden shadow-sm border border-border hover:shadow-md transition-all group relative flex flex-col h-full cursor-pointer"
     >
-      <div onClick={onViewDetail} className="h-32 w-full bg-gray-100 dark:bg-gray-800 relative">
+      <div onClick={onViewDetail} className="h-32 w-full bg-surface-muted relative">
         {restaurant.heroImageUrl ? (
           <>
             <img
@@ -58,7 +58,7 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({
             <div className="absolute inset-0 bg-black/40 transition-opacity duration-300 group-hover:opacity-50" />
           </>
         ) : (
-          <div className="w-full h-full bg-gradient-to-r from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-900 flex items-center justify-center opacity-50">
+          <div className="w-full h-full bg-gradient-to-r from-surface-muted to-surface-hover flex items-center justify-center opacity-50">
             <Store className="w-8 h-8 text-text-muted" />
           </div>
         )}
@@ -92,7 +92,7 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({
           </div>
 
           <div className="mb-1 mt-2">
-            <AnatomyText.Label className="px-2 py-1 bg-gray-50 dark:bg-gray-900 rounded-lg border border-border">
+            <AnatomyText.Label className="px-2 py-1 bg-surface-muted rounded-lg border border-border">
               {getPriceSymbol(restaurant.priceRange)}
             </AnatomyText.Label>
           </div>
@@ -112,7 +112,7 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({
         </div>
 
         {restaurant.user && (
-          <div className="mb-5 p-2.5 rounded-xl bg-gray-50 dark:bg-gray-900/50 border border-border flex items-center gap-3">
+          <div className="mb-5 p-2.5 rounded-xl bg-surface-muted border border-border flex items-center gap-3">
             <div className="w-8 h-8 rounded-full bg-background-card flex items-center justify-center shadow-sm border border-border overflow-hidden shrink-0">
               {restaurant.user.profileImageUrl ? (
                 <img

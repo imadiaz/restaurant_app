@@ -35,7 +35,7 @@ const ProductPickerModal: React.FC<ProductPickerModalProps> = ({
           <AnatomyText.H3 className="mb-0 text-lg">
             {t("products.select_product")}
           </AnatomyText.H3>
-          <button onClick={onClose} className="text-text-muted hover:text-text-main">
+          <button onClick={onClose} aria-label={t('common.close')} className="text-text-muted hover:text-text-main">
             <X className="w-5 h-5" />
           </button>
         </div>
@@ -55,9 +55,9 @@ const ProductPickerModal: React.FC<ProductPickerModalProps> = ({
             <button
               key={product.id}
               onClick={() => onSelect(product)}
-              className="w-full flex items-center gap-3 p-3 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-xl transition-colors text-left group"
+              className="w-full flex items-center gap-3 p-3 hover:bg-surface-hover rounded-xl transition-colors text-left group"
             >
-              <div className="w-10 h-10 rounded-lg bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-text-muted">
+              <div className="w-10 h-10 rounded-lg bg-surface-muted flex items-center justify-center text-text-muted">
                 {product.imageUrl ? (
                   <img src={product.imageUrl} alt="" className="w-full h-full object-cover rounded-lg" />
                 ) : (

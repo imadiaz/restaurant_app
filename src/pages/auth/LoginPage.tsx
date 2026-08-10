@@ -114,7 +114,7 @@ const LoginPage: React.FC = () => {
 
         {/* Footer */}
         <div className="pb-4 pt-8">
-          <AnatomyText.Link  className="text-gray-500 font-normal hover:text-gray-700 hover:no-underline">
+          <AnatomyText.Link className="text-text-muted font-normal hover:text-text-main hover:no-underline">
             {t('common.need_help')} 
           </AnatomyText.Link>
         </div>

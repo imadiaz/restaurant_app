@@ -148,7 +148,7 @@ const OrderCard: React.FC<OrderCardProps> = ({ order, onClick }) => {
               <span className="text-xs font-mono text-text-main font-medium">
                 #{order.id.slice(0, 8)}
               </span>
-              <button className="p-1 rounded bg-background-card text-text-muted group-hover/copy:text-primary group-hover/copy:bg-primary/10 transition-all">
+              <button aria-label={t('common.copy')} className="p-1 rounded bg-background-card text-text-muted group-hover/copy:text-primary group-hover/copy:bg-primary/10 transition-all">
                 <Copy className="w-3 h-3" />
               </button>
             </div>

@@ -83,13 +83,13 @@ const DashboardLayout: React.FC = () => {
         <div className="sticky top-0 z-30 flex flex-col shadow-sm">
           
           {showImpersonationBanner && (
-            <div className="bg-gray-900 text-white px-4 md:px-6 py-2 flex items-center justify-between border-b border-gray-800">
+            <div className="bg-sidebar text-text-main px-4 md:px-6 py-2 flex items-center justify-between border-b border-border">
               <div className="flex items-center gap-3">
                 <div className="p-1.5 bg-white/10 rounded-lg hidden sm:block">
                   <Building2 className="w-4 h-4 text-primary" />
                 </div>
                 <div>
-                  <p className="text-[10px] text-gray-400 font-medium uppercase tracking-wider">{t('dashboard.view_as_admin')}</p>
+                  <p className="text-[10px] text-text-muted font-medium uppercase tracking-wider">{t('dashboard.view_as_admin')}</p>
                   <p className="text-sm font-bold text-white leading-none">{activeRestaurant?.name}</p>
                 </div>
               </div>
