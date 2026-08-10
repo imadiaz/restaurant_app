@@ -1,8 +1,7 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useRestaurants } from "../../../hooks/restaurants/use.restaurant";
 import { useAppStore } from "../../../store/app.store";
 import { ChefHat } from "lucide-react";
-import type { Restaurant } from "../../../data/models/restaurant/restaurant";
 import { useTranslation } from "react-i18next";
 import ManageCategoriesModal from "./ManageCategoriesModal";
 
@@ -16,21 +15,10 @@ const ManageCategoriesSection: React.FC<ManageCategoriesSectionProps> = ({
   mobile,
 }: ManageCategoriesSectionProps) => {
   const { activeRestaurant } = useAppStore((state) => state);
-  const { getRestaurantById, isLoading } = useRestaurants();
-  const [localRestaurant, setLocalRestaurant] = useState<Restaurant | null>(
-    null,
-  );
+  const { restaurants, isLoading } = useRestaurants(activeRestaurant?.id);
+  const localRestaurant = restaurants[0] ?? activeRestaurant;
   const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
-  useEffect(() => {
-    handleGetRestaurantDetail();
-  }, []);
-
-  const handleGetRestaurantDetail = async () => {
-    const details = await getRestaurantById(activeRestaurant?.id ?? "");
-    setLocalRestaurant(details);
-  };
-
   const initialIds = useMemo(() => {
     return (localRestaurant?.categories ?? []).map((cat) => cat.id);
   }, [localRestaurant]);
@@ -43,7 +31,6 @@ const ManageCategoriesSection: React.FC<ManageCategoriesSectionProps> = ({
           onClose={() => setIsOpen(false)}
           restaurantId={localRestaurant?.id ?? ""}
           initialSelectedIds={initialIds}
-          onSuccess={() => handleGetRestaurantDetail()}
         />
       )}
       <button

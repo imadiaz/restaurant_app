@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import {
   Save,
   AlertCircle,
@@ -61,7 +61,7 @@ const CouponFormPage: React.FC = () => {
   } = useCoupons();
 
   // Form Setup
-  const { register, handleSubmit, watch, reset } = useForm<CreateCouponDto>({
+  const { register, handleSubmit, control, reset } = useForm<CreateCouponDto>({
     defaultValues: {
       code: "",
       description: "",
@@ -82,7 +82,7 @@ const CouponFormPage: React.FC = () => {
   });
 
   // Watch type to change icons/labels dynamically
-  const couponType = watch("type");
+  const couponType = useWatch({ control, name: "type" });
   const isAdmin = isSuperAdmin(user);
 
   // Load Data in Edit Mode

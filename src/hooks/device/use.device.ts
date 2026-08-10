@@ -1,4 +1,3 @@
-import { useState, useEffect } from 'react';
 import { UAParser } from 'ua-parser-js';
 export interface DeviceInfo {
   browser: {
@@ -23,26 +22,17 @@ export interface DeviceInfo {
 }
 
 export const useDeviceInfo = () => {
-  const [deviceInfo, setDeviceInfo] = useState<DeviceInfo | null>(null);
+  const result = new UAParser().getResult();
+  const isMobile = result.device.type === 'mobile';
+  const isTablet = result.device.type === 'tablet';
 
-  useEffect(() => {
-    const parser = new UAParser();
-    const result = parser.getResult();
-
-    const isMobile = result.device.type === 'mobile';
-    const isTablet = result.device.type === 'tablet';
-    const isDesktop = !isMobile && !isTablet;
-
-    setDeviceInfo({
-      browser: result.browser,
-      os: result.os,
-      device: result.device,
-      cpu: result.cpu,
-      isMobile,
-      isTablet,
-      isDesktop
-    });
-  }, []);
-
-  return deviceInfo;
+  return {
+    browser: result.browser,
+    os: result.os,
+    device: result.device,
+    cpu: result.cpu,
+    isMobile,
+    isTablet,
+    isDesktop: !isMobile && !isTablet,
+  } satisfies DeviceInfo;
 };

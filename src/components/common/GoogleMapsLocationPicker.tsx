@@ -7,6 +7,7 @@ import AnatomyText from "../anatomy/AnatomyText";
 
 
 const LIBRARIES: ("places" | "geometry" | "drawing" | "visualization")[] = ["places"];
+const DEFAULT_CENTER = { lat: 18.9213584, lng: -99.244986 };
 
 interface LocationPickerProps {
   initialLat?: number;
@@ -26,23 +27,18 @@ const LocationPicker: React.FC<LocationPickerProps> = ({
     libraries: LIBRARIES,
   });
 
-  // Default Fallback: Mexico City (Zocalo)
-  const defaultCenter = { lat: 18.9213584, lng: -99.244986 };
-  
-  const [center, setCenter] = useState(defaultCenter);
-  const [markerPos, setMarkerPos] = useState(defaultCenter);
+  const initialPosition = initialLat && initialLng && initialLat !== 0
+    ? { lat: Number(initialLat), lng: Number(initialLng) }
+    : DEFAULT_CENTER;
+  const [center, setCenter] = useState(initialPosition);
+  const [markerPos, setMarkerPos] = useState(initialPosition);
   
   const mapRef = useRef<google.maps.Map | null>(null);
   const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
 
   // --- 1. GEOLOCATION & INIT LOGIC ---
   useEffect(() => {
-    if (initialLat && initialLng && initialLat !== 0) {
-      const pos = { lat: Number(initialLat), lng: Number(initialLng) };
-      setCenter(pos);
-      setMarkerPos(pos);
-      return;
-    }
+    if (initialLat && initialLng && initialLat !== 0) return;
 
     // B. CREATE MODE: Try to get User's Current Location
     if (navigator.geolocation) {
@@ -67,7 +63,7 @@ const LocationPicker: React.FC<LocationPickerProps> = ({
 
   // --- HANDLERS ---
 
-  const triggerReverseGeocode = (lat: number, lng: number) => {
+  const triggerReverseGeocode = useCallback((lat: number, lng: number) => {
     const geocoder = new google.maps.Geocoder();
     geocoder.geocode({ location: { lat, lng } }, (results, status) => {
       if (status === "OK" && results && results[0]) {
@@ -75,7 +71,7 @@ const LocationPicker: React.FC<LocationPickerProps> = ({
         onLocationSelect(extracted);
       }
     });
-  };
+  }, [onLocationSelect]);
 
   const onMarkerDragEnd = useCallback(async (e: google.maps.MapMouseEvent) => {
     if (!e.latLng) return;
@@ -83,7 +79,7 @@ const LocationPicker: React.FC<LocationPickerProps> = ({
     const lng = e.latLng.lng();
     setMarkerPos({ lat, lng });
     triggerReverseGeocode(lat, lng);
-  }, [onLocationSelect]);
+  }, [triggerReverseGeocode]);
 
   const onPlaceChanged = () => {
     if (autocompleteRef.current) {
@@ -115,14 +111,14 @@ const LocationPicker: React.FC<LocationPickerProps> = ({
 
   if (!isLoaded) {
     return (
-      <div className="w-full h-80 bg-gray-100 dark:bg-gray-800 flex items-center justify-center rounded-2xl border border-gray-200 dark:border-gray-700">
-        <Loader2 className="w-8 h-8 animate-spin text-gray-400" />
+      <div className="w-full h-80 bg-surface-muted flex items-center justify-center rounded-card border border-border">
+        <Loader2 className="w-8 h-8 animate-spin text-text-subtle" />
       </div>
     );
   }
 
   return (
-    <div className="relative w-full h-[600px] rounded-3xl overflow-hidden shadow-sm border border-gray-200 dark:border-gray-700">
+    <div className="relative w-full h-[min(600px,70dvh)] rounded-card overflow-hidden shadow-sm border border-border">
       <GoogleMap
         center={center}
         zoom={15}
@@ -142,7 +138,7 @@ const LocationPicker: React.FC<LocationPickerProps> = ({
                 onPlaceChanged={onPlaceChanged}
             >
                 {/* Solid Background Container */}
-                <div className="relative shadow-xl rounded-full bg-white dark:bg-gray-800 ring-1 ring-gray-200 dark:ring-gray-700 group focus-within:ring-2 focus-within:ring-primary transition-all">
+                <div className="relative shadow-xl rounded-control bg-input ring-1 ring-border group focus-within:ring-2 focus-within:ring-primary transition-all">
                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                         <Search className="h-5 w-5 text-gray-400 group-focus-within:text-primary" />
                     </div>
@@ -150,10 +146,9 @@ const LocationPicker: React.FC<LocationPickerProps> = ({
                         type="text"
                         placeholder="Search address (e.g. Reforma 222)..."
                         className="
-                            w-full py-3.5 pl-12 pr-12 rounded-full border-none 
+                            w-full py-3.5 pl-12 pr-12 rounded-control border-none 
                             bg-transparent 
-                            text-sm font-medium text-gray-900 dark:text-white 
-                            placeholder-gray-400 dark:placeholder-gray-500
+                            text-sm font-medium text-text-main placeholder:text-text-subtle
                             focus:outline-none focus:ring-0
                         "
                     />
@@ -164,8 +159,9 @@ const LocationPicker: React.FC<LocationPickerProps> = ({
         {/* --- RECENTER BUTTON --- */}
         <button
             onClick={handleRecenter}
-            className="absolute bottom-20 right-3 z-10 bg-white dark:bg-gray-800 p-2.5 rounded-full shadow-lg border border-gray-100 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:text-primary transition-colors"
+            className="absolute bottom-20 right-3 z-10 bg-input p-2.5 rounded-full shadow-lg border border-border text-text-muted hover:text-primary transition-colors"
             title="My Location"
+            aria-label="My location"
             type="button"
         >
             <Crosshair className="w-6 h-6" />

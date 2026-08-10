@@ -49,7 +49,7 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
   const currentVariant = variants[variant];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6" role="dialog" aria-modal="true" aria-labelledby="confirm-modal-title" aria-describedby="confirm-modal-description">
       {/* Backdrop */}
       <div 
         className="absolute inset-0 bg-gray-900/50 backdrop-blur-sm transition-opacity" 
@@ -57,13 +57,14 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
       />
 
       {/* Modal Panel */}
-      <div className="relative w-full max-w-md transform overflow-hidden rounded-2xl bg-white dark:bg-gray-800 p-6 text-left shadow-xl transition-all animate-in fade-in zoom-in-95 duration-200">
+      <div className="relative w-full max-w-md transform overflow-hidden rounded-card bg-background-card border border-border p-6 text-left shadow-xl transition-all animate-in fade-in zoom-in-95 duration-200">
         
         {/* Close Button (Top Right) */}
         <button
           onClick={onClose}
           disabled={isLoading}
-          className="absolute right-4 top-4 text-gray-400 hover:text-gray-500 disabled:opacity-50"
+          aria-label="Close"
+          className="absolute right-4 top-4 text-text-subtle hover:text-text-main disabled:opacity-50"
         >
           <X className="w-5 h-5" />
         </button>
@@ -75,11 +76,11 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
           </div>
 
           <div className="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
-            <h3 className="text-lg font-semibold leading-6 text-gray-900 dark:text-white">
+            <h3 id="confirm-modal-title" className="text-lg font-semibold leading-6 text-text-main">
               {title}
             </h3>
             <div className="mt-2">
-              <p className="text-sm text-gray-500 dark:text-gray-400">
+              <p id="confirm-modal-description" className="text-sm text-text-muted">
                 {message}
               </p>
             </div>
@@ -99,7 +100,7 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
             type="button"
             disabled={isLoading}
             onClick={onClose}
-            className="mt-3 inline-flex w-full justify-center rounded-lg bg-white dark:bg-gray-700 px-3 py-2 text-sm font-semibold text-gray-900 dark:text-gray-200 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600 sm:mt-0 sm:w-auto disabled:opacity-50"
+            className="mt-3 inline-flex w-full justify-center rounded-control bg-background-card px-3 py-2 text-sm font-semibold text-text-main shadow-sm ring-1 ring-inset ring-border hover:bg-surface-hover sm:mt-0 sm:w-auto disabled:opacity-50"
           >
             {cancelText}
           </button>

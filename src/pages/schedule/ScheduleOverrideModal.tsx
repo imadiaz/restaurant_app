@@ -5,7 +5,7 @@ import AnatomyButton from '../../components/anatomy/AnatomyButton';
 import AnatomySwitcher from '../../components/anatomy/AnatomySwitcher';
 import AnatomyText from '../../components/anatomy/AnatomyText';
 import AnatomyTextField from '../../components/anatomy/AnatomyTextField';
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import { useToastStore } from '../../store/toast.store';
 
 
@@ -52,7 +52,7 @@ const ScheduleOverrideModal: React.FC<ScheduleOverrideModalProps> = ({
   const currentTimeStr = getCurrentTimeString();
   const {addToast} = useToastStore();
 
-  const { register, handleSubmit, watch, setValue, reset } = useForm<ScheduleOverrideDto>({
+  const { register, handleSubmit, control, setValue, reset } = useForm<ScheduleOverrideDto>({
     defaultValues: {
       date: initialDate || todayStr,
       isClosed: true, 
@@ -62,10 +62,10 @@ const ScheduleOverrideModal: React.FC<ScheduleOverrideModalProps> = ({
     }
   });
 
-  const isClosed = watch('isClosed');
-  const selectedDate = watch('date');
-  const openTime = watch('openTime');
-  const closeTime = watch('closeTime');
+  const isClosed = useWatch({ control, name: 'isClosed' });
+  const selectedDate = useWatch({ control, name: 'date' });
+  const openTime = useWatch({ control, name: 'openTime' });
+  const closeTime = useWatch({ control, name: 'closeTime' });
 
 
   const isDateInvalid = useMemo(() => {
@@ -243,4 +243,3 @@ const ScheduleOverrideModal: React.FC<ScheduleOverrideModalProps> = ({
 };
 
 export default ScheduleOverrideModal;
-

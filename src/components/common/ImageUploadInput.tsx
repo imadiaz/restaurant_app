@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useId, useState } from 'react';
 import { Camera, User } from 'lucide-react'; // Ajusta tus iconos
 import { useToastStore } from '../../store/toast.store';
 
@@ -18,11 +18,15 @@ export const ImageUploadInput: React.FC<ImageUploadInputProps> = ({
   allowedTypes = ['image/jpeg', 'image/png', 'image/webp']
 }) => {
   const addToast = useToastStore((state) => state.addToast);
-  const [preview, setPreview] = useState<string | null>(initialPreview);
+  const [selectedPreview, setSelectedPreview] = useState<string | null>(null);
+  const inputId = useId();
+  const preview = selectedPreview ?? initialPreview;
 
   useEffect(() => {
-    setPreview(initialPreview);
-  }, [initialPreview]);
+    return () => {
+      if (selectedPreview) URL.revokeObjectURL(selectedPreview);
+    };
+  }, [selectedPreview]);
 
   const validateAndEmit = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -42,13 +46,13 @@ export const ImageUploadInput: React.FC<ImageUploadInputProps> = ({
     }
 
     const objectUrl = URL.createObjectURL(file);
-    setPreview(objectUrl);
+    setSelectedPreview(objectUrl);
     onFileSelect(file);
   };
 
   return (
     <div className="bg-background-card p-6 rounded-3xl shadow-sm border border-border flex flex-col items-center text-center sticky top-6">
-      <h3 className="mb-6 font-semibold text-lg">{label}</h3>
+      <label htmlFor={inputId} className="mb-6 font-semibold text-lg">{label}</label>
       
       <div className="relative group mb-6">
         <div className="w-40 h-40 rounded-full border-4 border-background shadow-inner overflow-hidden relative bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
@@ -69,10 +73,12 @@ export const ImageUploadInput: React.FC<ImageUploadInputProps> = ({
         </div>
         
         <input 
+          id={inputId}
           type="file" 
           accept={allowedTypes.join(',')}
           className="absolute inset-0 w-full h-full opacity-0 cursor-pointer rounded-full z-10"
           onChange={validateAndEmit}
+          aria-label={label}
         />
       </div>
 

@@ -142,7 +142,7 @@ const OrdersPage: React.FC = () => {
            </div>
         )}
 
-        <OrderDetailModal
+        {isModalOpen && selectedOrder && <OrderDetailModal
             isOpen={isModalOpen}
             order={selectedOrder}
             onClose={handleCloseModal}
@@ -152,7 +152,7 @@ const OrdersPage: React.FC = () => {
                  handleStatusUpdate(selectedOrder.id, newStatus, timeInMinutes, driverId);
                }
             }}
-          />
+          />}
 
       </div>
     </BasePageLayout>

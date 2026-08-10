@@ -1,20 +1,24 @@
 import React from 'react';
 import { Moon, Sun } from 'lucide-react';
 import { useThemeStore } from '../../store/theme.store';
+import { useTranslation } from 'react-i18next';
 
 const ThemeToggle: React.FC = () => {
   const { theme, toggleTheme } = useThemeStore();
+  const { t } = useTranslation();
+  const toggleLabel = theme === 'dark'
+    ? t('theme.switch_to_light', 'Switch to light theme')
+    : t('theme.switch_to_dark', 'Switch to dark theme');
 
   return (
     <button
       onClick={toggleTheme}
       className={`
         p-2 rounded-full transition-all duration-300 relative overflow-hidden
-        ${theme === 'dark' 
-          ? 'bg-gray-800 text-yellow-400 hover:bg-gray-700' 
-          : 'bg-orange-100 text-orange-500 hover:bg-orange-200'}
+        bg-primary/10 text-primary hover:bg-primary/20
       `}
-      title="Toggle Theme"
+      title={toggleLabel}
+      aria-label={toggleLabel}
     >
       <div className="relative w-5 h-5">
         <Sun 

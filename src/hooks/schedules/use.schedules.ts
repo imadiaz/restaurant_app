@@ -1,6 +1,6 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { scheduleService, type CreateOverrideDto, type CreateScheduleItemDto } from '../../service/schedule.service';
+import { scheduleService, type CreateOverrideDto, type CreateScheduleItemDto, type ScheduleItem } from '../../service/schedule.service';
 import { useAppStore } from '../../store/app.store';
 import { useErrorHandler } from '../use.error.handler';
 import { useToastStore } from '../../store/toast.store';
@@ -14,13 +14,28 @@ const generateEmptyWeek = (): SchedulesByDay => {
   return week;
 };
 
+const groupSchedules = (schedules: ScheduleItem[] = []): SchedulesByDay => {
+  const grouped = generateEmptyWeek();
+  [...schedules]
+    .sort((a, b) => a.openTime.localeCompare(b.openTime))
+    .forEach((schedule) => {
+      grouped[schedule.dayOfWeek].push({
+        id: schedule.id,
+        dayOfWeek: schedule.dayOfWeek,
+        openTime: schedule.openTime,
+        closeTime: schedule.closeTime,
+      });
+    });
+  return grouped;
+};
+
 export const useSchedules = () => {
   const queryClient = useQueryClient();
   const { activeRestaurant } = useAppStore();
   const { handleError } = useErrorHandler();
   const addToast = useToastStore((state) => state.addToast);
 
-  const [localSchedules, setLocalSchedules] = useState<SchedulesByDay>(generateEmptyWeek());
+  const [localSchedules, setLocalSchedules] = useState<SchedulesByDay | null>(null);
   const [isDirty, setIsDirty] = useState(false);
 
   const queryKey = ['schedules', activeRestaurant?.id];
@@ -35,38 +50,21 @@ export const useSchedules = () => {
     enabled: !!activeRestaurant?.id,
   });
 
-  useEffect(() => {
-    if (serverData) {
-      const grouped = generateEmptyWeek();
-      
-      const sorted = [...serverData].sort((a, b) => a.openTime.localeCompare(b.openTime));
-
-      sorted.forEach((entity) => {
-        const dto: CreateScheduleItemDto = {
-          id: entity.id,
-          dayOfWeek: entity.dayOfWeek,
-          openTime: entity.openTime,
-          closeTime: entity.closeTime
-        };
-
-        if (grouped[entity.dayOfWeek]) {
-          grouped[entity.dayOfWeek].push(dto);
-        }
-      });
-      setLocalSchedules(grouped);
-      setIsDirty(false); 
-    }
-  }, [serverData]);
+  const groupedSchedules = useMemo(
+    () => localSchedules ?? groupSchedules(serverData),
+    [localSchedules, serverData],
+  );
 
   const saveMutation = useMutation({
     mutationFn: async () => {
       if (!activeRestaurant?.id) throw new Error("No restaurant selected");
-      const flatList = Object.values(localSchedules).flat();
+      const flatList = Object.values(groupedSchedules).flat();
       return scheduleService.saveSchedules(activeRestaurant.id, flatList);
     },
     onSuccess: () => {      
       addToast('Horarios actualizados correctamente', 'success');
       queryClient.invalidateQueries({ queryKey });
+      setLocalSchedules(null);
       setIsDirty(false);
     },
     onError: handleError
@@ -109,39 +107,43 @@ export const useSchedules = () => {
 
   const addSlot = useCallback((dayOfWeek: number) => {
     setLocalSchedules((prev) => {
-      const currentDaySlots = prev[dayOfWeek] || [];
+      const base = prev ?? groupedSchedules;
+      const currentDaySlots = base[dayOfWeek] || [];
       const newSlot: CreateScheduleItemDto = {
         dayOfWeek,
         openTime: "09:00", 
         closeTime: "17:00"
       };
-      return { ...prev, [dayOfWeek]: [...currentDaySlots, newSlot] };
+      return { ...base, [dayOfWeek]: [...currentDaySlots, newSlot] };
     });
     setIsDirty(true);
-  }, []);
+  }, [groupedSchedules]);
 
   const removeSlot = useCallback((dayOfWeek: number, index: number) => {
     setLocalSchedules((prev) => {
-      const newSlots = [...prev[dayOfWeek]];
+      const base = prev ?? groupedSchedules;
+      const newSlots = [...base[dayOfWeek]];
       newSlots.splice(index, 1);
-      return { ...prev, [dayOfWeek]: newSlots };
+      return { ...base, [dayOfWeek]: newSlots };
     });
     setIsDirty(true);
-  }, []);
+  }, [groupedSchedules]);
 
   const updateSlot = useCallback((dayOfWeek: number, index: number, field: keyof CreateScheduleItemDto, value: string) => {
     setLocalSchedules((prev) => {
-      const newSlots = [...prev[dayOfWeek]];
+      const base = prev ?? groupedSchedules;
+      const newSlots = [...base[dayOfWeek]];
       newSlots[index] = { ...newSlots[index], [field]: value };
-      return { ...prev, [dayOfWeek]: newSlots };
+      return { ...base, [dayOfWeek]: newSlots };
     });
     setIsDirty(true);
-  }, []);
+  }, [groupedSchedules]);
 
   const copyDayToAll = useCallback((sourceDay: number) => {
     setLocalSchedules((prev) => {
-      const sourceSlots = prev[sourceDay];
-      const newWeek = { ...prev };
+      const base = prev ?? groupedSchedules;
+      const sourceSlots = base[sourceDay];
+      const newWeek = { ...base };
       
       for (let i = 0; i <= 6; i++) {
         if (i === sourceDay) continue;
@@ -155,10 +157,10 @@ export const useSchedules = () => {
       return newWeek;
     });
     setIsDirty(true);
-  }, []);
+  }, [groupedSchedules]);
 
   return {
-    groupedSchedules: localSchedules,
+    groupedSchedules,
     isLoading,
     isSaving: saveMutation.isPending,
     isDirty,

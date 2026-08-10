@@ -77,11 +77,12 @@ const Sidebar: React.FC<SidebarProps> = ({ mobile = false }) => {
         )}
       </div>
 
-      <div className="flex-1 py-6 space-y-2 overflow-y-auto px-3">
+      <nav aria-label={t('navigation.main', 'Main navigation')} className="flex-1 py-6 space-y-2 overflow-y-auto px-3">
         {menuItems.map((item) => (
           <button
             key={item.path}
             onClick={() => navigate(item.path)}
+            aria-current={isActive(item.path) ? 'page' : undefined}
             className={`
               w-full flex items-center p-3 rounded-xl transition-all duration-200 group
               ${isActive(item.path) 
@@ -93,11 +94,11 @@ const Sidebar: React.FC<SidebarProps> = ({ mobile = false }) => {
             <item.icon className={`w-5 h-5 ${(!isSidebarCollapsed || mobile) ? 'mr-3' : ''}`} />
             
             {(!isSidebarCollapsed || mobile) && (
-              <span className="font-medium text-sm">{item.label}</span>
+              <span className="font-medium text-sm">{t(item.labelKey, item.label)}</span>
             )}
           </button>
         ))}
-      </div>
+      </nav>
 
       <div>
         {activeRestaurant && <ManageRestaurantSettingsSection isSidebarCollapsed={isSidebarCollapsed} mobile={mobile}/>}

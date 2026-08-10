@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { X, Save, DollarSign, Store, Shield, Link, Plus, Trash2, Receipt, Clock } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 // Assuming you have these exported from your hooks/services
@@ -37,21 +37,13 @@ const ManageRestaurantSettingsModal: React.FC<ManageRestaurantSettingsModalProps
   const { fees, isLoadingFees } = useRestaurantFees(restaurant.id);
 
   // Local state to manage the dynamic list of fees before saving
-  const [localFees, setLocalFees] = useState<CreateRestaurantFeeDto[]>([]);
-
-  // Load existing fees into our local form state when the modal opens/data loads
-  useEffect(() => {
-    if (fees) {
-      setLocalFees(
-        fees.map((f) => ({
-          name: f.name,
-          description: f.description || '',
-          type: f.type,
-          value: f.value,
-        }))
-      );
-    }
-  }, [fees]);
+  const [localFees, setLocalFees] = useState<CreateRestaurantFeeDto[] | null>(null);
+  const editableFees = localFees ?? fees.map((fee) => ({
+    name: fee.name,
+    description: fee.description || '',
+    type: fee.type,
+    value: fee.value,
+  }));
 
   const setupPaymentLinkHandler = async () => {
     try {
@@ -63,17 +55,17 @@ const ManageRestaurantSettingsModal: React.FC<ManageRestaurantSettingsModalProps
 
   // --- Dynamic Fee Handlers ---
   const handleAddFee = () => {
-    setLocalFees([...localFees, { name: '', description: '', type: FeeType.FLAT, value: 0 }]);
+    setLocalFees([...editableFees, { name: '', description: '', type: FeeType.FLAT, value: 0 }]);
   };
 
   const handleRemoveFee = (index: number) => {
-    const newFees = [...localFees];
+    const newFees = [...editableFees];
     newFees.splice(index, 1);
     setLocalFees(newFees);
   };
 
   const handleFeeChange = <K extends keyof CreateRestaurantFeeDto>(index: number, field: K, val: CreateRestaurantFeeDto[K]) => {
-    const newFees = [...localFees];
+    const newFees = [...editableFees];
     newFees[index] = { ...newFees[index], [field]: val };
     setLocalFees(newFees);
   };
@@ -82,7 +74,7 @@ const ManageRestaurantSettingsModal: React.FC<ManageRestaurantSettingsModalProps
     try {
       await syncRestaurantFees({
         id: restaurant.id,
-        data: { fees: localFees },
+        data: { fees: editableFees },
       });
       // Optionally call onSuccess or show a local success state
     } catch (error) {
@@ -218,13 +210,13 @@ const ManageRestaurantSettingsModal: React.FC<ManageRestaurantSettingsModalProps
             <div className="bg-orange-50/50 dark:bg-orange-900/10 p-5 rounded-2xl border border-orange-100 dark:border-orange-900/30 space-y-4">
               {isLoadingFees ? (
                 <div className="text-center text-gray-500 py-4">Loading fees...</div>
-              ) : localFees.length === 0 ? (
+              ) : editableFees.length === 0 ? (
                 <div className="text-center text-gray-500 py-4 text-sm">
                   {t('settings.no_fees', 'No additional fees configured.')}
                 </div>
               ) : (
                 <div className="space-y-4">
-                  {localFees.map((fee, index) => (
+                  {editableFees.map((fee, index) => (
                     <div key={index} className="flex flex-col gap-3 bg-white dark:bg-gray-800 p-4 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm">
                       
                       {/* Top Row: Name, Type, Value, Delete */}

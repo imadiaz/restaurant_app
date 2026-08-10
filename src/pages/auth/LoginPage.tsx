@@ -6,6 +6,7 @@ import AnatomyText from '../../components/anatomy/AnatomyText';
 import { useLogin } from '../../hooks/auth/use.login';
 import AnatomyTextFieldPassword from '../../components/anatomy/AnatomyTextFieldPassword';
 import LanguageSwitcher from '../../components/common/LanguageSwitcher';
+import ThemeToggle from '../../components/common/ThemeToggle';
 import { useTranslation } from 'react-i18next';
 import { useDeviceInfo } from '../../hooks/device/use.device';
 
@@ -54,7 +55,10 @@ const LoginPage: React.FC = () => {
               {t('login.login')}
             </AnatomyText.H1>
 
-            <LanguageSwitcher />
+            <div className="flex items-center justify-center gap-2">
+              <LanguageSwitcher />
+              <ThemeToggle />
+            </div>
             
             <AnatomyText.Subtitle className="max-w-xs mx-auto">
               {t('login.login_description')}

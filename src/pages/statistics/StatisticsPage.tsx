@@ -22,6 +22,7 @@ import { useRestaurantOperations } from "../../hooks/restaurants/use.operations"
 import { useAppStore } from "../../store/app.store";
 import { useAuthStore } from "../../store/auth.store";
 import { isRestaurantAdmin, isSuperAdmin } from "../../data/models/user/utils/user.utils";
+import { useThemeStore } from "../../store/theme.store";
 
 ChartJS.register(
   CategoryScale,
@@ -37,8 +38,8 @@ ChartJS.register(
 // 🆕 Helper component to create clean dividers between sections
 const SectionHeader = ({ title }: { title: string }) => (
   <div className="flex items-center space-x-4 mb-4 mt-8 first:mt-0">
-    <h2 className="text-xl font-bold text-gray-800">{title}</h2>
-    <div className="flex-1 h-px bg-gray-200"></div>
+    <h2 className="text-xl font-bold text-text-main">{title}</h2>
+    <div className="flex-1 h-px bg-border"></div>
   </div>
 );
 
@@ -46,6 +47,9 @@ const StatisticsPage: React.FC = () => {
   const { t } = useTranslation();
   const { activeRestaurant } = useAppStore();
   const { user } = useAuthStore();
+  const theme = useThemeStore((state) => state.theme);
+  const chartTextColor = theme === "dark" ? "#94a3b8" : "#6b7280";
+  const chartGridColor = theme === "dark" ? "#334155" : "#e5e7eb";
   
   const [dates, setDates] = useState(() => {
     const today = new Date();
@@ -96,8 +100,8 @@ const StatisticsPage: React.FC = () => {
       },
     },
     scales: {
-      x: { grid: { display: false }, ticks: { color: "#888" } },
-      y: { border: { display: false }, grid: { color: "#eee" }, ticks: { color: "#888", callback: (value) => `$${value}` } },
+      x: { grid: { display: false }, ticks: { color: chartTextColor } },
+      y: { border: { display: false }, grid: { color: chartGridColor }, ticks: { color: chartTextColor, callback: (value) => `$${value}` } },
     },
   };
 
@@ -132,7 +136,7 @@ const StatisticsPage: React.FC = () => {
   }
 
   if (hasAnyError) {
-    return <div className="p-6 text-red-500">{t("common.error_loading_data")}</div>;
+    return <div className="p-6 text-danger">{t("common.error_loading_data")}</div>;
   }
 
   return (
@@ -149,14 +153,16 @@ const StatisticsPage: React.FC = () => {
             type="date"
             value={dates.startDate}
             onChange={(e) => setDates((prev) => ({ ...prev, startDate: e.target.value }))}
-            className="w-full sm:w-auto border-gray-300 rounded-md shadow-sm text-sm p-2 focus:ring-primary focus:border-primary outline-none border"
+            aria-label={t("statistics.start_date", "Start date")}
+            className="w-full sm:w-auto bg-input text-text-main border-border-strong rounded-control shadow-sm text-sm p-2 focus:ring-primary focus:border-primary outline-none border"
           />
-          <span className="text-gray-500 hidden sm:block">{t("common.to", "to")}</span>
+          <span className="text-text-muted hidden sm:block">{t("common.to", "to")}</span>
           <input
             type="date"
             value={dates.endDate}
             onChange={(e) => setDates((prev) => ({ ...prev, endDate: e.target.value }))}
-            className="w-full sm:w-auto border-gray-300 rounded-md shadow-sm text-sm p-2 focus:ring-primary focus:border-primary outline-none border"
+            aria-label={t("statistics.end_date", "End date")}
+            className="w-full sm:w-auto bg-input text-text-main border-border-strong rounded-control shadow-sm text-sm p-2 focus:ring-primary focus:border-primary outline-none border"
           />
         </div>
       }
@@ -174,23 +180,23 @@ const StatisticsPage: React.FC = () => {
             {/* 🔒 SUPER ADMIN ONLY: Platform Financials */}
             {isSuperAdmin(user) && (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
-                <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 border-t-4 border-t-purple-500">
-                  <h3 className="text-sm font-medium text-gray-500">{t("statistics.total_commissions", "Platform Commissions")}</h3>
-                  <p className="text-3xl font-bold text-gray-900 mt-2">
+                <div className="bg-background-card p-6 rounded-xl shadow-sm border border-border border-t-4 border-t-purple-500">
+                  <h3 className="text-sm font-medium text-text-muted">{t("statistics.total_commissions", "Platform Commissions")}</h3>
+                  <p className="text-3xl font-bold text-text-main mt-2">
                     {isFetchingAny ? "..." : formatCurrency(financialSummary?.totalPlatformCommissions)}
                   </p>
                 </div>
 
-                <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 border-t-4 border-t-indigo-500">
-                  <h3 className="text-sm font-medium text-gray-500">{t("statistics.net_profit", "Net Profit (After Refunds)")}</h3>
-                  <p className="text-3xl font-bold text-gray-900 mt-2">
+                <div className="bg-background-card p-6 rounded-xl shadow-sm border border-border border-t-4 border-t-indigo-500">
+                  <h3 className="text-sm font-medium text-text-muted">{t("statistics.net_profit", "Net Profit (After Refunds)")}</h3>
+                  <p className="text-3xl font-bold text-text-main mt-2">
                     {isFetchingAny ? "..." : formatCurrency(financialSummary?.netPlatformProfit)}
                   </p>
                 </div>
                 
-                <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 border-t-4 border-t-teal-500">
-                  <h3 className="text-sm font-medium text-gray-500">{t("statistics.debt_settled", "Total Debt Settled")}</h3>
-                  <p className="text-3xl font-bold text-gray-900 mt-2">
+                <div className="bg-background-card p-6 rounded-xl shadow-sm border border-border border-t-4 border-t-teal-500">
+                  <h3 className="text-sm font-medium text-text-muted">{t("statistics.debt_settled", "Total Debt Settled")}</h3>
+                  <p className="text-3xl font-bold text-text-main mt-2">
                     {isFetchingAny ? "..." : formatCurrency(financialSummary?.totalDebtSettled)}
                   </p>
                 </div>
@@ -199,16 +205,16 @@ const StatisticsPage: React.FC = () => {
 
             {/* ⚠️ RESTAURANT ADMIN ONLY: Conditional Debt Warning Block */}
             {isRestaurantAdmin(user) && platformDebt && platformDebt.debtAmount < 0 && (
-              <div className="bg-red-50 p-6 rounded-xl shadow-sm border border-red-100 border-t-4 border-t-red-500 mb-6">
+              <div className="bg-danger-surface p-6 rounded-card shadow-sm border border-danger/20 border-t-4 border-t-danger mb-6">
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                   <div>
-                    <h3 className="text-lg font-bold text-red-800">
+                    <h3 className="text-lg font-bold text-danger">
                       {t("statistics.platform_debt", "Platform Debt Attention")}
                     </h3>
-                    <p className="text-sm text-red-600 mt-1">
+                    <p className="text-sm text-danger mt-1">
                       {t("statistics.platform_debt_description", "You have an outstanding balance from cash order commissions.")}
                     </p>
-                    <p className="text-3xl font-black text-red-900 mt-3">
+                    <p className="text-3xl font-black text-danger mt-3">
                       {isFetchingAny ? "..." : formatCurrency(Math.abs(platformDebt.debtAmount))}
                     </p>
                   </div>
@@ -229,29 +235,29 @@ const StatisticsPage: React.FC = () => {
           <SectionHeader title={t("statistics.sections.financial", "Financial Overview")} />
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             
-            <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 border-t-4 border-t-orange-500">
-              <h3 className="text-sm font-medium text-gray-500">{t("statistics.total_revenue", "Total Revenue")}</h3>
-              <p className="text-3xl font-bold text-gray-900 mt-2">
+            <div className="bg-background-card p-6 rounded-xl shadow-sm border border-border border-t-4 border-t-orange-500">
+              <h3 className="text-sm font-medium text-text-muted">{t("statistics.total_revenue", "Total Revenue")}</h3>
+              <p className="text-3xl font-bold text-text-main mt-2">
                 {isFetchingAny ? "..." : formatCurrency(summary?.totalEarnings)}
               </p>
             </div>
 
-            <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 border-t-4 border-t-blue-500">
-              <h3 className="text-sm font-medium text-gray-500">{t("statistics.card_revenue", "Card Revenue")}</h3>
-              <p className="text-3xl font-bold text-gray-900 mt-2">
+            <div className="bg-background-card p-6 rounded-xl shadow-sm border border-border border-t-4 border-t-blue-500">
+              <h3 className="text-sm font-medium text-text-muted">{t("statistics.card_revenue", "Card Revenue")}</h3>
+              <p className="text-3xl font-bold text-text-main mt-2">
                 {isFetchingAny ? "..." : formatCurrency(financialSummary?.totalCardRevenue)}
               </p>
             </div>
 
-            <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 border-t-4 border-t-green-500">
-              <h3 className="text-sm font-medium text-gray-500">{t("statistics.cash_revenue", "Cash Revenue")}</h3>
-              <p className="text-3xl font-bold text-gray-900 mt-2">
+            <div className="bg-background-card p-6 rounded-xl shadow-sm border border-border border-t-4 border-t-green-500">
+              <h3 className="text-sm font-medium text-text-muted">{t("statistics.cash_revenue", "Cash Revenue")}</h3>
+              <p className="text-3xl font-bold text-text-main mt-2">
                 {isFetchingAny ? "..." : formatCurrency(financialSummary?.totalCashRevenue)}
               </p>
             </div>
 
-            <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 border-t-4 border-t-rose-500">
-              <h3 className="text-sm font-medium text-gray-500">{t("statistics.total_refunded", "Total Refunded")}</h3>
+            <div className="bg-background-card p-6 rounded-xl shadow-sm border border-border border-t-4 border-t-rose-500">
+              <h3 className="text-sm font-medium text-text-muted">{t("statistics.total_refunded", "Total Refunded")}</h3>
               <p className="text-3xl font-bold text-rose-600 mt-2">
                 {isFetchingAny ? "..." : `-${formatCurrency(financialSummary?.totalRefunded)}`}
               </p>
@@ -264,16 +270,16 @@ const StatisticsPage: React.FC = () => {
         <div>
           <SectionHeader title={t("statistics.sections.orders", "Orders & Products")} />
           
-          <div className="mb-6 bg-white p-6 rounded-xl shadow-sm border border-gray-100 border-l-4 border-l-blue-500 inline-block pr-12">
-            <h3 className="text-sm font-medium text-gray-500">{t("statistics.total_orders", "Total Delivered Orders")}</h3>
-            <p className="text-3xl font-bold text-gray-900 mt-2">
+          <div className="mb-6 bg-background-card p-6 rounded-xl shadow-sm border border-border border-l-4 border-l-blue-500 inline-block pr-12">
+            <h3 className="text-sm font-medium text-text-muted">{t("statistics.total_orders", "Total Delivered Orders")}</h3>
+            <p className="text-3xl font-bold text-text-main mt-2">
               {isFetchingAny ? "..." : summary?.totalOrders || 0}
             </p>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div className="col-span-1 lg:col-span-2 bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-              <h3 className="text-lg font-semibold text-gray-900 mb-6">
+            <div className="col-span-1 lg:col-span-2 bg-background-card p-6 rounded-xl shadow-sm border border-border">
+              <h3 className="text-lg font-semibold text-text-main mb-6">
                 {t("statistics.revenue_over_time", "Revenue Over Time")}
               </h3>
               <div className="h-[320px] w-full">
@@ -281,19 +287,19 @@ const StatisticsPage: React.FC = () => {
               </div>
             </div>
 
-            <div className="col-span-1 bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex flex-col h-full">
+            <div className="col-span-1 bg-background-card p-6 rounded-xl shadow-sm border border-border flex flex-col h-full">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-gray-900">
+                <h3 className="text-lg font-semibold text-text-main">
                   {t("statistics.top_products", "Top Selling Products")}
                 </h3>
-                <span className="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
+                <span className="bg-success-surface text-success text-xs font-medium px-2.5 py-0.5 rounded-full">
                   {t("statistics.best_sellers", "Best Sellers")}
                 </span>
               </div>
 
               <div className="overflow-x-auto flex-1">
-                <table className="w-full text-sm text-left text-gray-500">
-                  <thead className="text-xs text-gray-700 uppercase border-b border-gray-200">
+                <table className="w-full text-sm text-left text-text-muted">
+                  <thead className="text-xs text-text-main uppercase border-b border-border">
                     <tr>
                       <th scope="col" className="px-4 py-3 font-medium">{t("common.product", "Product")}</th>
                       <th scope="col" className="px-4 py-3 font-medium text-right">{t("common.sold", "Sold")}</th>
@@ -302,12 +308,12 @@ const StatisticsPage: React.FC = () => {
                   </thead>
                   <tbody>
                     {topProducts.map((product) => (
-                      <tr key={product.productId || product.productName} className="border-b border-gray-100 last:border-0 hover:bg-gray-50">
-                        <td className="px-4 py-3 font-medium text-gray-900 truncate max-w-[120px]" title={product.productName}>
+                      <tr key={product.productId || product.productName} className="border-b border-border last:border-0 hover:bg-surface-hover">
+                        <td className="px-4 py-3 font-medium text-text-main truncate max-w-[120px]" title={product.productName}>
                           {product.productName}
                         </td>
                         <td className="px-4 py-3 text-right">{product.totalSold}</td>
-                        <td className="px-4 py-3 text-right font-medium text-gray-900">
+                        <td className="px-4 py-3 text-right font-medium text-text-main">
                           {formatCurrency(product.revenueGenerated)}
                         </td>
                       </tr>
@@ -315,7 +321,7 @@ const StatisticsPage: React.FC = () => {
 
                     {topProducts.length === 0 && !isFetchingAny && (
                       <tr>
-                        <td colSpan={3} className="px-4 py-8 text-center text-gray-500">
+                        <td colSpan={3} className="px-4 py-8 text-center text-text-muted">
                           {t("statistics.no_sales_data", "No sales data for this period.")}
                         </td>
                       </tr>

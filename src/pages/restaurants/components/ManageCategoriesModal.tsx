@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { X, Search, Plus, Save, Tag } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import AnatomyButton from '../../../components/anatomy/AnatomyButton';
@@ -28,15 +28,8 @@ const ManageCategoriesModal: React.FC<ManageCategoriesModalProps> = ({
   const { categories: allCategories, isLoading: isLoadingCats } = useCategories();
   const { updateCategories, isUpdating } = useRestaurants();
   
-  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [selectedIds, setSelectedIds] = useState<string[]>(initialSelectedIds);
   const [searchTerm, setSearchTerm] = useState('');
-
-  useEffect(() => {
-    if (isOpen) {
-      setSelectedIds(initialSelectedIds);
-      setSearchTerm('');
-    }
-  }, [isOpen, initialSelectedIds]);
 
   const selectedCategories = useMemo(() => {
     return allCategories.filter(c => selectedIds.includes(c.id));
@@ -78,7 +71,7 @@ const ManageCategoriesModal: React.FC<ManageCategoriesModalProps> = ({
               {t('categories.manage_description')}
             </AnatomyText.Small>
           </div>
-          <button onClick={onClose} className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors">
+          <button onClick={onClose} aria-label={t('common.close', 'Close')} className="p-2 hover:bg-surface-muted rounded-full transition-colors">
             <X className="w-5 h-5 text-text-muted" />
           </button>
         </div>

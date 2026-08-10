@@ -91,7 +91,7 @@ const hasLoadedData = useRef(false);
       };
       loadUser();
     }
-  }, [isEditMode, id, getUserById]);
+  }, [isEditMode, id, getUserById, goBack]);
 
   const handleSave = async () => {
     if (!firstName || !lastName || !phone || !username) {

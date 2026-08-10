@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   X,
   MapPin,
@@ -55,19 +55,9 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
 
   // Local State
   const [showPrepTime, setShowPrepTime] = useState(false);
-  const [prepTime, setPrepTime] = useState<number>(15);
-  const [selectedDriverId, setSelectedDriverId] = useState<string>("");
+  const [prepTime, setPrepTime] = useState<number>(activeRestaurant?.averagePrepTimeMin ?? 15);
+  const [selectedDriverId, setSelectedDriverId] = useState<string>(order?.driverId || "");
   const [isHistoryOpen, setIsHistoryOpen] = useState(false); // Collapsible state
-
-  // Effects to reset state
-  useEffect(() => {
-    if (isOpen && order) {
-      setShowPrepTime(false);
-      setPrepTime(activeRestaurant?.averagePrepTimeMin ?? 15);
-      setSelectedDriverId(order.driverId || "");
-      setIsHistoryOpen(false);
-    }
-  }, [isOpen, order, activeRestaurant]);
 
   if (!isOpen || !order) return null;
 
@@ -118,6 +108,9 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
 
   return (
     <div
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="order-detail-title"
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200"
       onClick={handleBackdropClick}
     >
@@ -126,7 +119,7 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
         <div className="px-8 py-6 border-b border-border flex justify-between items-start bg-background-card z-10">
           <div>
             <div className="flex items-center gap-3 mb-1">
-              <AnatomyText.H3 className="text-2xl mb-0">
+              <AnatomyText.H3 id="order-detail-title" className="text-2xl mb-0">
                 {t("orders.order")} #{order.id.slice(0, 6)}
               </AnatomyText.H3>
               <AnatomyTag variant={getStatusVariant(order.status)}>

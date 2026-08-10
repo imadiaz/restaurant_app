@@ -14,7 +14,7 @@ import {
   Type,
   PackageSearch,
 } from "lucide-react";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
 import AnatomyButton from "../../components/anatomy/AnatomyButton";
@@ -35,6 +35,16 @@ import ProductPickerModal from "../products/components/ProductPickerModal";
 import { useAppNavigation } from "../../hooks/navigation/use.app.navigation";
 import { useConfirm } from "../../hooks/use.confirm.modal";
 import type { ModifierOption, Product } from "../../data/models/products/product";
+
+const mapToCreateOption = (option: ModifierOption): CreateModifierOption => ({
+  id: option.id,
+  name: option.name,
+  price: option.price,
+  maxQuantity: option.maxQuantity,
+  isAvailable: option.isAvailable,
+  productId: option.productId,
+  imageUrl: option.linkedProduct?.imageUrl,
+});
 
 const ModifierFormPage: React.FC = () => {
   const { goBack } = useAppNavigation();
@@ -60,33 +70,18 @@ const ModifierFormPage: React.FC = () => {
   const [options, setOptions] = useState<CreateModifierOption[]>([]);
   const [isSingle, setIsSingle] = useState(false);
   const [productPickerOpen, setProductPickerOpen] = useState(false);
+  const [loadedGroupId, setLoadedGroupId] = useState<string | null>(null);
 
-  // Load Data
-  useEffect(() => {
-    if (isEditMode && modifiers.length > 0) {
-      const group = modifiers.find((m) => m.id === id);
-      if (group) {
-        setName(group.name);
-        setMinSelection(group.minSelected);
-        setMaxSelection(group.maxSelected);
-        setIsRequired(group.minSelected > 0);
-        setOptions(group.options.map((value) => mapToCreateOption(value)) || []);
-        setIsSingle(group.minSelected === 1 && group.maxSelected === 1);
-      }
-    }
-  }, [id, isEditMode, modifiers]);
-
-  const mapToCreateOption = (option: ModifierOption): CreateModifierOption => {
-  return {
-    id: option.id,
-    name: option.name,
-    price: option.price,
-    maxQuantity: option.maxQuantity,
-    isAvailable: option.isAvailable,
-    productId: option.productId,
-    imageUrl: option.linkedProduct?.imageUrl, 
-  };
-};
+  const editGroup = isEditMode ? modifiers.find((group) => group.id === id) : undefined;
+  if (editGroup && loadedGroupId !== editGroup.id) {
+    setLoadedGroupId(editGroup.id);
+    setName(editGroup.name);
+    setMinSelection(editGroup.minSelected);
+    setMaxSelection(editGroup.maxSelected);
+    setIsRequired(editGroup.minSelected > 0);
+    setOptions(editGroup.options.map(mapToCreateOption));
+    setIsSingle(editGroup.minSelected === 1 && editGroup.maxSelected === 1);
+  }
 
   const handleDragEnd = (result: DropResult) => {
     if (!result.destination) return;
