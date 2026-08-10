@@ -55,7 +55,6 @@ const LocationPicker: React.FC<LocationPickerProps> = ({
           // triggerReverseGeocode(userPos.lat, userPos.lng);
         },
         () => {
-          console.log("Geolocation permission denied or failed. Using default center.");
         }
       );
     }

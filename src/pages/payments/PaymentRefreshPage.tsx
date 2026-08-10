@@ -36,8 +36,8 @@ export const PaymentRefreshPage = () => {
       } else {
         addToast(t('common.error_generic'), 'error');
       }
-    } catch (error) {
-      console.error(error);
+    } catch {
+      return;
     }
   };
 

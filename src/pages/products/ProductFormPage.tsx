@@ -20,7 +20,7 @@ import {
   Copy,
   X,
 } from "lucide-react";
-import React, { useState, useEffect, useRef } from "react";
+import React, { lazy, Suspense, useState, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
 import AnatomyButton from "../../components/anatomy/AnatomyButton";
@@ -48,9 +48,10 @@ import type {
 import { useToastStore } from "../../store/toast.store";
 import AnatomyMultiSelect from "../../components/anatomy/AnatomyMultiSelect";
 import { useModifiers } from "../../hooks/modifiers/use.modifiers";
-import ProductPickerModal from "./components/ProductPickerModal";
 import type { Product } from "../../data/models/products/product";
 import { Routes } from "../../config/routes";
+
+const ProductPickerModal = lazy(() => import("./components/ProductPickerModal"));
 
 let temporaryIdSequence = 0;
 const createTemporaryId = (prefix: string) => `${prefix}-${++temporaryIdSequence}`;
@@ -428,7 +429,6 @@ const {navigateTo} = useAppNavigation();
       modifierGroups: cleanedModifiers,
     };
 
-    console.log(payload);
     try {
       if (isEditMode && id) {
         await updateProduct({ id, data: payload });
@@ -436,8 +436,8 @@ const {navigateTo} = useAppNavigation();
         await createProduct(payload);
       }
       goBack();
-    } catch (e) {
-      console.error(e);
+    } catch {
+      return;
     }
   };
 
@@ -917,12 +917,16 @@ const {navigateTo} = useAppNavigation();
       </div>
 
       {/* Product Modal */}
-      <ProductPickerModal
-        isOpen={productPickerOpen}
-        onClose={() => setProductPickerOpen(false)}
-        products={allProducts}
-        onSelect={handleProductSelect}
-      />
+      {productPickerOpen && (
+        <Suspense fallback={null}>
+          <ProductPickerModal
+            isOpen
+            onClose={() => setProductPickerOpen(false)}
+            products={allProducts}
+            onSelect={handleProductSelect}
+          />
+        </Suspense>
+      )}
     </BasePageLayout>
   );
 };

@@ -85,8 +85,8 @@ const CategoryFormPage: React.FC = () => {
         await createCategory(payload);
       }
       goBack();
-    } catch (error) {
-      console.error(error);
+    } catch {
+      return;
     }
   };
 

@@ -73,8 +73,8 @@ const MenuSectionFormPage: React.FC = () => {
         await createSection(payload);
       }
       goBack();
-    } catch (error) {
-      console.error(error);
+    } catch {
+      return;
     }
   };
 

@@ -163,7 +163,6 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({
           isAdminMode={isAdminMode}
           onSuccess={() => {
              // Optional: Refresh list or show success toast
-             console.log("Settings updated!");
           }}
         />
       )}

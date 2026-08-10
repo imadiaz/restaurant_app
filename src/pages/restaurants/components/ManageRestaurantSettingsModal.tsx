@@ -48,8 +48,8 @@ const ManageRestaurantSettingsModal: React.FC<ManageRestaurantSettingsModalProps
   const setupPaymentLinkHandler = async () => {
     try {
       await setupPaymentLink({ id: restaurant.id });
-    } catch (error) {
-      console.error("Failed to send Stripe link", error);
+    } catch {
+      return;
     }
   };
 
@@ -77,8 +77,8 @@ const ManageRestaurantSettingsModal: React.FC<ManageRestaurantSettingsModalProps
         data: { fees: editableFees },
       });
       // Optionally call onSuccess or show a local success state
-    } catch (error) {
-      console.error("Failed to save fees", error);
+    } catch {
+      return;
     }
   };
 
@@ -102,8 +102,8 @@ const ManageRestaurantSettingsModal: React.FC<ManageRestaurantSettingsModalProps
         }});
       onSuccess?.();
       onClose();
-    } catch (error) {
-      console.error("Update failed", error);
+    } catch {
+      return;
     }
   };
 

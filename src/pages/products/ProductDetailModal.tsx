@@ -52,8 +52,8 @@ const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
     setTogglingId(optionId);
     try {
       await onToggleOptionStatus(optionId, newValue as "active" | "inactive");
-    } catch (error) {
-      console.error("Failed to toggle status", error);
+    } catch {
+      return;
     } finally {
       setTogglingId(null);
     }

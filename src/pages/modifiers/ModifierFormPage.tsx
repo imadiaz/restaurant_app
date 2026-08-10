@@ -14,7 +14,7 @@ import {
   Type,
   PackageSearch,
 } from "lucide-react";
-import React, { useState } from "react";
+import React, { lazy, Suspense, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
 import AnatomyButton from "../../components/anatomy/AnatomyButton";
@@ -31,10 +31,11 @@ import type {
 } from "../../service/products.service";
 import { useAppStore } from "../../store/app.store";
 import { useToastStore } from "../../store/toast.store";
-import ProductPickerModal from "../products/components/ProductPickerModal";
 import { useAppNavigation } from "../../hooks/navigation/use.app.navigation";
 import { useConfirm } from "../../hooks/use.confirm.modal";
 import type { ModifierOption, Product } from "../../data/models/products/product";
+
+const ProductPickerModal = lazy(() => import("../products/components/ProductPickerModal"));
 
 const mapToCreateOption = (option: ModifierOption): CreateModifierOption => ({
   id: option.id,
@@ -232,8 +233,8 @@ const ModifierFormPage: React.FC = () => {
         await createGroup(payload);
       }
       goBack();
-    } catch (e) {
-      console.error(e);
+    } catch {
+      return;
     }
   };
 
@@ -498,12 +499,16 @@ const ModifierFormPage: React.FC = () => {
         </div>
       </div>
 
-      <ProductPickerModal
-        isOpen={productPickerOpen}
-        onClose={() => setProductPickerOpen(false)}
-        products={allProducts}
-        onSelect={handleProductSelect}
-      />
+      {productPickerOpen && (
+        <Suspense fallback={null}>
+          <ProductPickerModal
+            isOpen
+            onClose={() => setProductPickerOpen(false)}
+            products={allProducts}
+            onSelect={handleProductSelect}
+          />
+        </Suspense>
+      )}
     </BasePageLayout>
   );
 };

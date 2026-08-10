@@ -58,7 +58,8 @@
      "search_code": "Search by code...",
      "acceptOrder":"Accept order",
      "go_back": "Go back",
-     "preview": "Preview"
+     "preview": "Preview",
+     "processing": "Processing..."
   },
   "login": {
     "login": "Login",
@@ -188,6 +189,22 @@
     "no_active_restaurant": "System error: no active restaurant selected.",
     "no_active_restaurant_description": "Open a restaurant dashboard before creating this resource."
   },
+  "api_errors": {
+    "default": "Something went wrong. Please try again later.",
+    "network": "Unable to connect to the server. Check your connection.",
+    "auth": {
+      "user_registered": "This user is already registered",
+      "user_not_found": "User not found. Check your credentials.",
+      "invalid_password": "Incorrect password",
+      "expired_token": "Your session has expired",
+      "user_disabled": "This user is disabled. Contact your administrator."
+    },
+    "database": { "duplicate_user": "A user with this email or username already exists" },
+    "categories": {
+      "duplicate": "A category with this name already exists",
+      "not_found": "Category not found"
+    }
+  },
   "validation": {
     "invalid_dates": "Enter valid dates",
     "error_date_range": "The end date cannot be before the start date",
@@ -311,6 +328,9 @@
     "select_driver": "Select a driver"
   },
   "orders": {
+    "new_order_received": "New order received",
+    "more_items": "+ {{count}} more items...",
+    "view_details": "View order details",
     "id": "Order ID",
     "title": "Orders",
     "subtitle": "Manage and track incoming restaurant orders",

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { lazy, Suspense, useState, useEffect, useRef } from "react";
 import {  useParams } from "react-router-dom";
 import {
   Building2, MapPin, FileText, Phone, 
@@ -18,11 +18,12 @@ import { useUsers } from "../../hooks/users/use.users";
 import type { UpdateRestaurantDto, CreateRestaurantDto } from "../../service/restaurant.service";
 import { useToastStore } from "../../store/toast.store";
 import type { AddressResult } from "../../utils/maps/google.maps.utils";
-import GoogleMapsLocationPicker from "../../components/common/GoogleMapsLocationPicker";
 import { ROLES } from "../../config/roles";
 import { useTranslation } from "react-i18next";
 import { isBlank, isValidEmail } from "../../utils/validation.utils";
 import { ImageUploadInput } from "../../components/common/ImageUploadInput";
+
+const GoogleMapsLocationPicker = lazy(() => import("../../components/common/GoogleMapsLocationPicker"));
 
 
 
@@ -194,8 +195,8 @@ const RestaurantFormPage: React.FC = () => {
         await createRestaurant(payload);
       }
       goBack();
-    } catch (error) {
-      console.error(error);
+    } catch {
+      return;
     }
   };
 
@@ -294,12 +295,14 @@ const RestaurantFormPage: React.FC = () => {
             </div>
 
             <div className="mb-6">
-                <GoogleMapsLocationPicker 
-                    apiKey={import.meta.env.VITE_GOOGLE_MAPS_KEY}
-                    initialLat={lat}
-                    initialLng={lng}
-                    onLocationSelect={handleLocationSelect}
-                />
+                <Suspense fallback={<div className="h-80 animate-pulse rounded-2xl bg-surface-muted" aria-label={t('common.loading')} />}>
+                  <GoogleMapsLocationPicker
+                      apiKey={import.meta.env.VITE_GOOGLE_MAPS_KEY}
+                      initialLat={lat}
+                      initialLng={lng}
+                      onLocationSelect={handleLocationSelect}
+                  />
+                </Suspense>
                 {fieldErrors.location && <p role="alert" className="mt-2 text-xs font-medium text-danger">{fieldErrors.location}</p>}
             </div>
 

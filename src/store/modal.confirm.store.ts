@@ -35,8 +35,8 @@ export const useConfirmStore = create<ConfirmState>((set, get) => ({
     try {
       await options.onConfirm();
       set({ isOpen: false }); 
-    } catch (error) {
-      console.error("Confirmation action failed:", error);
+    } catch {
+      set({ isOpen: false });
     } finally {
       set({ isLoading: false });
     }

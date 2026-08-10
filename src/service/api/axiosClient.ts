@@ -61,7 +61,6 @@ const refreshTokens = async (): Promise<string> => {
     processQueue(null, newAccessToken);
     return newAccessToken;
   } catch (error) {
-    console.log("Error refreshing token before", error);
     processQueue(error, null);
     useAuthStore.getState().logout();
     throw error;
@@ -122,7 +121,6 @@ axiosClient.interceptors.response.use(
         originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
         return axiosClient(originalRequest);
       } catch {
-        console.log("Error in catch");
         // logout already handled in refreshTokens
         return Promise.reject(error);
       }
@@ -130,9 +128,9 @@ axiosClient.interceptors.response.use(
 
     /* ---------------- Custom error mapping ---------------- */
 
-    let errorMessage = "Ocurrió un error inesperado";
+    let errorMessage = "Unexpected error";
     let statusCode = 500;
-    let errorCode: string | undefined;
+    let errorCode: string | undefined = "CLIENT_UNEXPECTED";
     let validationErrors: string[] = [];
 
     if (error.response) {
@@ -148,7 +146,8 @@ axiosClient.interceptors.response.use(
         errorMessage = serverData.message || error.message;
       }
     } else if (error.request) {
-      errorMessage = "No hay conexión con el servidor.";
+      errorMessage = "Network unavailable";
+      errorCode = "CLIENT_NETWORK";
       statusCode = 0;
     }
 

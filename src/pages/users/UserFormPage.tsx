@@ -160,8 +160,8 @@ const hasLoadedData = useRef(false);
         await createUser(createPayload);
       }
       goBack();
-    } catch (error) {
-      console.error("Error saving user:", error);
+    } catch {
+      return;
     }
   };
 

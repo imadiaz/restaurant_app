@@ -15,19 +15,27 @@ const icons = {
 
 // Styles for standard toast types
 const styles = {
-  success: 'bg-white border-l-4 border-green-500 text-gray-800',
-  error: 'bg-white border-l-4 border-red-500 text-gray-800',
-  info: 'bg-white border-l-4 border-blue-500 text-gray-800',
-  warning: 'bg-white border-l-4 border-orange-500 text-gray-800',
+  success: 'bg-background-card border-l-4 border-success text-text-main',
+  error: 'bg-background-card border-l-4 border-danger text-text-main',
+  info: 'bg-background-card border-l-4 border-info text-text-main',
+  warning: 'bg-background-card border-l-4 border-warning text-text-main',
   custom: '' // Custom toasts handle their own styling
 };
 
 const iconColors = {
-  success: 'text-green-500',
-  error: 'text-red-500',
-  info: 'text-blue-500',
-  warning: 'text-orange-500',
-  custom: 'text-gray-500'
+  success: 'text-success',
+  error: 'text-danger',
+  info: 'text-info',
+  warning: 'text-warning',
+  custom: 'text-text-muted'
+};
+
+const progressColors = {
+  success: 'bg-success',
+  error: 'bg-danger',
+  info: 'bg-info',
+  warning: 'bg-warning',
+  custom: 'bg-text-muted',
 };
 
 export const AnatomyToast: React.FC<{ toast: Toast }> = ({ toast }) => {
@@ -66,7 +74,7 @@ export const AnatomyToast: React.FC<{ toast: Toast }> = ({ toast }) => {
   return (
     <div 
       className={`
-        flex items-start gap-3 p-4 rounded-lg shadow-lg border border-gray-100 min-w-[320px] max-w-md relative overflow-hidden transition-all duration-300 transform pointer-events-auto
+        flex items-start gap-3 p-4 rounded-lg shadow-lg border border-border min-w-[320px] max-w-md relative overflow-hidden transition-all duration-300 transform pointer-events-auto
         ${styles[toast.type]}
         ${isVisible ? 'translate-y-0 opacity-100' : '-translate-y-4 opacity-0'}
       `}
@@ -81,7 +89,8 @@ export const AnatomyToast: React.FC<{ toast: Toast }> = ({ toast }) => {
 
       <button 
         onClick={handleClose}
-        className="absolute top-2 right-2 p-1 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100 transition-colors"
+        aria-label="Close"
+        className="absolute top-2 right-2 p-1 text-text-subtle hover:text-text-main rounded-full hover:bg-surface-hover transition-colors"
       >
         <X className="w-4 h-4" />
       </button>
@@ -89,7 +98,7 @@ export const AnatomyToast: React.FC<{ toast: Toast }> = ({ toast }) => {
       {/* Progress Bar for Auto-Close */}
       {toast.duration && toast.duration > 0 && (
          <div 
-           className={`absolute bottom-0 left-0 h-0.5 ${iconColors[toast.type].replace('text-', 'bg-')}`}
+           className={`absolute bottom-0 left-0 h-0.5 ${progressColors[toast.type]}`}
            style={{ 
              width: '100%', 
              animation: `shrink ${toast.duration}ms linear forwards` 

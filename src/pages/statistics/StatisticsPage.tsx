@@ -48,8 +48,12 @@ const StatisticsPage: React.FC = () => {
   const { activeRestaurant } = useAppStore();
   const { user } = useAuthStore();
   const theme = useThemeStore((state) => state.theme);
-  const chartTextColor = theme === "dark" ? "#94a3b8" : "#6b7280";
-  const chartGridColor = theme === "dark" ? "#334155" : "#e5e7eb";
+  const themeStyles = getComputedStyle(document.documentElement);
+  const themeColor = (name: string, fallback: string) =>
+    themeStyles.getPropertyValue(name).trim() || fallback;
+  const chartTextColor = themeColor("--color-text-muted", theme === "dark" ? "#94a3b8" : "#6b7280");
+  const chartGridColor = themeColor("--color-border", theme === "dark" ? "#334155" : "#e5e7eb");
+  const chartPrimaryColor = themeColor("--color-primary", "#ee8410");
   
   const [dates, setDates] = useState(() => {
     const today = new Date();
@@ -112,11 +116,11 @@ const StatisticsPage: React.FC = () => {
         fill: true,
         label: "Revenue",
         data: chartData.map((d) => d.dailyEarnings),
-        borderColor: "#EE8410", 
-        backgroundColor: "rgba(245, 166, 35, 0.15)", 
+        borderColor: chartPrimaryColor,
+        backgroundColor: `color-mix(in srgb, ${chartPrimaryColor} 15%, transparent)`,
         tension: 0.4, 
-        pointBackgroundColor: "#EE8410",
-        pointBorderColor: "#fff",
+        pointBackgroundColor: chartPrimaryColor,
+        pointBorderColor: themeColor("--color-background-card", "#fff"),
         pointBorderWidth: 2,
         pointRadius: 4,
         pointHoverRadius: 6,
@@ -130,8 +134,8 @@ const StatisticsPage: React.FC = () => {
       if(data != null && data?.url) {
         window.open(data.url, '_blank');
       }
-    } catch (error) {
-      console.error("Error generating payment link:", error);
+    } catch {
+      return;
     }
   }
 

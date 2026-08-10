@@ -222,8 +222,7 @@ const CouponFormPage: React.FC = () => {
         await createCoupon(payload);
       }
       goBack();
-    } catch (error) {
-      console.error(error);
+    } catch {
       // The hook usually handles the error toast, but you can add specific handling here
     }
   };

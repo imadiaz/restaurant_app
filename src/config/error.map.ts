@@ -1,16 +1,18 @@
 // src/config/errorMap.ts
 
-export const ERROR_MESSAGES: Record<string, string> = {
-  'AUTH_001': 'Usuario ya registrado',
-  'AUTH_002': 'Usuario no encontrado. Verifica tus credenciales.',
-  'AUTH_003': 'Contraseña incorrecta',
-  'AUTH_004': 'Token expirado',
-  'AUTH_005': 'Usuario no encontrado. Verifica tus credenciales.',
-  'AUTH_007': 'Contraseña incorrecta. Por favor, inténtalo de nuevo.',
-  'AUTH_009': 'El usuario ha sido deshabilitado, contacta con tu administrador',
-  'DB_001': 'Ya existe un usuario registrado con ese correo electronico o username',
-  'CAT_001':'Ya existe una categoria con ese nombre',
-  'CAT_002': 'Categoria no encontrada'
+export const ERROR_MESSAGE_KEYS: Record<string, string> = {
+  AUTH_001: 'api_errors.auth.user_registered',
+  AUTH_002: 'api_errors.auth.user_not_found',
+  AUTH_003: 'api_errors.auth.invalid_password',
+  AUTH_004: 'api_errors.auth.expired_token',
+  AUTH_005: 'api_errors.auth.user_not_found',
+  AUTH_007: 'api_errors.auth.invalid_password',
+  AUTH_009: 'api_errors.auth.user_disabled',
+  DB_001: 'api_errors.database.duplicate_user',
+  CAT_001: 'api_errors.categories.duplicate',
+  CAT_002: 'api_errors.categories.not_found',
+  CLIENT_NETWORK: 'api_errors.network',
+  CLIENT_UNEXPECTED: 'api_errors.default',
 };
 
-export const DEFAULT_ERROR_MESSAGE = 'Ocurrió un error inesperado. Inténtalo más tarde.';
+export const DEFAULT_ERROR_KEY = 'api_errors.default';

@@ -160,8 +160,8 @@ const PromotionsFormPage: React.FC = () => {
         await createPromotion(payload);
       }
       goBack();
-    } catch (error) {
-      console.error(error);
+    } catch {
+      return;
     }
   };
 

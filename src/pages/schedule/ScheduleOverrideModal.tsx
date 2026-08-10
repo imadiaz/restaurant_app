@@ -114,8 +114,8 @@ const ScheduleOverrideModal: React.FC<ScheduleOverrideModalProps> = ({
       }
       await onSave(cleanData);
       onClose();
-    } catch (error) {
-      console.error(error);
+    } catch {
+      return;
     } finally {
       setIsSubmitting(false);
     }

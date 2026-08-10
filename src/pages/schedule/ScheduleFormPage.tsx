@@ -32,8 +32,8 @@ const ScheduleFormPage: React.FC = () => {
      try {
         await saveChanges(); 
         goBack();           
-     } catch (error) {
-       console.log(error);
+    } catch {
+      return;
      }
   };
 

@@ -133,9 +133,8 @@ const DriverFormPage: React.FC = () => {
         await createDriver(payload);
       }
       goBack();
-    } catch (error) {
-      console.error("Error saving driver:", error);
-      // Error handling is usually done in the hook/service, but logging here helps
+    } catch {
+      return;
     }
   };
 
