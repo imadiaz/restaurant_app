@@ -5,6 +5,7 @@ import { useAppStore } from '../../store/app.store';
 import { useAuthStore } from '../../store/auth.store';
 import { useErrorHandler } from '../use.error.handler';
 import { useToastStore } from '../../store/toast.store';
+import { queryKeys } from '../../config/query.keys';
 
 
 export const useCoupons = (restaurantIdOverride?: string) => {
@@ -18,7 +19,7 @@ export const useCoupons = (restaurantIdOverride?: string) => {
   // Determine effective ID: Override > Active Restaurant
   const effectiveRestaurantId = restaurantIdOverride || activeRestaurant?.id;
 
-  const queryKey = ['coupons', effectiveRestaurantId || 'all'];
+  const queryKey = queryKeys.coupons.list(effectiveRestaurantId);
 
   // --------------------------------------------------------
   // 1. FETCH COUPONS
@@ -30,7 +31,6 @@ export const useCoupons = (restaurantIdOverride?: string) => {
   } = useQuery({
     queryKey: queryKey,
     queryFn: async () => {
-      console.log("🚀 Fetching coupons. Context:", effectiveRestaurantId || "ALL");
 
       // A. If we are in a Restaurant Context (Owner or Admin viewing specific restaurant)
       if (effectiveRestaurantId) {

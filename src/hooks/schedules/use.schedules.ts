@@ -4,6 +4,7 @@ import { scheduleService, type CreateOverrideDto, type CreateScheduleItemDto, ty
 import { useAppStore } from '../../store/app.store';
 import { useErrorHandler } from '../use.error.handler';
 import { useToastStore } from '../../store/toast.store';
+import { queryKeys } from '../../config/query.keys';
 
 
 export type SchedulesByDay = Record<number, CreateScheduleItemDto[]>;
@@ -38,8 +39,8 @@ export const useSchedules = () => {
   const [localSchedules, setLocalSchedules] = useState<SchedulesByDay | null>(null);
   const [isDirty, setIsDirty] = useState(false);
 
-  const queryKey = ['schedules', activeRestaurant?.id];
-  const overridesKey = ['schedules-overrides', activeRestaurant?.id];
+  const queryKey = queryKeys.schedules.detail(activeRestaurant?.id);
+  const overridesKey = queryKeys.schedules.overrides(activeRestaurant?.id);
 
   const { data: serverData, isLoading } = useQuery({
     queryKey,
@@ -73,7 +74,6 @@ export const useSchedules = () => {
   const { data: overrides = [], isLoading: isLoadingOverrides } = useQuery({
     queryKey: overridesKey,
     queryFn: () => {
-        console.log("🚀 Fetching overrides for restaurant:", activeRestaurant?.id);
        if (!activeRestaurant?.id) return [];
        return scheduleService.getOverrides(activeRestaurant.id);
     },

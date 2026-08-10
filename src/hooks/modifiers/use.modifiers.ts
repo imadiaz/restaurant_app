@@ -4,6 +4,7 @@ import { modifierService } from "../../service/modifiers.service";
 import { useToastStore } from "../../store/toast.store";
 import { useErrorHandler } from "../use.error.handler";
 import type { CreateModifierGroup } from "../../service/products.service";
+import { queryKeys } from "../../config/query.keys";
 
 
 export const useModifiers = () => {
@@ -12,7 +13,7 @@ export const useModifiers = () => {
   const addToast = useToastStore((state) => state.addToast);
   const { handleError } = useErrorHandler();
 
-  const queryKey = ['modifiers', activeRestaurant?.id || 'all'];
+  const queryKey = queryKeys.modifiers.list(activeRestaurant?.id);
 
   // --- FETCH ---
   const { 
@@ -89,7 +90,7 @@ export const useModifiers = () => {
     onSuccess: (_, vars) => {
       addToast(`Option ${vars.status}`, 'info');
       queryClient.invalidateQueries({ queryKey });
-      queryClient.invalidateQueries({ queryKey: ['products'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.products.all });
     },
     onError: handleError,
   });

@@ -4,6 +4,7 @@ import { useAppStore } from '../../store/app.store';
 import type { MenuSection } from '../../data/models/menu/menu.section';
 import { useErrorHandler } from '../use.error.handler';
 import { menuSectionService, type UpdateMenuSectionDto, type UpdateMenuSectionStatus } from '../../service/menu.service';
+import { queryKeys } from '../../config/query.keys';
 
 
 export const useMenuSections = (restaurantIdInput?: string) => {
@@ -14,7 +15,7 @@ export const useMenuSections = (restaurantIdInput?: string) => {
   const { activeRestaurant } = useAppStore((state) => state);
   const effectiveRestaurantId = restaurantIdInput || activeRestaurant?.id;
 
-  const queryKey = ['menu-sections', effectiveRestaurantId || 'all'];
+  const queryKey = queryKeys.menuSections.list(effectiveRestaurantId);
 
   const { 
     data: sections = [], 
@@ -23,7 +24,6 @@ export const useMenuSections = (restaurantIdInput?: string) => {
   } = useQuery({
     queryKey: queryKey,
     queryFn: () => {
-      console.log("🚀 Fetching sections for restaurant:", effectiveRestaurantId);
       if (effectiveRestaurantId) {
         return menuSectionService.getAllByRestaurantId(effectiveRestaurantId);
       }

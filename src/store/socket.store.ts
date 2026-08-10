@@ -1,7 +1,4 @@
 import { create } from "zustand";
-import { useToastStore } from "./toast.store";
-import OrderNotificationToast from "../components/common/OrderNotificationToast";
-import React from "react";
 import type { Order } from "../service/order.service";
 import { io, Socket } from "socket.io-client";
 import { useAuthStore } from "./auth.store";
@@ -11,7 +8,7 @@ interface SocketState {
   isConnected: boolean;
   connect: (
     restaurantId: string,
-    onOrderUpdate?: (order: Order) => void,
+    onOrderEvent?: (order: Order, event: "newOrder" | "orderUpdate") => void,
   ) => void;
   disconnect: () => void;
 }
@@ -21,72 +18,40 @@ export const useSocketStore = create<SocketState>((set, get) => {
     socket: null,
     isConnected: false,
 
-    connect: (restaurantId: string, onDataUpdate) => {
+    connect: (restaurantId: string, onOrderEvent) => {
       const { socket } = get();
-      if (socket?.connected) return;
+      if (socket) return;
 
       const userToken = useAuthStore.getState().accessToken;
 
-      if (!userToken) {
-        console.log(
-          "🚫 Socket connection aborted: User is not authenticated.",
-        );
-        return;
-      }
-
-      console.log("🔌 Initializing Socket Connection...");
+      if (!userToken) return;
 
       const newSocket = io(
         import.meta.env.VITE_API_URL || "http://localhost:3000",
         {
-          auth: { token: userToken },
+          auth: (callback) => callback({
+            token: useAuthStore.getState().accessToken,
+          }),
           transports: ["websocket"],
           autoConnect: true,
         },
       );
 
       newSocket.on("connect", () => {
-        console.log(`✅ Connected to WebSocket. ID: ${newSocket.id}`);
         set({ isConnected: true });
-        console.log(`joining room: restaurant_${restaurantId}`);
         newSocket.emit("joinRestaurantRoom", restaurantId);
       });
 
       newSocket.on("disconnect", () => {
-        console.log("❌ Disconnected from WebSocket");
         set({ isConnected: false });
       });
 
       newSocket.on("newOrder", (orderData: Order) => {
-        console.log("🔔 New Order Received:", orderData);
-        window.dispatchEvent(new Event("play-order-sound"));
-        const toastId = `order-${orderData.id}-${Date.now()}`;
-
-        useToastStore.getState().addCustomToast(
-          React.createElement(OrderNotificationToast, {
-            order: orderData,
-            onClose: () => useToastStore.getState().removeToast(toastId),
-          }),
-          10000,
-        );
-
-        if (onDataUpdate) {
-          onDataUpdate(orderData);
-        }
+        onOrderEvent?.(orderData, "newOrder");
       });
 
       newSocket.on("orderUpdate", (orderData: Order) => {
-        console.log("🔄 Order Update:", orderData);
-        let message = `Order #${orderData.id.slice(0, 5)} updated to ${orderData.status}`;
-
-        if (orderData.status === "ON_WAY") {
-          message = `Driver picked up Order #${orderData.id.slice(0, 5)}`;
-        } else if (orderData.status === "DELIVERED") {
-          message = `Order #${orderData.id.slice(0, 5)} has been Delivered!`;
-        }
-
-        useToastStore.getState().addToast(message, "info");
-        if (onDataUpdate) onDataUpdate(orderData);
+        onOrderEvent?.(orderData, "orderUpdate");
       });
 
       set({ socket: newSocket });
@@ -95,6 +60,7 @@ export const useSocketStore = create<SocketState>((set, get) => {
     disconnect: () => {
       const { socket } = get();
       if (socket) {
+        socket.removeAllListeners();
         socket.disconnect();
         set({ socket: null, isConnected: false });
       }

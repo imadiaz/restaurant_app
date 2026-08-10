@@ -3,6 +3,7 @@ import { useToastStore } from '../../store/toast.store'; // Adjust path
 import { useErrorHandler } from '../use.error.handler';
 import { promotionsService, type CreatePromotionDto, type Promotion, type UpdatePromotionDto } from '../../service/promotion.service';
 import { useAppStore } from '../../store/app.store';
+import { queryKeys } from '../../config/query.keys';
 
 
 
@@ -13,7 +14,7 @@ export const usePromotions = () => {
   const addToast = useToastStore((state) => state.addToast);
 
   // Dynamic key based on the store
-  const queryKey = ['promotions', activeRestaurant?.id || 'all'];
+  const queryKey = queryKeys.promotions.list(activeRestaurant?.id);
 
   // --- 1. GET ALL (By Active Restaurant) ---
   const { 
@@ -24,7 +25,6 @@ export const usePromotions = () => {
     queryKey: queryKey,
     queryFn: async () => {
       if (!activeRestaurant?.id) return [];
-      console.log(`🚀 Fetching promotions for active restaurant: ${activeRestaurant.id}`);
       return promotionsService.getAllByRestaurant(activeRestaurant.id);
     },
     // Only fetch if we have an active restaurant in the store

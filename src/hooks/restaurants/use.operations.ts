@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { restaurantService, type BulkCreateRestaurantFeesDto, type UpdateRestaurantOperationalDto, } from '../../service/restaurant.service';
 import { useToastStore } from '../../store/toast.store';
 import { useErrorHandler } from '../use.error.handler';
+import { queryKeys } from '../../config/query.keys';
 
 
 // ---------------------------------------------------------
@@ -19,8 +20,8 @@ export const useRestaurantOperations = () => {
     
     onSuccess: (_, variables) => {
       addToast('Operational settings updated successfully', 'success');
-        queryClient.invalidateQueries({ queryKey: ['restaurant', variables.id] });
-        queryClient.invalidateQueries({ queryKey: ['restaurants'] });
+        queryClient.invalidateQueries({ queryKey: queryKeys.restaurants.detail(variables.id) });
+        queryClient.invalidateQueries({ queryKey: queryKeys.restaurants.all });
     },
     onError: handleError,
   });
@@ -30,7 +31,7 @@ export const useRestaurantOperations = () => {
       restaurantService.setPaymentConfig(id),
     onSuccess: () => {
       addToast('Enlace de configuración de cuenta en stripe connect enviado exitosamente', 'success');
-      queryClient.invalidateQueries({ queryKey: ['restaurants'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.restaurants.all });
     },
     onError: handleError,
   });
@@ -39,7 +40,7 @@ export const useRestaurantOperations = () => {
     mutationFn: ({ id }: { id: string }) => 
       restaurantService.generatePaymentLink(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['restaurants'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.restaurants.all });
     },
     onError: handleError,
   });
@@ -51,7 +52,7 @@ export const useRestaurantOperations = () => {
     onSuccess: (_, variables) => {
       addToast('Tarifas actualizadas exitosamente', 'success');
       // Invalidate the specific fees query so the UI updates instantly
-      queryClient.invalidateQueries({ queryKey: ['restaurantFees', variables.id] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.restaurants.fees(variables.id) });
     },
     onError: handleError,
   });
@@ -85,7 +86,7 @@ export const useRestaurantFees = (restaurantId?: string) => {
     refetch: refetchFees,
   } = useQuery({
     // Cache key tied specifically to this restaurant's ID
-    queryKey: ['restaurantFees', restaurantId],
+    queryKey: queryKeys.restaurants.fees(restaurantId),
     queryFn: async () => {
       try {
         return await restaurantService.getFees(restaurantId!);

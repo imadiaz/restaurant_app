@@ -4,6 +4,9 @@ import { orderService, OrderStatus, type AssignDriverDto, type Order, type Updat
 import { useAppStore } from '../../store/app.store';
 import { useToastStore } from '../../store/toast.store';
 import { useErrorHandler } from '../use.error.handler';
+import { queryKeys } from '../../config/query.keys';
+import { useSocketStore } from '../../store/socket.store';
+import { syncOrderInCache } from '../../utils/order.cache.utils';
 
 
 export const useOrders = (statusFilter?: typeof OrderStatus[keyof typeof OrderStatus]) => {
@@ -12,8 +15,9 @@ export const useOrders = (statusFilter?: typeof OrderStatus[keyof typeof OrderSt
   const { handleError } = useErrorHandler();
   const addToast = useToastStore((state) => state.addToast);
   const { activeRestaurant } = useAppStore((state) => state);
+  const isSocketConnected = useSocketStore((state) => state.isConnected);
 
-  const queryKey = ['orders', activeRestaurant?.id, statusFilter || 'all'];
+  const queryKey = queryKeys.orders.list(activeRestaurant?.id, statusFilter || 'all');
 
   const { 
     data: orders = [], 
@@ -27,8 +31,8 @@ export const useOrders = (statusFilter?: typeof OrderStatus[keyof typeof OrderSt
       return orderService.getByRestaurant(activeRestaurant.id, statusFilter);
     },
     enabled: !!activeRestaurant?.id,
-    refetchInterval: 30000, 
-    staleTime: 10000,
+    refetchInterval: isSocketConnected ? false : 30000,
+    staleTime: isSocketConnected ? 60000 : 10000,
   });
 
   const getOrderById = async (id: string): Promise<Order | null> => {
@@ -50,7 +54,9 @@ export const useOrders = (statusFilter?: typeof OrderStatus[keyof typeof OrderSt
       orderService.updateStatus(id, { status, timeInMinutes, note }),
     onSuccess: (data) => {
       addToast(`${t('orders.status_updated')}: ${data.status}`, 'success');
-      queryClient.invalidateQueries({ queryKey: ['orders'] });
+      if (activeRestaurant?.id) {
+        syncOrderInCache(queryClient, activeRestaurant.id, data);
+      }
     },
     onError: handleError
   });
@@ -58,9 +64,11 @@ export const useOrders = (statusFilter?: typeof OrderStatus[keyof typeof OrderSt
   const assignDriver = useMutation({
     mutationFn: (data: AssignDriverDto) => 
       orderService.assignDriver(data),
-    onSuccess: () => {
+    onSuccess: (data) => {
       addToast(t('orders.driver_assigned') || 'Driver assigned', 'success');
-      queryClient.invalidateQueries({ queryKey: ['orders'] });
+      if (activeRestaurant?.id) {
+        syncOrderInCache(queryClient, activeRestaurant.id, data);
+      }
     },
     onError: handleError
   });

@@ -4,6 +4,7 @@ import { useToastStore } from '../../store/toast.store';
 import { useErrorHandler } from '../use.error.handler';
 import type { Product } from '../../data/models/products/product';
 import { productService, type CreateProductDto } from '../../service/products.service';
+import { queryKeys } from '../../config/query.keys';
 
 
 export const useProducts = () => {
@@ -12,7 +13,7 @@ export const useProducts = () => {
   const { activeRestaurant } = useAppStore();
   const addToast = useToastStore((state) => state.addToast);
 
-  const queryKey = ['products', activeRestaurant?.id || 'all'];
+  const queryKey = queryKeys.products.list(activeRestaurant?.id);
 
   const { 
     data: products = [], 

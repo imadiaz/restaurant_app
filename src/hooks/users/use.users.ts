@@ -6,6 +6,7 @@ import { useAuthStore } from '../../store/auth.store';
 import { isSuperAdmin } from '../../data/models/user/utils/user.utils';
 import type { User } from '../../data/models/user/user';
 import { useAppStore } from '../../store/app.store';
+import { queryKeys } from '../../config/query.keys';
 
 export const useUsers = (restaurantIdOverride?: string) => {
   const queryClient = useQueryClient();
@@ -16,7 +17,7 @@ export const useUsers = (restaurantIdOverride?: string) => {
 
   const effectiveRestaurantId = restaurantIdOverride || activeRestaurant?.id;
 
-  const queryKey = ['users', effectiveRestaurantId || 'all'];
+  const queryKey = queryKeys.users.list(effectiveRestaurantId);
 
   const { 
     data: users = [], 
@@ -25,7 +26,6 @@ export const useUsers = (restaurantIdOverride?: string) => {
   } = useQuery({
     queryKey: queryKey,
     queryFn: async () => {
-      console.log("🚀 Fetching users. Effective Restaurant Context:", effectiveRestaurantId || "NONE (Global)");
 
       if (effectiveRestaurantId) {
          return userService.getAllByRestaurantId(effectiveRestaurantId);
@@ -64,8 +64,7 @@ export const useUsers = (restaurantIdOverride?: string) => {
       }
       return userService.create(finalData);
     },
-    onSuccess: (data) => {
-      console.log("🚀 User created:", data);
+    onSuccess: () => {
       addToast('Usuario creado correctamente', 'success');
       queryClient.invalidateQueries({ queryKey });
     },

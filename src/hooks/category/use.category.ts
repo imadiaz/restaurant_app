@@ -2,13 +2,14 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useErrorHandler } from '../use.error.handler'; // Adjust path if needed
 import { useToastStore } from '../../store/toast.store'; // Adjust path if needed
 import { categoryService, type Category, type UpdateCategoryDto } from '../../service/category.service';
+import { queryKeys } from '../../config/query.keys';
 
 export const useCategories = () => {
   const queryClient = useQueryClient();
   const { handleError } = useErrorHandler();
   const addToast = useToastStore((state) => state.addToast);
 
-  const queryKey = ['categories'];
+  const queryKey = queryKeys.categories.all;
 
   const { 
     data: categories = [], 
@@ -17,7 +18,6 @@ export const useCategories = () => {
   } = useQuery({
     queryKey: queryKey,
     queryFn: () => {
-      console.log("🚀 Fetching all global categories");
       return categoryService.getAll();
     },
     staleTime: 1000 * 60 * 5, 

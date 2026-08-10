@@ -5,6 +5,7 @@ import { useToastStore } from '../../store/toast.store';
 import { useErrorHandler } from '../use.error.handler';
 import { isSuperAdmin } from '../../data/models/user/utils/user.utils';
 import { useAuthStore } from '../../store/auth.store';
+import { queryKeys } from '../../config/query.keys';
 
 
 export const useDrivers = (restaurantIdOverride?: string) => {
@@ -16,7 +17,7 @@ export const useDrivers = (restaurantIdOverride?: string) => {
   const { user } = useAuthStore((state) => state);
   const effectiveRestaurantId = restaurantIdOverride || activeRestaurant?.id;
 
-  const queryKey = ['drivers', effectiveRestaurantId || 'all'];
+  const queryKey = queryKeys.drivers.list(effectiveRestaurantId);
 
   const { 
     data: drivers = [], 
@@ -25,7 +26,6 @@ export const useDrivers = (restaurantIdOverride?: string) => {
   } = useQuery({
     queryKey: queryKey,
     queryFn: async () => {
-      console.log("🚀 Fetching drivers. Effective Context:", effectiveRestaurantId || "NONE");
 
       if (effectiveRestaurantId) {
          return driverService.getAllByRestaurantId(effectiveRestaurantId);
@@ -61,8 +61,7 @@ export const useDrivers = (restaurantIdOverride?: string) => {
       
       return driverService.create(finalData);
     },
-    onSuccess: (data) => {
-      console.log("🚀 Driver created:", data);
+    onSuccess: () => {
       addToast('Driver created successfully', 'success');
       queryClient.invalidateQueries({ queryKey });
     },

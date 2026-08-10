@@ -3,6 +3,7 @@ import { useErrorHandler } from '../use.error.handler';
 import { useToastStore } from '../../store/toast.store';
 import { restaurantService, type CreateRestaurantDto, type UpdateRestaurantDto } from '../../service/restaurant.service';
 import type { Restaurant } from '../../data/models/restaurant/restaurant';
+import { queryKeys } from '../../config/query.keys';
 
 
 export const useRestaurants = (restaurantId?: string) => {
@@ -10,7 +11,7 @@ export const useRestaurants = (restaurantId?: string) => {
   const { handleError } = useErrorHandler();
   const addToast = useToastStore((state) => state.addToast);
 
-  const queryKey = ['restaurants', restaurantId || 'all'];
+  const queryKey = restaurantId ? queryKeys.restaurants.detail(restaurantId) : queryKeys.restaurants.list();
 
   const { 
     data: restaurants = [],
@@ -19,7 +20,6 @@ export const useRestaurants = (restaurantId?: string) => {
   } = useQuery({
     queryKey: queryKey,
     queryFn: async () => {
-      console.log("🚀 Fetching restaurantId:", restaurantId);
       if (restaurantId) {
         const restaurant = await restaurantService.getById(restaurantId);
         return [restaurant];
@@ -30,7 +30,7 @@ export const useRestaurants = (restaurantId?: string) => {
   });
 
   const getRestaurantById = async (id: string): Promise<Restaurant | null> => {
-    const cachedRestaurants = queryClient.getQueryData<Restaurant[]>(['restaurants', 'all']);
+    const cachedRestaurants = queryClient.getQueryData<Restaurant[]>(queryKeys.restaurants.list());
     const foundRestaurant = cachedRestaurants?.find((u) => u.id === id);
 
     if (foundRestaurant) {
@@ -50,7 +50,7 @@ export const useRestaurants = (restaurantId?: string) => {
     mutationFn: (data: CreateRestaurantDto) => restaurantService.create(data),
     onSuccess: () => {
       addToast('Restaurante creado exitosamente', 'success');
-      queryClient.invalidateQueries({ queryKey: ['restaurants'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.restaurants.all });
     },
     onError: handleError,
   });
@@ -60,7 +60,7 @@ export const useRestaurants = (restaurantId?: string) => {
       restaurantService.update(id, data),
     onSuccess: () => {
       addToast('Restaurante actualizado', 'success');
-      queryClient.invalidateQueries({ queryKey: ['restaurants'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.restaurants.all });
     },
     onError: handleError,
   });
@@ -71,7 +71,7 @@ export const useRestaurants = (restaurantId?: string) => {
     onSuccess: (data) => {
       const status = data.isOpen ? 'Abierto' : 'Cerrado';
       addToast(`Restaurante ahora está ${status}`, 'info');
-      queryClient.invalidateQueries({ queryKey: ['restaurants'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.restaurants.all });
     },
     onError: handleError,
   });
@@ -83,8 +83,8 @@ export const useRestaurants = (restaurantId?: string) => {
       
     onSuccess: (updatedRestaurant, variables) => {
       addToast('Cuisines updated successfully', 'success');
-      queryClient.setQueryData(['restaurant', variables.restaurantId], updatedRestaurant);
-      queryClient.setQueryData<Restaurant[]>(['restaurants', 'all'], (oldList) => {
+      queryClient.setQueryData(queryKeys.restaurants.detail(variables.restaurantId), [updatedRestaurant]);
+      queryClient.setQueryData<Restaurant[]>(queryKeys.restaurants.list(), (oldList) => {
         if (!oldList) return []; 
 
         return oldList.map((restaurant) => 

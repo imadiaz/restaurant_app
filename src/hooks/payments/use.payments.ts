@@ -1,6 +1,7 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { paymentService } from '../../service/payment.service';
 import { useErrorHandler } from '../use.error.handler';
+import { queryKeys } from '../../config/query.keys';
 
 export const usePayments = (restaurantId?: string) => {
 
@@ -11,7 +12,7 @@ export const usePayments = (restaurantId?: string) => {
     isLoading: isCheckingStatus,
     isError: isStatusError 
   } = useQuery({
-    queryKey: ['paymentStatus', restaurantId],
+    queryKey: queryKeys.payments.status(restaurantId),
     queryFn: () => {
       if (!restaurantId) throw new Error("No restaurant ID");
       return paymentService.getAccountStatus(restaurantId);

@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { statisticsService, type StatisticsFilterDto } from '../../service/statistics.service';
 import { useAppStore } from '../../store/app.store';
 import { useErrorHandler } from '../use.error.handler';
+import { queryKeys } from '../../config/query.keys';
 
 
 export const useStatistics = (dates?: { startDate?: string; endDate?: string }) => {
@@ -24,7 +25,7 @@ export const useStatistics = (dates?: { startDate?: string; endDate?: string }) 
     isError: isErrorSummary,
   } = useQuery({
     // The queryKey includes the filters so it automatically refetches when dates change
-    queryKey: ['statistics', 'summary', filters],
+    queryKey: queryKeys.statistics.resource('summary', filters),
     queryFn: async () => {
       try {
         return await statisticsService.getKpiSummary(filters);
@@ -45,7 +46,7 @@ export const useStatistics = (dates?: { startDate?: string; endDate?: string }) 
     isLoading: isLoadingChart,
     isError: isErrorChart,
   } = useQuery({
-    queryKey: ['statistics', 'chart', filters],
+    queryKey: queryKeys.statistics.resource('chart', filters),
     queryFn: async () => {
       try {
         return await statisticsService.getEarningsChart(filters);
@@ -65,7 +66,7 @@ export const useStatistics = (dates?: { startDate?: string; endDate?: string }) 
     isLoading: isLoadingTopProducts,
     isError: isErrorTopProducts,
   } = useQuery({
-    queryKey: ['statistics', 'top-products', filters],
+    queryKey: queryKeys.statistics.resource('top-products', filters),
     queryFn: async () => {
       try {
         return await statisticsService.getTopProducts(filters);
@@ -82,7 +83,7 @@ export const useStatistics = (dates?: { startDate?: string; endDate?: string }) 
     isLoading: isLoadingPlatformDebt,
     isError: isErrorPlatformDebt,
   } = useQuery({
-    queryKey: ['statistics', 'platform-debt', filters],
+    queryKey: queryKeys.statistics.resource('platform-debt', filters),
     queryFn: async () => {
       try {
         return await statisticsService.getPlatformDebt(filters.restaurantId!);
@@ -99,7 +100,7 @@ export const useStatistics = (dates?: { startDate?: string; endDate?: string }) 
     isLoading: isLoadingFinancials,
     isError: isErrorFinancials,
   } = useQuery({
-    queryKey: ['statistics', 'financials', filters],
+    queryKey: queryKeys.statistics.resource('financials', filters),
     queryFn: async () => {
       try {
         return await statisticsService.getFinancialSummary(filters);

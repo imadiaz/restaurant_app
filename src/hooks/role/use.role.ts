@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { roleService } from '../../service/role.service';
+import { queryKeys } from '../../config/query.keys';
 
 export const useRoles = () => {
   
@@ -9,7 +10,7 @@ export const useRoles = () => {
     isError,
     error 
   } = useQuery({
-    queryKey: ['roles'],
+    queryKey: queryKeys.roles.all,
     queryFn: roleService.getAll,
     staleTime: 10000 * 60 * 60, 
   });
