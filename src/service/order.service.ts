@@ -2,32 +2,33 @@ import type { ApiResponse } from "../data/models/api/api.types";
 import axiosClient from "./api/axiosClient";
 
 export const OrderStatus = {
-  PENDING: 'PENDING',
-  CONFIRMED: 'CONFIRMED',
-  PREPARING: 'PREPARING',
-  READY: 'READY',
-  ON_WAY: 'ON_WAY',
-  DELIVERED: 'DELIVERED',
-  COURIER_ARRIVING: 'COURIER_ARRIVING',
-  CANCELLED: 'CANCELLED',
-  INCOMPLETE_PAYMENT: 'INCOMPLETE_PAYMENT'
+  PENDING: "PENDING",
+  CONFIRMED: "CONFIRMED",
+  PREPARING: "PREPARING",
+  READY: "READY",
+  ON_WAY: "ON_WAY",
+  DELIVERED: "DELIVERED",
+  COURIER_ARRIVING: "COURIER_ARRIVING",
+  CANCELLED: "CANCELLED",
+  INCOMPLETE_PAYMENT: "INCOMPLETE_PAYMENT",
 } as const;
 
 export const OrderType = {
-  DELIVERY: 'DELIVERY',
-  PICKUP: 'PICKUP'
+  DELIVERY: "DELIVERY",
+  PICKUP: "PICKUP",
 } as const;
 
 export const PaymentMethod = {
-  CASH: 'CASH',
-  CARD: 'CARD'
+  CASH: "CASH",
+  CARD: "CARD",
 } as const;
 
 export const PaymentStatus = {
-  PENDING: 'PENDING',
-  PAID: 'PAID',
-  FAILED: 'FAILED',
-  REFUNDED: 'REFUNDED'
+  PENDING: "PENDING",
+  PAID: "PAID",
+  FAILED: "FAILED",
+  REFUNDED: "REFUNDED",
+  INCOMPLETE_PAYMENT: "INCOMPLETE_PAYMENT",
 } as const;
 
 // --- SNAPSHOT INTERFACES ---
@@ -49,8 +50,8 @@ export interface PaymentSnapshot {
   brand?: string | null;
   last4?: string | null;
   expirationMonth?: string | number;
-  expirationYear?: string | number;  
-  country?: string | null;  
+  expirationYear?: string | number;
+  country?: string | null;
 }
 
 export interface CustomerSnapshot {
@@ -71,7 +72,7 @@ export interface DriverSnapshot {
 }
 
 export interface StatusHistoryEntry {
-  status: typeof OrderStatus[keyof typeof OrderStatus];
+  status: (typeof OrderStatus)[keyof typeof OrderStatus];
   timestamp: string;
   localTime: string;
   comment?: string;
@@ -103,28 +104,29 @@ export interface Order {
   id: string;
   createdAt: string;
   updatedAt: string;
-  
+
   // State
-  status: typeof OrderStatus[keyof typeof OrderStatus];
-  type: typeof OrderType[keyof typeof OrderType];
-  
+  status: (typeof OrderStatus)[keyof typeof OrderStatus];
+  type: (typeof OrderType)[keyof typeof OrderType];
+
   // Security
-  pickupCode?: string;
-  deliveryCode?: string;
+  pickupCode?: string | null;
+  deliveryCode?: string | null;
+  requestId?: string | null;
 
   // Payment
-  paymentMethod: typeof PaymentMethod[keyof typeof PaymentMethod];
-  paymentStatus: typeof PaymentStatus[keyof typeof PaymentStatus];
+  paymentMethod: (typeof PaymentMethod)[keyof typeof PaymentMethod];
+  paymentStatus: (typeof PaymentStatus)[keyof typeof PaymentStatus];
   transactionId?: string;
   changeFor?: number;
-  
+
   // Financials
   subtotal: number;
   deliveryFee: number;
   tip: number;
   totalAmount: number;
-  platformFee: number;
-  restaurantEarnings: number;
+  platformFee?: number;
+  restaurantEarnings?: number;
 
   // Snapshots
   deliveryAddress?: DeliveryAddressSnapshot;
@@ -145,7 +147,7 @@ export interface Order {
   restaurantId: string;
   driverId?: string;
   products: OrderProduct[];
-  
+
   estimatedCompletionTime?: string;
   incompletePaymentAmount?: number;
 }
@@ -153,7 +155,7 @@ export interface Order {
 // --- DTOs (Only for Updates) ---
 
 export interface UpdateOrderStatusDto {
-  status: typeof OrderStatus[keyof typeof OrderStatus];
+  status: (typeof OrderStatus)[keyof typeof OrderStatus];
   timeInMinutes?: number;
   note?: string;
 }
@@ -161,43 +163,59 @@ export interface UpdateOrderStatusDto {
 export interface AssignDriverDto {
   orderId: string;
   driverId: string;
-  status: typeof OrderStatus[keyof typeof OrderStatus];
+  status?: (typeof OrderStatus)[keyof typeof OrderStatus];
 }
 
 // --- SERVICE IMPLEMENTATION ---
 export const orderService = {
-  
   // 1. Get List by Restaurant
-  async getByRestaurant(restaurantId: string, status?: typeof OrderStatus[keyof typeof OrderStatus]): Promise<Order[]> {
-    const params = status ? { status } : {};
-    const res = await axiosClient.get<unknown, ApiResponse<Order[]>>(`/orders/restaurant/${restaurantId}`, { params });
+  async getByRestaurant(
+    restaurantId: string,
+    status?: (typeof OrderStatus)[keyof typeof OrderStatus],
+  ): Promise<Order[]> {
+    const params = { status, limit: 100, offset: 0 };
+    const res = await axiosClient.get<unknown, ApiResponse<Order[]>>(
+      `/orders/restaurant/${restaurantId}`,
+      { params },
+    );
     return res.data;
   },
 
   // 2. Get Details
   async getOne(id: string): Promise<Order> {
-    const res = await axiosClient.get<unknown, ApiResponse<Order>>(`/orders/${id}`);
+    const res = await axiosClient.get<unknown, ApiResponse<Order>>(
+      `/orders/${id}`,
+    );
     return res.data;
   },
 
   // 3. Update Status (Restaurant Flow)
   async updateStatus(id: string, data: UpdateOrderStatusDto): Promise<Order> {
-    const res = await axiosClient.patch<unknown, ApiResponse<Order>>(`/orders/${id}/status`, data);
+    const res = await axiosClient.patch<unknown, ApiResponse<Order>>(
+      `/orders/${id}/status`,
+      data,
+    );
     return res.data;
   },
 
   // 4. Assign Driver
   async assignDriver(data: AssignDriverDto): Promise<Order> {
-    const res = await axiosClient.patch<unknown, ApiResponse<Order>>(`/orders/${data.orderId}/assign-driver`, { 
-      driverId: data.driverId,
-      status: data.status 
-    });
+    const res = await axiosClient.patch<unknown, ApiResponse<Order>>(
+      `/orders/${data.orderId}/assign-driver`,
+      {
+        driverId: data.driverId,
+        status: data.status,
+      },
+    );
     return res.data;
   },
 
   // 5. Get Driver Location
   async getTracking(id: string): Promise<{ lat: number; lng: number }> {
-    const res = await axiosClient.get<unknown, ApiResponse<{ lat: number; lng: number }>>(`/orders/${id}/tracking`);
+    const res = await axiosClient.get<
+      unknown,
+      ApiResponse<{ lat: number; lng: number }>
+    >(`/orders/${id}/tracking`);
     return res.data;
-  }
+  },
 };

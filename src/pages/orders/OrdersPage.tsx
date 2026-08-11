@@ -18,12 +18,12 @@ interface OrderTab {
 }
 
 const TABS: OrderTab[] = [
-  { id: 'all', labelKey: 'orders.tabs.all', statuses: [OrderStatus.PENDING, OrderStatus.CONFIRMED, OrderStatus.ON_WAY, OrderStatus.PREPARING, OrderStatus.READY] },
+  { id: 'all', labelKey: 'orders.tabs.all', statuses: [OrderStatus.PENDING, OrderStatus.CONFIRMED, OrderStatus.PREPARING, OrderStatus.READY, OrderStatus.ON_WAY, OrderStatus.COURIER_ARRIVING] },
   { id: 'new', labelKey: 'orders.tabs.new', statuses: [OrderStatus.PENDING, OrderStatus.CONFIRMED,] },
   { id: 'cooking', labelKey: 'orders.tabs.cooking', statuses: [OrderStatus.PREPARING] },
   { id: 'ready', labelKey: 'orders.tabs.ready', statuses: [OrderStatus.READY] },
   { id: 'active', labelKey: 'orders.tabs.active', statuses: [OrderStatus.ON_WAY, OrderStatus.COURIER_ARRIVING] },
-  { id: 'completed', labelKey: 'orders.tabs.completed', statuses: [OrderStatus.DELIVERED, OrderStatus.CANCELLED] },
+  { id: 'completed', labelKey: 'orders.tabs.completed', statuses: [OrderStatus.DELIVERED, OrderStatus.CANCELLED, OrderStatus.INCOMPLETE_PAYMENT] },
 ];
 
 const OrdersPage: React.FC = () => {

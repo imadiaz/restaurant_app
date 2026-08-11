@@ -605,6 +605,18 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
                   {t("orders.actions.mark_ready")}
                 </AnatomyButton>
               ))}
+
+            {/* PICKUP READY -> DELIVERED */}
+            {order.status === OrderStatus.READY &&
+              order.type === OrderType.PICKUP && (
+                <AnatomyButton
+                  onClick={() => onStatusChange(OrderStatus.DELIVERED)}
+                  className="bg-success hover:bg-success/90 text-white border-transparent"
+                >
+                  <Check className="w-4 h-4 mr-2" />
+                  {t("orders.actions.mark_delivered")}
+                </AnatomyButton>
+              )}
           </div>
         </div>
       </div>
