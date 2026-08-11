@@ -119,6 +119,7 @@ const DayRow: React.FC<DayRowProps> = ({
 
              {!isClosed && (
                 <button 
+                   type="button"
                    onClick={onCopy}
                    className="mt-0 md:mt-3 text-xs text-primary hover:text-primary-dark font-medium flex items-center transition-colors group"
                    title={t('schedules.copy_to_all')}
@@ -144,11 +145,12 @@ const DayRow: React.FC<DayRowProps> = ({
                          <div className="relative group">
                             <input 
                                type="time" 
+                               aria-label={`${t('schedules.open')} ${t(`schedules.days.${dayIndex}`)} ${idx + 1}`}
                                value={slot.openTime}
                                onChange={(e) => onUpdate(idx, 'openTime', e.target.value)}
                                className="bg-transparent border-none text-sm font-bold text-text-main focus:ring-0 w-24 text-center cursor-pointer"
                             />
-                            <span className="absolute -top-2 left-2 text-[10px] text-text-muted bg-background px-1 opacity-0 group-hover:opacity-100 transition-opacity">Open</span>
+                            <span className="absolute -top-2 left-2 text-[10px] text-text-muted bg-background px-1 opacity-0 group-hover:opacity-100 transition-opacity">{t('schedules.open')}</span>
                          </div>
                          
                          <span className="text-text-muted text-xs">{t('common.to')}</span>
@@ -156,16 +158,19 @@ const DayRow: React.FC<DayRowProps> = ({
                          <div className="relative group">
                             <input 
                                type="time" 
+                               aria-label={`${t('common.close')} ${t(`schedules.days.${dayIndex}`)} ${idx + 1}`}
                                value={slot.closeTime}
                                onChange={(e) => onUpdate(idx, 'closeTime', e.target.value)}
                                className="bg-transparent border-none text-sm font-bold text-text-main focus:ring-0 w-24 text-center cursor-pointer"
                             />
-                            <span className="absolute -top-2 left-2 text-[10px] text-text-muted bg-background px-1 opacity-0 group-hover:opacity-100 transition-opacity">Close</span>
+                            <span className="absolute -top-2 left-2 text-[10px] text-text-muted bg-background px-1 opacity-0 group-hover:opacity-100 transition-opacity">{t('common.close')}</span>
                          </div>
                       </div>
 
                       <button 
+                         type="button"
                          onClick={() => onRemove(idx)}
+                         aria-label={`${t('common.delete')} ${t(`schedules.days.${dayIndex}`)} ${idx + 1}`}
                          className="w-8 h-8 flex items-center justify-center rounded-full text-text-subtle hover:text-danger hover:bg-danger-surface transition-all"
                       >
                          <Trash2 className="w-4 h-4" />
@@ -176,6 +181,7 @@ const DayRow: React.FC<DayRowProps> = ({
 
              <div className="pt-1">
                 <button 
+                   type="button"
                    onClick={onAdd}
                    className="flex items-center text-sm font-bold text-primary hover:text-primary-dark transition-colors py-1 px-2 rounded-lg hover:bg-primary/5"
                 >

@@ -135,6 +135,8 @@ export const Draggable = ({
       'aria-label': 'Drag to reorder; use arrow keys for keyboard ordering',
       role: 'button',
       tabIndex: disabled ? -1 : 0,
+      draggable: !disabled,
+      onDragStart: draggableProps.onDragStart,
       onKeyDown: (event) => {
         if (disabled || (event.key !== 'ArrowUp' && event.key !== 'ArrowDown')) return;
         event.preventDefault();
