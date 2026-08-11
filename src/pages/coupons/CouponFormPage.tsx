@@ -172,7 +172,7 @@ const CouponFormPage: React.FC = () => {
 
     // --- 🚀 3. PREPARE & SEND ---
     try {
-      let finalImageUrl: string | null | undefined = imagePreview || "";
+      let finalImageUrl: string | undefined = imagePreview || undefined;
       if (imageFile && imageFile.size > 0 && !isImageUploaded) {
         const uploadedUrl = await uploadFile(
           imageFile,
@@ -189,6 +189,8 @@ const CouponFormPage: React.FC = () => {
         finalImageUrl = undefined;
       }
 
+      const startDate = new Date(`${data.startDate}T00:00:00`);
+      const endDate = new Date(`${data.endDate}T23:59:59.999`);
       const payload: CreateCouponDto = {
         code: data.code.toUpperCase().trim(),
         description: data.description,
@@ -199,8 +201,8 @@ const CouponFormPage: React.FC = () => {
         maxDiscountAmount: Number(data.maxDiscountAmount) || 0,
         usageLimitGlobal: Number(data.usageLimitGlobal) || undefined,
         usageLimitPerUser: Number(data.usageLimitPerUser) || 1,
-        startDate: new Date(data.startDate).toISOString(),
-        endDate: new Date(data.endDate).toISOString(),
+        startDate: startDate.toISOString(),
+        endDate: endDate.toISOString(),
         isActive: data.isActive,
         imageUrl: finalImageUrl,
       };

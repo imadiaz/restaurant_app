@@ -58,10 +58,7 @@ export const useCoupons = (restaurantIdOverride?: string) => {
     if (found) return found;
 
     try {
-      // If not in cache, you could fetch it individually if your service supports getOne
-      // For now, since coupons are usually small lists, we rely on the list cache
-      // or you can add `getOne` to your service.
-      return null; 
+      return await couponService.getOne(id);
     } catch (error) {
       handleError(error);
       return null;

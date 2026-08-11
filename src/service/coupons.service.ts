@@ -76,6 +76,11 @@ export const couponService = {
     return res.data; 
   },
 
+  async getOne(id: string): Promise<Coupon> {
+    const res = await axiosClient.get<unknown, ApiResponse<Coupon>>(`/coupons/${id}`);
+    return res.data;
+  },
+
   // 2. Create Coupon
   async create(data: CreateCouponDto): Promise<Coupon> {
     const res = await axiosClient.post<unknown, ApiResponse<Coupon>>('/coupons', data);
