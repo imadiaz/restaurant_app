@@ -152,7 +152,13 @@ axiosClient.interceptors.response.use(
     }
 
     return Promise.reject(
-      new AppError(errorMessage, statusCode, errorCode, validationErrors),
+      new AppError(
+        errorMessage,
+        statusCode,
+        errorCode,
+        validationErrors,
+        error.response?.data.requestId,
+      ),
     );
   },
 );

@@ -325,6 +325,7 @@
   "api_errors": {
     "default": "Ocurrió un error inesperado. Inténtalo más tarde.",
     "network": "No se pudo conectar con el servidor. Revisa tu conexión.",
+    "rate_limited": "Hay demasiadas solicitudes. Espera un momento e inténtalo de nuevo.",
     "auth": {
       "user_registered": "El usuario ya está registrado",
       "user_not_found": "Usuario no encontrado. Verifica tus credenciales.",

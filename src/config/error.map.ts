@@ -8,6 +8,7 @@ export const ERROR_MESSAGE_KEYS: Record<string, string> = {
   AUTH_005: 'api_errors.auth.user_not_found',
   AUTH_007: 'api_errors.auth.invalid_password',
   AUTH_009: 'api_errors.auth.user_disabled',
+  AUTH_010: 'api_errors.rate_limited',
   DB_001: 'api_errors.database.duplicate_user',
   CAT_001: 'api_errors.categories.duplicate',
   CAT_002: 'api_errors.categories.not_found',

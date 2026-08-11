@@ -22,6 +22,9 @@ export const useErrorHandler = () => {
       if (error.statusCode === 400) {
          type = 'warning';
       }
+      if (error.statusCode >= 500 && error.requestId) {
+        message = `${message} (Ref: ${error.requestId.slice(0, 8)})`;
+      }
     } 
     else if (error instanceof Error) {
       message = error.message;

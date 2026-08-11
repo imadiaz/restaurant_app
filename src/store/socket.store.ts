@@ -46,6 +46,12 @@ export const useSocketStore = create<SocketState>((set, get) => {
         set({ isConnected: false });
       });
 
+      newSocket.on("connect_error", () => {
+        newSocket.removeAllListeners();
+        newSocket.disconnect();
+        set({ socket: null, isConnected: false });
+      });
+
       newSocket.on("newOrder", (orderData: Order) => {
         onOrderEvent?.(orderData, "newOrder");
       });

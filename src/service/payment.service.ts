@@ -4,13 +4,13 @@ import axiosClient from "./api/axiosClient";
 
 export interface StripeAccountStatus {
     isActive: boolean;
-    pendingRequirements: false;
-    details: StripeAccountStatusDetails
+    pendingRequirements: boolean;
+    details?: StripeAccountStatusDetails
 }
 
 interface StripeAccountStatusDetails {
-    transfers: boolean;
-    payments: boolean;
+    transfers?: string | null;
+    payments?: string | null;
 }
 
 export const paymentService = {

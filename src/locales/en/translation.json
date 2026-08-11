@@ -206,6 +206,7 @@
   "api_errors": {
     "default": "Something went wrong. Please try again later.",
     "network": "Unable to connect to the server. Check your connection.",
+    "rate_limited": "Too many requests. Wait a moment and try again.",
     "auth": {
       "user_registered": "This user is already registered",
       "user_not_found": "User not found. Check your credentials.",

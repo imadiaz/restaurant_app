@@ -1,7 +1,7 @@
 import { RefreshCw, ShieldCheck, ArrowRight, Home } from "lucide-react";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import AnatomyButton from "../../components/anatomy/AnatomyButton";
 import AnatomyText from "../../components/anatomy/AnatomyText";
 import BasePageLayout from "../../components/layout/BaseLayout";
@@ -12,11 +12,15 @@ import { useToastStore } from "../../store/toast.store";
 export const PaymentRefreshPage = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { id: routeRestaurantId } = useParams<{ id: string }>();
   const [searchParams] = useSearchParams();
   const { activeRestaurant } = useAppStore();
   const addToast = useToastStore((s) => s.addToast);
 
-  const restaurantId = searchParams.get('restaurantId') || activeRestaurant?.id;
+  const restaurantId =
+    routeRestaurantId ||
+    searchParams.get('restaurantId') ||
+    activeRestaurant?.id;
 
   const { createAccountLink, isCreatingLink } = usePayments();
 
@@ -88,7 +92,7 @@ export const PaymentRefreshPage = () => {
 
               <AnatomyButton 
                  variant="ghost" 
-                 onClick={() => navigate('/dashboard')}
+                 onClick={() => navigate('/dashboard/home')}
                  disabled={isCreatingLink}
                  className="w-full justify-center"
               >

@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useSearchParams, useNavigate } from 'react-router-dom';
+import { useSearchParams, useNavigate, useParams } from 'react-router-dom';
 import { CheckCircle, AlertTriangle, ArrowRight, Home, CreditCard } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useAppStore } from '../../store/app.store';
@@ -11,10 +11,14 @@ import BasePageLayout from '../../components/layout/BaseLayout';
 const PaymentSuccessPage: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { id: routeRestaurantId } = useParams<{ id: string }>();
   const [searchParams] = useSearchParams();
   const { activeRestaurant } = useAppStore();
   
-  const restaurantId = searchParams.get('restaurantId') || activeRestaurant?.id;
+  const restaurantId =
+    routeRestaurantId ||
+    searchParams.get('restaurantId') ||
+    activeRestaurant?.id;
 
   const { accountStatus, isCheckingStatus } = usePayments(restaurantId);
 
@@ -24,7 +28,10 @@ const PaymentSuccessPage: React.FC = () => {
     }
   }, [restaurantId, isCheckingStatus, navigate]);
 
-  const isActive = accountStatus?.isActive && accountStatus?.details.payments && accountStatus.details.transfers;
+  const isActive =
+    accountStatus?.isActive &&
+    accountStatus.details?.payments &&
+    accountStatus.details?.transfers;
   const isPending = !isActive && accountStatus?.pendingRequirements;
   if (isCheckingStatus) {
     return (
@@ -76,7 +83,7 @@ const PaymentSuccessPage: React.FC = () => {
 
               <div className="pt-4">
                 <AnatomyButton 
-                  onClick={() => navigate('/')} 
+                  onClick={() => navigate('/dashboard/home')}
                   className="w-full justify-center py-3 text-base"
                 >
                    {t('common.go_dashboard')} <ArrowRight className="w-4 h-4 ml-2" />
@@ -107,7 +114,7 @@ const PaymentSuccessPage: React.FC = () => {
               <div className="pt-4 flex flex-col gap-3">                
                 <AnatomyButton 
                   variant="ghost" 
-                  onClick={() => navigate('/')}
+                  onClick={() => navigate('/dashboard/home')}
                   className="w-full justify-center"
                 >
                    <Home className="w-4 h-4 mr-2" /> {t('common.return_home')}
