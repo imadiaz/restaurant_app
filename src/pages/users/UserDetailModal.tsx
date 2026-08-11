@@ -14,12 +14,14 @@ interface UserDetailModalProps {
   user: User | null;
   isOpen: boolean;
   onClose: () => void;
+  canEdit?: boolean;
 }
 
 const UserDetailModal: React.FC<UserDetailModalProps> = ({
   user,
   isOpen,
-  onClose
+  onClose,
+  canEdit = false,
 }) => {
   const {t} = useTranslation();
   const {navigateTo} = useAppNavigation();
@@ -120,14 +122,16 @@ const UserDetailModal: React.FC<UserDetailModalProps> = ({
             )}
           </div>
 
-          <div className="w-full mt-6 grid grid-cols-2 gap-4">
+          <div className={`w-full mt-6 grid ${canEdit ? 'grid-cols-2' : 'grid-cols-1'} gap-4`}>
             <AnatomyButton variant="secondary" onClick={onClose}>
               {t('common.close')}
             </AnatomyButton>
-            <AnatomyButton onClick={() => navigateTo(Routes.UserEdit(user.id))}>
-              <Edit className="w-4 h-4 mr-2" />
-              {t('common.edit')}
-            </AnatomyButton>
+            {canEdit && (
+              <AnatomyButton onClick={() => navigateTo(Routes.UserEdit(user.id))}>
+                <Edit className="w-4 h-4 mr-2" />
+                {t('common.edit')}
+              </AnatomyButton>
+            )}
           </div>
 
         </div>

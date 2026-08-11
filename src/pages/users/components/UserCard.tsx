@@ -8,7 +8,7 @@ import AnatomyCardActions from "../../../components/anatomy/AnatomyCardActions";
 
 interface UserCardProps {
   user: User;
-  onEdit: () => void;
+  onEdit?: () => void;
   onViewDetails: () => void;
 }
 
@@ -90,11 +90,11 @@ const UserCard = ({
         </div>
 
         <AnatomyCardActions
-          secondary={{
-            label: t("common.edit"),
-            icon: Edit,
-            onClick: onEdit,
-          }}
+          secondary={onEdit ? {
+              label: t("common.edit"),
+              icon: Edit,
+              onClick: onEdit,
+            } : undefined}
           primary={{
             label: t("common.details"),
             icon: ExternalLink,

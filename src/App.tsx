@@ -99,8 +99,14 @@ function App() {
             <Route path="home"  element={<StatisticsPage />} />
             <Route path="orders" element={<OrdersPage />} />
             <Route path="users" element={<UsersPage />} />
-            <Route path="users/add" element={<UserFormPage />} />
-            <Route path="users/edit/:id" element={<UserFormPage />} />
+            <Route
+              element={
+                <RoleGuard allowedRoles={[ROLES.SUPER_ADMIN, ROLES.ADMIN]} />
+              }
+            >
+              <Route path="users/add" element={<UserFormPage />} />
+              <Route path="users/edit/:id" element={<UserFormPage />} />
+            </Route>
             <Route path="menu-sections" element={<MenuSectionsPage />} />
             <Route path="menu-sections/add" element={<MenuSectionFormPage />} />
             <Route

@@ -3,7 +3,6 @@ import { useErrorHandler } from '../use.error.handler';
 import { useToastStore } from '../../store/toast.store';
 import { userService, type CreateUserDto, type UpdateUserDto } from '../../service/user.service';
 import { useAuthStore } from '../../store/auth.store';
-import { isSuperAdmin } from '../../data/models/user/utils/user.utils';
 import type { User } from '../../data/models/user/user';
 import { useAppStore } from '../../store/app.store';
 import { queryKeys } from '../../config/query.keys';
@@ -31,11 +30,7 @@ export const useUsers = (restaurantIdOverride?: string) => {
          return userService.getAllByRestaurantId(effectiveRestaurantId);
       }
 
-      if (isSuperAdmin(user)) {
-         return userService.getAll();
-      }
-
-      return []; 
+      return user ? userService.getAll() : [];
     },
     enabled: true, 
   });
