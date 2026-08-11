@@ -423,7 +423,26 @@
     "status_history": "Status history",
     "status_label": "Status",
     "times": "Times",
-    "history_user": "User who changed"
+    "history_user": "User who changed",
+    "refund": {
+      "title": "Refund",
+      "action": "Refund order",
+      "retry_action": "Retry refund",
+      "check_action": "Check refund",
+      "review_action": "Review and confirm",
+      "reason_label": "Operational reason",
+      "reason_placeholder": "Describe why this order is being refunded (minimum 5 characters)",
+      "confirm_title": "Confirm full refund",
+      "confirm_message": "The customer will receive ${{amount}} MXN and the order will be cancelled. This financial action cannot be undone.",
+      "confirm_action": "Yes, refund",
+      "updated": "Refund status updated",
+      "failure_code": "Operational code",
+      "status": {
+        "pending": "Pending reconciliation",
+        "succeeded": "Completed",
+        "failed": "Failed; review required"
+      }
+    }
   },
   "confirm_modal": {
     "change_status_group": "Change status group",

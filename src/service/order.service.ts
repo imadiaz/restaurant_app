@@ -31,6 +31,12 @@ export const PaymentStatus = {
   INCOMPLETE_PAYMENT: "INCOMPLETE_PAYMENT",
 } as const;
 
+export const RefundStatus = {
+  PENDING: "PENDING",
+  SUCCEEDED: "SUCCEEDED",
+  FAILED: "FAILED",
+} as const;
+
 // --- SNAPSHOT INTERFACES ---
 export interface DeliveryAddressSnapshot {
   alias?: string;
@@ -150,6 +156,17 @@ export interface Order {
 
   estimatedCompletionTime?: string;
   incompletePaymentAmount?: number;
+  refund?: {
+    id: string;
+    status: (typeof RefundStatus)[keyof typeof RefundStatus];
+    amount: number;
+    currency: string;
+    reason?: string;
+    failureCode?: string | null;
+    requestedAt?: string;
+    completedAt?: string | null;
+    updatedAt?: string;
+  } | null;
 }
 
 // --- DTOs (Only for Updates) ---
@@ -164,6 +181,11 @@ export interface AssignDriverDto {
   orderId: string;
   driverId: string;
   status?: (typeof OrderStatus)[keyof typeof OrderStatus];
+}
+
+export interface RefundOrderDto {
+  requestId: string;
+  reason: string;
 }
 
 // --- SERVICE IMPLEMENTATION ---
@@ -216,6 +238,14 @@ export const orderService = {
       unknown,
       ApiResponse<{ lat: number; lng: number }>
     >(`/orders/${id}/tracking`);
+    return res.data;
+  },
+
+  async refund(id: string, data: RefundOrderDto): Promise<Order> {
+    const res = await axiosClient.post<unknown, ApiResponse<Order>>(
+      `/orders/${id}/refund`,
+      data,
+    );
     return res.data;
   },
 };

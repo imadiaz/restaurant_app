@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-import { orderService, OrderStatus, type AssignDriverDto, type Order, type UpdateOrderStatusDto } from '../../service/order.service';
+import { orderService, OrderStatus, RefundStatus, type AssignDriverDto, type Order, type UpdateOrderStatusDto } from '../../service/order.service';
 import { useAppStore } from '../../store/app.store';
 import { useToastStore } from '../../store/toast.store';
 import { useErrorHandler } from '../use.error.handler';
@@ -31,7 +31,14 @@ export const useOrders = (statusFilter?: typeof OrderStatus[keyof typeof OrderSt
       return orderService.getByRestaurant(activeRestaurant.id, statusFilter);
     },
     enabled: !!activeRestaurant?.id,
-    refetchInterval: isSocketConnected ? false : 30000,
+    refetchInterval: (query) => {
+      const currentOrders = (query.state.data ?? []) as Order[];
+      const hasPendingRefund = currentOrders.some(
+        (order) => order.refund?.status === RefundStatus.PENDING,
+      );
+      if (hasPendingRefund) return 10000;
+      return isSocketConnected ? false : 30000;
+    },
     staleTime: isSocketConnected ? 60000 : 10000,
   });
 
@@ -73,6 +80,21 @@ export const useOrders = (statusFilter?: typeof OrderStatus[keyof typeof OrderSt
     onError: handleError
   });
 
+  const refundOrder = useMutation({
+    mutationFn: ({ id, reason }: { id: string; reason: string }) =>
+      orderService.refund(id, {
+        requestId: crypto.randomUUID(),
+        reason,
+      }),
+    onSuccess: (data) => {
+      addToast(t('orders.refund.updated'), 'success');
+      if (activeRestaurant?.id) {
+        syncOrderInCache(queryClient, activeRestaurant.id, data);
+      }
+    },
+    onError: handleError,
+  });
+
   return {
     // Data
     orders,
@@ -84,9 +106,11 @@ export const useOrders = (statusFilter?: typeof OrderStatus[keyof typeof OrderSt
     getOrderById,
     updateStatus: updateStatus.mutateAsync,
     assignDriver: assignDriver.mutateAsync,
+    refundOrder: refundOrder.mutateAsync,
 
     // Loading States
     isUpdating: updateStatus.isPending,
-    isAssigning: assignDriver.isPending
+    isAssigning: assignDriver.isPending,
+    isRefunding: refundOrder.isPending,
   };
 };

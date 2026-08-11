@@ -33,7 +33,7 @@ const OrdersPage: React.FC = () => {
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const { orders, isLoading, updateStatus, assignDriver } = useOrders();
+  const { orders, isLoading, updateStatus, assignDriver, refundOrder, isRefunding } = useOrders();
 
   const { counts, filteredOrders } = useMemo(() => {
      const newCounts: Record<string, number> = { all: 0 };
@@ -73,6 +73,11 @@ const OrdersPage: React.FC = () => {
     } else {
       await updateStatus({ id, status: newStatus, timeInMinutes });
     }
+  };
+
+  const handleRefund = async (id: string, reason: string) => {
+    const updatedOrder = await refundOrder({ id, reason });
+    setSelectedOrder(updatedOrder);
   };
 
   return (
@@ -146,6 +151,8 @@ const OrdersPage: React.FC = () => {
             isOpen={isModalOpen}
             order={selectedOrder}
             onClose={handleCloseModal}
+            isRefunding={isRefunding}
+            onRefund={(reason) => handleRefund(selectedOrder.id, reason)}
             onStatusChange={(newStatus, timeInMinutes, driverId) => {
                if (selectedOrder) {
                 setIsModalOpen(false);

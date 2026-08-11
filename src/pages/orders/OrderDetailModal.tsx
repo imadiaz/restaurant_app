@@ -15,12 +15,17 @@ import {
   ChevronUp,
   ChevronDown,
   History,
+  RotateCcw,
+  AlertCircle,
 } from "lucide-react";
 import AnatomyText from "../../components/anatomy/AnatomyText";
 import AnatomyButton from "../../components/anatomy/AnatomyButton";
 import {
   OrderStatus,
   OrderType,
+  PaymentMethod,
+  PaymentStatus,
+  RefundStatus,
   type Order,
 } from "../../service/order.service";
 import { useTranslation } from "react-i18next";
@@ -30,6 +35,9 @@ import { useAppStore } from "../../store/app.store";
 import { useDrivers } from "../../hooks/drivers/use.drivers";
 import AnatomySelect from "../../components/anatomy/AnatomySelect";
 import { useDialogAccessibility } from "../../hooks/use.dialog.accessibility";
+import { useAuthStore } from "../../store/auth.store";
+import { ROLES } from "../../config/roles";
+import { useConfirm } from "../../hooks/use.confirm.modal";
 
 type OrderStatusType = keyof typeof OrderStatus;
 
@@ -42,6 +50,8 @@ interface OrderDetailModalProps {
     timeInMinutes?: number,
     driverId?: string,
   ) => void;
+  onRefund: (reason: string) => Promise<void>;
+  isRefunding: boolean;
 }
 
 const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
@@ -49,16 +59,22 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
   isOpen,
   onClose,
   onStatusChange,
+  onRefund,
+  isRefunding,
 }) => {
   const { t } = useTranslation();
   const { activeRestaurant } = useAppStore((state) => state);
   const { drivers } = useDrivers();
+  const user = useAuthStore((state) => state.user);
+  const { confirm } = useConfirm();
 
   // Local State
   const [showPrepTime, setShowPrepTime] = useState(false);
   const [prepTime, setPrepTime] = useState<number>(activeRestaurant?.averagePrepTimeMin ?? 15);
   const [selectedDriverId, setSelectedDriverId] = useState<string>(order?.driverId || "");
   const [isHistoryOpen, setIsHistoryOpen] = useState(false); // Collapsible state
+  const [showRefundForm, setShowRefundForm] = useState(false);
+  const [refundReason, setRefundReason] = useState("");
   const dialogRef = useRef<HTMLDivElement>(null);
   useDialogAccessibility(isOpen && Boolean(order), dialogRef, onClose);
 
@@ -107,6 +123,32 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
 
   const handleAcceptOrder = () => {
     onStatusChange(OrderStatus.CONFIRMED, undefined, undefined);
+  };
+
+  const canRefund =
+    (user?.role.name === ROLES.SUPER_ADMIN || user?.role.name === ROLES.ADMIN) &&
+    order.paymentMethod === PaymentMethod.CARD &&
+    order.paymentStatus === PaymentStatus.PAID &&
+    order.status !== OrderStatus.DELIVERED &&
+    order.status !== OrderStatus.INCOMPLETE_PAYMENT &&
+    order.refund?.status !== RefundStatus.SUCCEEDED;
+
+  const requestRefund = () => {
+    const reason = refundReason.trim();
+    if (reason.length < 5) return;
+    confirm({
+      title: t("orders.refund.confirm_title"),
+      message: t("orders.refund.confirm_message", {
+        amount: Number(order.totalAmount).toFixed(2),
+      }),
+      confirmText: t("orders.refund.confirm_action"),
+      variant: "danger",
+      onConfirm: async () => {
+        await onRefund(reason);
+        setRefundReason("");
+        setShowRefundForm(false);
+      },
+    });
   };
 
   return (
@@ -433,6 +475,78 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
                 </div>
               </div>
 
+              {order.refund && (
+                <div
+                  className={`mt-5 rounded-xl border p-4 ${
+                    order.refund.status === RefundStatus.SUCCEEDED
+                      ? "border-success/30 bg-success-surface"
+                      : order.refund.status === RefundStatus.FAILED
+                        ? "border-danger/30 bg-danger-surface"
+                        : "border-warning/30 bg-warning-surface"
+                  }`}
+                >
+                  <div className="flex items-start gap-3">
+                    {order.refund.status === RefundStatus.FAILED ? (
+                      <AlertCircle className="mt-0.5 h-5 w-5 text-danger" />
+                    ) : (
+                      <RotateCcw className="mt-0.5 h-5 w-5 text-text-muted" />
+                    )}
+                    <div className="min-w-0 flex-1">
+                      <AnatomyText.Label className="font-bold uppercase">
+                        {t("orders.refund.title")}
+                      </AnatomyText.Label>
+                      <AnatomyText.Small className="mt-1 text-text-muted">
+                        {t(`orders.refund.status.${order.refund.status.toLowerCase()}`)} · ${Number(order.refund.amount).toFixed(2)} {order.refund.currency}
+                      </AnatomyText.Small>
+                      {order.refund.reason && (
+                        <AnatomyText.Small className="mt-1 block text-text-muted">
+                          {order.refund.reason}
+                        </AnatomyText.Small>
+                      )}
+                      {order.refund.failureCode && (
+                        <AnatomyText.Small className="mt-1 block font-mono text-danger">
+                          {t("orders.refund.failure_code")}: {order.refund.failureCode}
+                        </AnatomyText.Small>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {canRefund && showRefundForm && (
+                <div className="mt-5 rounded-xl border border-danger/30 bg-danger-surface p-4">
+                  <label htmlFor="refund-reason" className="mb-2 block text-sm font-bold text-text-main">
+                    {t("orders.refund.reason_label")}
+                  </label>
+                  <textarea
+                    id="refund-reason"
+                    value={refundReason}
+                    onChange={(event) => setRefundReason(event.target.value)}
+                    maxLength={500}
+                    rows={3}
+                    disabled={isRefunding}
+                    placeholder={t("orders.refund.reason_placeholder")}
+                    className="w-full resize-none rounded-lg border border-border bg-background-card px-3 py-2 text-sm text-text-main outline-none focus:ring-2 focus:ring-danger/40"
+                  />
+                  <div className="mt-3 flex justify-end gap-2">
+                    <AnatomyButton
+                      variant="secondary"
+                      onClick={() => setShowRefundForm(false)}
+                      disabled={isRefunding}
+                    >
+                      {t("common.cancel")}
+                    </AnatomyButton>
+                    <AnatomyButton
+                      onClick={requestRefund}
+                      disabled={refundReason.trim().length < 5 || isRefunding}
+                      className="bg-danger text-white hover:brightness-90"
+                    >
+                      {t("orders.refund.review_action")}
+                    </AnatomyButton>
+                  </div>
+                </div>
+              )}
+
               {order.statusHistory && order.statusHistory.length > 0 && (
                 <div className="mt-6 border-t border-border pt-4">
                   <button
@@ -506,6 +620,20 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
           </AnatomyButton>
 
           <div className="flex flex-wrap gap-3">
+            {canRefund && !showRefundForm && (
+              <AnatomyButton
+                onClick={() => setShowRefundForm(true)}
+                disabled={isRefunding}
+                className="bg-danger text-white hover:brightness-90"
+              >
+                <RotateCcw className="mr-2 h-4 w-4" />
+                {order.refund?.status === RefundStatus.PENDING
+                  ? t("orders.refund.check_action")
+                  : order.refund?.status === RefundStatus.FAILED
+                    ? t("orders.refund.retry_action")
+                    : t("orders.refund.action")}
+              </AnatomyButton>
+            )}
             {/* PENDING -> PREPARING */}
             {order.status === OrderStatus.PENDING && (
               <AnatomyButton

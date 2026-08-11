@@ -292,6 +292,25 @@
     "status_label": "Estado",
     "times": "Tiempos",
     "history_user": "Usuario que realizó el cambio"
+    ,"refund": {
+      "title": "Reembolso",
+      "action": "Reembolsar orden",
+      "retry_action": "Reintentar reembolso",
+      "check_action": "Verificar reembolso",
+      "review_action": "Revisar y confirmar",
+      "reason_label": "Motivo operativo",
+      "reason_placeholder": "Describe por qué se reembolsará esta orden (mínimo 5 caracteres)",
+      "confirm_title": "Confirmar reembolso total",
+      "confirm_message": "Se devolverán ${{amount}} MXN al cliente y se cancelará la orden. Esta acción financiera no se puede deshacer.",
+      "confirm_action": "Sí, reembolsar",
+      "updated": "Estado del reembolso actualizado",
+      "failure_code": "Código operativo",
+      "status": {
+        "pending": "Pendiente de conciliación",
+        "succeeded": "Completado",
+        "failed": "Falló; requiere revisión"
+      }
+    }
   },
   "forms": {
     "username":"Usuario",
