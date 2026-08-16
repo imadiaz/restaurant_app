@@ -39,6 +39,7 @@ const PaymentSuccessPage = lazy(() => import("./pages/payments/PaymentSuccessPag
 const PaymentRefreshPage = lazy(() =>
   import("./pages/payments/PaymentRefreshPage").then((module) => ({ default: module.PaymentRefreshPage })),
 );
+const PrivacyNoticePage = lazy(() => import("./pages/privacy/PrivacyNoticePage"));
 
 function App() {
   return (
@@ -58,6 +59,7 @@ function App() {
           path="/payments/onboarding/refresh/:id"
           element={<PaymentRefreshPage />}
         />
+        <Route path="/aviso-de-privacidad" element={<PrivacyNoticePage />} />
         <Route path="/" element={<RootRedirect />} />
         <Route path="/unauthorized" element={<UnauthorizedPage />} />
 
