@@ -96,7 +96,11 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
         return "warning";
       case OrderStatus.READY:
         return "success";
+      case OrderStatus.AT_RESTAURANT:
+        return "success";
       case OrderStatus.ON_WAY:
+        return "primary";
+      case OrderStatus.ARRIVED_AT_CUSTOMER:
         return "primary";
       case OrderStatus.DELIVERED:
         return "default";

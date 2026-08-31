@@ -59,6 +59,18 @@ const OrderCard: React.FC<OrderCardProps> = ({ order, onClick }) => {
           icon: Flame,
           textKey: "orders.status.cooking",
         };
+      case OrderStatus.AT_RESTAURANT:
+        return {
+          variant: "success",
+          icon: CheckCircle,
+          textKey: "orders.status.at_restaurant",
+        };
+      case OrderStatus.ARRIVED_AT_CUSTOMER:
+        return {
+          variant: "primary",
+          icon: MapPin,
+          textKey: "orders.status.arrived_at_customer",
+        };
       case OrderStatus.COURIER_ARRIVING:
         return {
           variant: "success",
