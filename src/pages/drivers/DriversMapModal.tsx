@@ -4,7 +4,12 @@ import { Loader2, MapPin, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useDialogAccessibility } from '../../hooks/use.dialog.accessibility';
 import type { DriverLocation } from '../../service/drivers.service';
-import { DEFAULT_MAP_CENTER, GOOGLE_MAPS_LIBRARIES } from '../../utils/maps/google.maps.config';
+import {
+  DEFAULT_MAP_CENTER,
+  DEFAULT_MAP_ZOOM,
+  GOOGLE_MAPS_LIBRARIES,
+  MIN_DRIVER_MAP_ZOOM,
+} from '../../utils/maps/google.maps.config';
 
 interface DriversMapModalProps {
   isOpen: boolean;
@@ -35,14 +40,25 @@ const DriversMapModal = ({
   const fitLocations = useCallback((map: google.maps.Map, points: DriverLocation[]) => {
     if (points.length === 0) {
       map.setCenter(DEFAULT_MAP_CENTER);
-      map.setZoom(12);
+      map.setZoom(DEFAULT_MAP_ZOOM);
       return;
     }
 
     const bounds = new google.maps.LatLngBounds();
     points.forEach(({ lat, lng }) => bounds.extend({ lat, lng }));
     map.fitBounds(bounds);
-    if (points.length === 1) map.setZoom(16);
+    if (points.length === 1) {
+      map.setZoom(16);
+      return;
+    }
+
+    google.maps.event.addListenerOnce(map, 'idle', () => {
+      const zoom = map.getZoom();
+      if (zoom !== undefined && zoom < MIN_DRIVER_MAP_ZOOM) {
+        map.setCenter(DEFAULT_MAP_CENTER);
+        map.setZoom(MIN_DRIVER_MAP_ZOOM);
+      }
+    });
   }, []);
 
   const handleMapLoad = useCallback((map: google.maps.Map) => {
@@ -96,7 +112,7 @@ const DriversMapModal = ({
         ) : (
           <GoogleMap
             center={DEFAULT_MAP_CENTER}
-            zoom={12}
+            zoom={DEFAULT_MAP_ZOOM}
             mapContainerStyle={{ width: '100%', height: '100%' }}
             onLoad={handleMapLoad}
             options={{

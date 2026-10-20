@@ -11,7 +11,7 @@ import { useErrorHandler } from '../../hooks/use.error.handler';
 import { useTranslation } from 'react-i18next';
 import { ROLES } from '../../config/roles';
 
-const NOTIFICATION_SOUND = "https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3";
+const NOTIFICATION_SOUND = "/audio/new-order-alarm.mp3";
 
 const SocketManager: React.FC = () => {
   const { connect, disconnect } = useSocketStore();
@@ -26,13 +26,43 @@ const SocketManager: React.FC = () => {
   
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const activeOrderToastsRef = useRef(new Map<string, string>());
+  const pendingAudioResumeRef = useRef<(() => void) | null>(null);
+
+  const clearPendingAudioResume = useCallback(() => {
+    const resume = pendingAudioResumeRef.current;
+    if (!resume) return;
+
+    window.removeEventListener('pointerdown', resume, true);
+    window.removeEventListener('keydown', resume, true);
+    pendingAudioResumeRef.current = null;
+  }, []);
+
+  const playNotificationSound = useCallback(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    clearPendingAudioResume();
+    audio.currentTime = 0;
+    audio.play().catch(() => {
+      const resumeAfterUserGesture = () => {
+        clearPendingAudioResume();
+        if (activeOrderToastsRef.current.size === 0) return;
+        audio.play().catch(() => undefined);
+      };
+
+      pendingAudioResumeRef.current = resumeAfterUserGesture;
+      window.addEventListener('pointerdown', resumeAfterUserGesture, true);
+      window.addEventListener('keydown', resumeAfterUserGesture, true);
+    });
+  }, [clearPendingAudioResume]);
 
   const stopNotificationSound = useCallback(() => {
+    clearPendingAudioResume();
     if (!audioRef.current) return;
 
     audioRef.current.pause();
     audioRef.current.currentTime = 0;
-  }, []);
+  }, [clearPendingAudioResume]);
 
   const dismissOrderNotification = useCallback((orderId: string, toastId: string) => {
     if (activeOrderToastsRef.current.get(orderId) === toastId) {
@@ -68,10 +98,7 @@ const SocketManager: React.FC = () => {
             updatedOrder.status === OrderStatus.PENDING &&
             (!isPaidCardOrder || canRefundCardOrder);
 
-          if (audioRef.current) {
-            audioRef.current.currentTime = 0;
-            audioRef.current.play().catch(() => undefined);
-          }
+          playNotificationSound();
           addCustomToast(
             React.createElement(OrderNotificationToast, {
               order: updatedOrder,
@@ -131,10 +158,10 @@ const SocketManager: React.FC = () => {
       stopNotificationSound();
     };
     }
-  }, [connect, disconnect, activeRestaurant?.id, isAuthenticated, user?.role.name, queryClient, addToast, addCustomToast, dismissOrderNotification, removeToast, stopNotificationSound, handleError, t]);
+  }, [connect, disconnect, activeRestaurant?.id, isAuthenticated, user?.role.name, queryClient, addToast, addCustomToast, dismissOrderNotification, removeToast, playNotificationSound, stopNotificationSound, handleError, t]);
 
   return (
-    <audio ref={audioRef} src={NOTIFICATION_SOUND} loop hidden />
+    <audio ref={audioRef} src={NOTIFICATION_SOUND} loop preload="auto" hidden />
   );
 };
 
