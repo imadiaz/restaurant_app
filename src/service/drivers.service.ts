@@ -20,6 +20,15 @@ export interface Driver {
   isAvailable: boolean;
 }
 
+export interface DriverLocation {
+  id: string;
+  name: string;
+  phone: string | null;
+  lat: number;
+  lng: number;
+  lastLocationUpdate: string | null;
+}
+
 
 export interface CreateDriverDto {
   firstName: string;
@@ -37,6 +46,13 @@ export interface UpdateDriverStatusDto {
 export const driverService = {
   async getAllByRestaurantId(restaurantId: string): Promise<Driver[]> {
     const res = await axiosClient.get<unknown, ApiResponse<Driver[]>>(`/drivers/restaurant/${restaurantId}`);
+    return res.data;
+  },
+
+  async getLocationsByRestaurantId(restaurantId: string): Promise<DriverLocation[]> {
+    const res = await axiosClient.get<unknown, ApiResponse<DriverLocation[]>>(
+      `/drivers/restaurant/${restaurantId}/locations`,
+    );
     return res.data;
   },
 

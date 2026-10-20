@@ -4,11 +4,8 @@ import { Crosshair, Loader2, MapPin, Search } from "lucide-react";
 import { extractAddressComponents, type AddressResult } from "../../utils/maps/google.maps.utils";
 import AnatomyText from "../anatomy/AnatomyText";
 import { useTranslation } from "react-i18next";
+import { DEFAULT_MAP_CENTER, GOOGLE_MAPS_LIBRARIES } from "../../utils/maps/google.maps.config";
 
-
-
-const LIBRARIES: ("places" | "geometry" | "drawing" | "visualization")[] = ["places"];
-const DEFAULT_CENTER = { lat: 18.9213584, lng: -99.244986 };
 
 interface LocationPickerProps {
   initialLat?: number;
@@ -26,12 +23,12 @@ const LocationPicker: React.FC<LocationPickerProps> = ({
   const { t } = useTranslation();
   const { isLoaded } = useJsApiLoader({
     googleMapsApiKey: apiKey,
-    libraries: LIBRARIES,
+    libraries: GOOGLE_MAPS_LIBRARIES,
   });
 
   const initialPosition = initialLat && initialLng && initialLat !== 0
     ? { lat: Number(initialLat), lng: Number(initialLng) }
-    : DEFAULT_CENTER;
+    : DEFAULT_MAP_CENTER;
   const [center, setCenter] = useState(initialPosition);
   const [markerPos, setMarkerPos] = useState(initialPosition);
   

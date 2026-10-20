@@ -13,6 +13,7 @@ export const queryKeys = {
   drivers: {
     all: ["drivers"] as const,
     list: (restaurantId?: string) => ["drivers", scope(restaurantId)] as const,
+    locations: (restaurantId?: string) => ["drivers", scope(restaurantId), "locations"] as const,
   },
   menuSections: {
     all: ["menu-sections"] as const,

@@ -203,6 +203,17 @@
     "sort_tips": "Los números menores aparecen primero. Usa incrementos de 10 para insertar secciones fácilmente."
   },
   "drivers": {
+    "map": {
+      "open_action": "Ver mapa",
+      "title": "Ubicación de repartidores",
+      "visible_count": "{{count}} repartidores con ubicación disponible",
+      "phone": "Teléfono",
+      "no_phone": "Sin teléfono",
+      "loading": "Actualizando ubicaciones...",
+      "empty": "Ningún repartidor ha compartido su ubicación todavía.",
+      "load_error": "No se pudieron cargar las ubicaciones.",
+      "configuration_error": "Configura VITE_GOOGLE_MAPS_KEY en el archivo .env para mostrar el mapa."
+    },
     "title": "Repartidores", "driver": "Repartidor", "subtitle": "Administración del equipo de entrega", "add": "Agregar repartidor",
     "edit": "Editar repartidor", "no_drivers": "No se encontraron repartidores.", "search_placeholder": "Buscar por nombre, correo o teléfono...",
     "phone": "Teléfono de acceso a la aplicación", "status": "Estado del repartidor", "select_driver": "Seleccionar repartidor"

@@ -333,6 +333,17 @@
     "currently_closed": "Currently closed"
   },
   "drivers": {
+    "map": {
+      "open_action": "View map",
+      "title": "Driver locations",
+      "visible_count": "{{count}} drivers with an available location",
+      "phone": "Phone",
+      "no_phone": "No phone number",
+      "loading": "Refreshing locations...",
+      "empty": "No driver has shared a location yet.",
+      "load_error": "Driver locations could not be loaded.",
+      "configuration_error": "Set VITE_GOOGLE_MAPS_KEY in the .env file to display the map."
+    },
     "title": "Drivers",
     "driver": "Driver",
     "subtitle": "Delivery team management",

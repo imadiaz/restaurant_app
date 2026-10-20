@@ -104,3 +104,20 @@ export const useDrivers = (restaurantIdOverride?: string) => {
     isUpdatingStatus: updateStatusMutation.isPending,
   };
 };
+
+export const useDriverLocations = (restaurantId: string | undefined, enabled: boolean) => {
+  const { data: driverLocations = [], isLoading, isError } = useQuery({
+    queryKey: queryKeys.drivers.locations(restaurantId),
+    queryFn: () => driverService.getLocationsByRestaurantId(restaurantId!),
+    enabled: enabled && Boolean(restaurantId),
+    refetchInterval: enabled ? 60_000 : false,
+    refetchIntervalInBackground: true,
+    refetchOnWindowFocus: false,
+  });
+
+  return {
+    driverLocations,
+    isLoading,
+    isError,
+  };
+};
