@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import { useSocketStore } from '../../store/socket.store';
 import { useAppStore } from '../../store/app.store';
 import { useQueryClient } from '@tanstack/react-query';
@@ -20,14 +20,35 @@ const SocketManager: React.FC = () => {
   const removeToast = useToastStore((state) => state.removeToast);
   
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const activeOrderToastIdsRef = useRef(new Set<string>());
+
+  const stopNotificationSound = useCallback(() => {
+    if (!audioRef.current) return;
+
+    audioRef.current.pause();
+    audioRef.current.currentTime = 0;
+  }, []);
+
+  const dismissOrderNotification = useCallback((toastId: string) => {
+    activeOrderToastIdsRef.current.delete(toastId);
+    removeToast(toastId);
+
+    if (activeOrderToastIdsRef.current.size === 0) {
+      stopNotificationSound();
+    }
+  }, [removeToast, stopNotificationSound]);
 
   useEffect(() => {
+    const activeOrderToastIds = activeOrderToastIdsRef.current;
+
     if (activeRestaurant?.id && isAuthenticated) {
       connect(activeRestaurant.id, (updatedOrder: Order, event) => {
         syncOrderInCache(queryClient, activeRestaurant.id, updatedOrder);
 
         if (event === 'newOrder') {
           const toastId = `order-${updatedOrder.id}-${Date.now()}`;
+          activeOrderToastIds.add(toastId);
+
           if (audioRef.current) {
             audioRef.current.currentTime = 0;
             audioRef.current.play().catch(() => undefined);
@@ -35,9 +56,9 @@ const SocketManager: React.FC = () => {
           addCustomToast(
             React.createElement(OrderNotificationToast, {
               order: updatedOrder,
-              onClose: () => removeToast(toastId),
+              onClose: () => dismissOrderNotification(toastId),
             }),
-            10000,
+            0,
             toastId,
           );
           return;
@@ -53,12 +74,15 @@ const SocketManager: React.FC = () => {
       });
     return () => {
       disconnect();
+      activeOrderToastIds.forEach(removeToast);
+      activeOrderToastIds.clear();
+      stopNotificationSound();
     };
     }
-  }, [connect, disconnect, activeRestaurant?.id, isAuthenticated, queryClient, addToast, addCustomToast, removeToast]);
+  }, [connect, disconnect, activeRestaurant?.id, isAuthenticated, queryClient, addToast, addCustomToast, dismissOrderNotification, removeToast, stopNotificationSound]);
 
   return (
-    <audio ref={audioRef} src={NOTIFICATION_SOUND} hidden />
+    <audio ref={audioRef} src={NOTIFICATION_SOUND} loop hidden />
   );
 };
 
