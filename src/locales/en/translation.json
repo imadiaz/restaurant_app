@@ -439,7 +439,11 @@
       "mark_ready": "Mark Ready",
       "send_driver": "Request Driver",
       "complete_order": "Complete Order",
-      "mark_delivered": "Mark Delivered"
+      "mark_delivered": "Mark Delivered",
+      "auto_assign_driver": "{{name}} will be assigned automatically.",
+      "no_active_drivers": "There are no active drivers available for assignment.",
+      "queued_assignment_hint": "Drivers already on a delivery can receive this order in their queue.",
+      "busy_queue_suffix": "add to queue"
     },
     "estimated_time": "Estimated preparation time",
     "assign_driver": "Assign a driver",

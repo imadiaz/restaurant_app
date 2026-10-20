@@ -307,7 +307,11 @@
       "mark_ready": "Marcar como lista",
       "send_driver": "Solicitar repartidor",
       "complete_order": "Completar orden",
-      "mark_delivered": "Marcar como entregada"
+      "mark_delivered": "Marcar como entregada",
+      "auto_assign_driver": "Se asignará automáticamente a {{name}}.",
+      "no_active_drivers": "No hay repartidores activos disponibles para asignar.",
+      "queued_assignment_hint": "Puedes agregar el pedido a la cola de un repartidor que ya está en ruta.",
+      "busy_queue_suffix": "agregar a su cola"
     },
     "estimated_time": "Tiempo estimado de preparación",
     "assign_driver": "Asignar repartidor",

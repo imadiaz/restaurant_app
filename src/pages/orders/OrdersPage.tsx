@@ -148,6 +148,7 @@ const OrdersPage: React.FC = () => {
         )}
 
         {isModalOpen && selectedOrder && <OrderDetailModal
+            key={selectedOrder.id}
             isOpen={isModalOpen}
             order={selectedOrder}
             onClose={handleCloseModal}
