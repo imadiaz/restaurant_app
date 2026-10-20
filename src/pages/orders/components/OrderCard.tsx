@@ -65,6 +65,12 @@ const OrderCard: React.FC<OrderCardProps> = ({ order, onClick }) => {
           icon: CheckCircle,
           textKey: "orders.status.at_restaurant",
         };
+      case OrderStatus.PICKED_UP:
+        return {
+          variant: "success",
+          icon: ShoppingBag,
+          textKey: "orders.status.picked_up",
+        };
       case OrderStatus.ARRIVED_AT_CUSTOMER:
         return {
           variant: "primary",
@@ -104,7 +110,7 @@ const OrderCard: React.FC<OrderCardProps> = ({ order, onClick }) => {
           icon: AlertCircle,
           textKey: "orders.status.cancelled",
         };
-         case OrderStatus.INCOMPLETE_PAYMENT:
+      case OrderStatus.INCOMPLETE_PAYMENT:
         return {
           variant: "error",
           icon: AlertCircle,

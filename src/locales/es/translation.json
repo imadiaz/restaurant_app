@@ -272,6 +272,7 @@
       "cooking": "En preparación",
       "ready": "Lista",
       "at_restaurant": "Repartidor en el restaurante",
+      "picked_up": "Recogida — en cola para entrega",
       "on_way": "En camino",
       "arrived_at_customer": "Repartidor con el cliente",
       "delivered": "Entregada",
@@ -309,9 +310,10 @@
       "complete_order": "Completar orden",
       "mark_delivered": "Marcar como entregada",
       "auto_assign_driver": "Se asignará automáticamente a {{name}}.",
-      "no_active_drivers": "No hay repartidores activos disponibles para asignar.",
-      "queued_assignment_hint": "Puedes agregar el pedido a la cola de un repartidor que ya está en ruta.",
-      "busy_queue_suffix": "agregar a su cola"
+      "no_active_drivers": "No hay repartidores habilitados disponibles para asignar.",
+      "queued_assignment_hint": "Elige un repartidor; puede recibir varios pedidos en su cola.",
+      "busy_queue_suffix": "agregar a su cola",
+      "offline_suffix": "sin conexión"
     },
     "estimated_time": "Tiempo estimado de preparación",
     "assign_driver": "Asignar repartidor",

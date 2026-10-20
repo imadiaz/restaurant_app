@@ -78,12 +78,17 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
   const dialogRef = useRef<HTMLDivElement>(null);
   useDialogAccessibility(isOpen && Boolean(order), dialogRef, onClose);
 
-  const activeDrivers = drivers.filter(
+  const registeredDrivers = drivers.filter(
     (driver) =>
       driver.status === "active" && driver.user?.status === "active",
   );
-  const soleActiveDriver =
-    activeDrivers.length === 1 ? activeDrivers[0] : null;
+  const onlineDrivers = registeredDrivers.filter((driver) => driver.isAvailable);
+  const automaticDriver =
+    registeredDrivers.length === 1
+      ? registeredDrivers[0]
+      : onlineDrivers.length === 1
+        ? onlineDrivers[0]
+        : null;
 
   if (!isOpen || !order) return null;
 
@@ -104,6 +109,8 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
       case OrderStatus.READY:
         return "success";
       case OrderStatus.AT_RESTAURANT:
+        return "success";
+      case OrderStatus.PICKED_UP:
         return "success";
       case OrderStatus.ON_WAY:
         return "primary";
@@ -131,7 +138,7 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
     onStatusChange(
       OrderStatus.READY,
       undefined,
-      activeDrivers.length > 1 ? selectedDriverId : undefined,
+      automaticDriver ? undefined : selectedDriverId,
     );
     setSelectedDriverId("");
   };
@@ -716,12 +723,12 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
             {order.status === OrderStatus.PREPARING &&
               (order.type === OrderType.DELIVERY ? (
                 <div className="flex flex-col sm:flex-row sm:items-center gap-2 animate-in fade-in">
-                  {soleActiveDriver ? (
+                  {automaticDriver ? (
                     <div className="flex max-w-sm items-center gap-2 rounded-xl border border-info/25 bg-info/10 px-3 py-2 text-info">
                       <Bike className="h-4 w-4 shrink-0" />
                       <AnatomyText.Small className="text-info">
                         {t("orders.actions.auto_assign_driver", {
-                          name: `${soleActiveDriver.firstName} ${soleActiveDriver.lastName}`.trim(),
+                          name: `${automaticDriver.firstName} ${automaticDriver.lastName}`.trim(),
                         })}
                       </AnatomyText.Small>
                     </div>
@@ -731,19 +738,19 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
                         value={selectedDriverId}
                         onChange={(e) => setSelectedDriverId(e.target.value)}
                         className="text-sm"
-                        disabled={activeDrivers.length === 0}
+                        disabled={registeredDrivers.length === 0}
                         helperText={
-                          activeDrivers.length > 1
+                          registeredDrivers.length > 1
                             ? t("orders.actions.queued_assignment_hint")
                             : t("orders.actions.no_active_drivers")
                         }
                       >
                         <option value="">{t("drivers.select_driver")}</option>
-                        {activeDrivers.map((driver) => (
+                        {registeredDrivers.map((driver) => (
                           <option key={driver.id} value={driver.id}>
                             {driver.firstName} {driver.lastName}
                             {!driver.isAvailable
-                              ? ` — ${t("orders.actions.busy_queue_suffix")}`
+                              ? ` — ${t("orders.actions.offline_suffix")}`
                               : ""}
                           </option>
                         ))}
@@ -754,8 +761,8 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
                     onClick={() => handleReady()}
                     className="bg-info hover:bg-info/90 text-white border-transparent"
                     disabled={
-                      activeDrivers.length === 0 ||
-                      (activeDrivers.length > 1 && !selectedDriverId)
+                      registeredDrivers.length === 0 ||
+                      (!automaticDriver && !selectedDriverId)
                     }
                   >
                     <ShoppingBag className="w-4 h-4 mr-2" />{" "}

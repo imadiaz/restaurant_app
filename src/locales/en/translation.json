@@ -401,6 +401,7 @@
       "cooking": "Cooking",
       "ready": "Ready",
       "at_restaurant": "Driver at restaurant",
+      "picked_up": "Collected — queued for delivery",
       "on_way": "On Way",
       "arrived_at_customer": "Driver arrived at customer",
       "delivered": "Delivered",
@@ -441,9 +442,10 @@
       "complete_order": "Complete Order",
       "mark_delivered": "Mark Delivered",
       "auto_assign_driver": "{{name}} will be assigned automatically.",
-      "no_active_drivers": "There are no active drivers available for assignment.",
-      "queued_assignment_hint": "Drivers already on a delivery can receive this order in their queue.",
-      "busy_queue_suffix": "add to queue"
+      "no_active_drivers": "There are no enabled drivers available for assignment.",
+      "queued_assignment_hint": "Choose a driver; they can receive multiple orders in their queue.",
+      "busy_queue_suffix": "add to queue",
+      "offline_suffix": "offline"
     },
     "estimated_time": "Estimated preparation time",
     "assign_driver": "Assign a driver",
