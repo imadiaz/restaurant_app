@@ -1,19 +1,22 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { X, ShoppingBag, ArrowRight } from 'lucide-react';
+import { X, ShoppingBag, ArrowRight, Ban } from 'lucide-react';
 import AnatomyText from '../anatomy/AnatomyText';
-import type { Order } from '../../service/order.service';
+import { PaymentMethod, PaymentStatus, type Order } from '../../service/order.service';
 import { useTranslation } from 'react-i18next';
+import { useConfirm } from '../../hooks/use.confirm.modal';
 
 
 interface OrderNotificationToastProps {
   order: Order;
   onClose: () => void;
+  onCancel?: () => Promise<void>;
 }
 
-const OrderNotificationToast: React.FC<OrderNotificationToastProps> = ({ order, onClose }) => {
+const OrderNotificationToast: React.FC<OrderNotificationToastProps> = ({ order, onClose, onCancel }) => {
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const { confirm } = useConfirm();
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
@@ -23,6 +26,27 @@ const OrderNotificationToast: React.FC<OrderNotificationToastProps> = ({ order, 
   const handleClick = () => {
     navigate('/dashboard/orders');
     onClose();
+  };
+
+  const handleCancel = () => {
+    if (!onCancel) return;
+
+    const requiresRefund =
+      order.paymentMethod === PaymentMethod.CARD &&
+      order.paymentStatus === PaymentStatus.PAID;
+
+    confirm({
+      title: t('orders.cancel_pending.title'),
+      message: t(
+        requiresRefund
+          ? 'orders.cancel_pending.card_message'
+          : 'orders.cancel_pending.cash_message',
+        { amount: Number(order.totalAmount).toFixed(2) },
+      ),
+      confirmText: t('orders.cancel_pending.confirm_action'),
+      variant: 'danger',
+      onConfirm: onCancel,
+    });
   };
 
   return (
@@ -70,14 +94,24 @@ const OrderNotificationToast: React.FC<OrderNotificationToastProps> = ({ order, 
            </div>
         </div>
 
-        {/* Action Button */}
-        <button 
-          onClick={handleClick}
-          className="w-full py-2 bg-primary hover:bg-primary-hover text-primary-contrast rounded-xl text-sm font-bold flex items-center justify-center transition-colors group"
-        >
-          {t('orders.view_details')}
-          <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
-        </button>
+        <div className="grid grid-cols-2 gap-2">
+          {onCancel && (
+            <button
+              onClick={handleCancel}
+              className="flex items-center justify-center rounded-xl border border-danger px-3 py-2 text-sm font-bold text-danger transition-colors hover:bg-danger-surface"
+            >
+              <Ban className="mr-2 h-4 w-4" />
+              {t('orders.cancel_pending.action')}
+            </button>
+          )}
+          <button
+            onClick={handleClick}
+            className={`${onCancel ? '' : 'col-span-2'} group flex items-center justify-center rounded-xl bg-primary px-3 py-2 text-sm font-bold text-primary-contrast transition-colors hover:bg-primary-hover`}
+          >
+            {t('orders.view_details')}
+            <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+          </button>
+        </div>
       </div>
     </div>
   );

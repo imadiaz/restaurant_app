@@ -219,6 +219,16 @@
     "new_order_received": "Nueva orden recibida",
     "more_items": "+ {{count}} artículos más...",
     "view_details": "Ver detalles de la orden",
+    "cancel_pending": {
+      "action": "Cancelar",
+      "title": "Cancelar orden nueva",
+      "cash_message": "La orden se cancelará antes de ser aceptada. Como el pago es en efectivo, no se realizará ningún movimiento financiero.",
+      "card_message": "La orden se cancelará y se reembolsarán ${{amount}} MXN a la tarjeta del cliente. Esta acción no se puede deshacer.",
+      "confirm_action": "Sí, cancelar orden",
+      "reason": "Orden cancelada por el restaurante antes de ser aceptada",
+      "cancelled": "Orden cancelada",
+      "refund_requested": "Cancelación y reembolso procesados"
+    },
     "id": "ID de orden",
     "title": "Órdenes",
     "subtitle": "Administra y da seguimiento a las órdenes del restaurante",

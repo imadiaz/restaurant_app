@@ -348,6 +348,16 @@
     "new_order_received": "New order received",
     "more_items": "+ {{count}} more items...",
     "view_details": "View order details",
+    "cancel_pending": {
+      "action": "Cancel",
+      "title": "Cancel new order",
+      "cash_message": "The order will be cancelled before acceptance. Since payment is in cash, no financial transaction will be made.",
+      "card_message": "The order will be cancelled and ${{amount}} MXN will be refunded to the customer's card. This action cannot be undone.",
+      "confirm_action": "Yes, cancel order",
+      "reason": "Order cancelled by the restaurant before acceptance",
+      "cancelled": "Order cancelled",
+      "refund_requested": "Cancellation and refund processed"
+    },
     "id": "Order ID",
     "title": "Orders",
     "subtitle": "Manage and track incoming restaurant orders",
