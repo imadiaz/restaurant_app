@@ -13,7 +13,7 @@ export const syncOrderInCache = (
 
   cachedQueries.forEach(([queryKey, orders]) => {
     const [, cachedRestaurantId, status = "all"] = queryKey;
-    if (cachedRestaurantId !== restaurantId || !orders) return;
+    if (cachedRestaurantId !== restaurantId || !Array.isArray(orders)) return;
 
     const belongsToList = status === "all" || status === updatedOrder.status;
     const nextOrders = belongsToList
@@ -24,4 +24,9 @@ export const syncOrderInCache = (
 
     queryClient.setQueryData(queryKey, nextOrders);
   });
+
+  queryClient.setQueryData(
+    queryKeys.orders.detail(restaurantId, updatedOrder.id),
+    updatedOrder,
+  );
 };

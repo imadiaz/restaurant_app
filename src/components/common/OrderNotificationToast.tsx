@@ -24,7 +24,7 @@ const OrderNotificationToast: React.FC<OrderNotificationToastProps> = ({ order, 
   }, []);
 
   const handleClick = () => {
-    navigate('/dashboard/orders');
+    navigate(`/dashboard/orders?orderId=${encodeURIComponent(order.id)}`);
     onClose();
   };
 

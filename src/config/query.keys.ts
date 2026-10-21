@@ -25,6 +25,8 @@ export const queryKeys = {
   },
   orders: {
     all: ["orders"] as const,
+    detail: (restaurantId?: string, orderId?: string) =>
+      ["orders", scope(restaurantId), "detail", orderId] as const,
     list: (restaurantId?: string, status = "all") =>
       ["orders", scope(restaurantId), status] as const,
   },

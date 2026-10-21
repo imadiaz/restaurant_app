@@ -1,10 +1,12 @@
 import React, { useMemo, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import AnatomyText from '../../components/anatomy/AnatomyText';
 import { ShoppingBag} from 'lucide-react';
 import AnatomySearchBar from '../../components/anatomy/AnatomySearchBar';
 import { useTranslation } from 'react-i18next';
 import BasePageLayout from '../../components/layout/BaseLayout';
 import { useOrders } from '../../hooks/orders/use.orders';
+import { useOrder } from '../../hooks/orders/use.order';
 import { OrderStatus, type Order } from '../../service/order.service';
 import OrderCard from './components/OrderCard';
 import OrderDetailModal from './OrderDetailModal';
@@ -30,10 +32,11 @@ const OrdersPage: React.FC = () => {
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const selectedOrderId = searchParams.get('orderId') || undefined;
 
   const { orders, isLoading, updateStatus, assignDriver, refundOrder, isRefunding } = useOrders();
+  const { data: selectedOrder, isLoading: isLoadingDetail, isError: isDetailError, refetch: refetchDetail } = useOrder(selectedOrderId, orders);
 
   const { counts, filteredOrders } = useMemo(() => {
      const newCounts: Record<string, number> = { all: 0 };
@@ -58,13 +61,17 @@ const OrdersPage: React.FC = () => {
   }, [orders, activeTab, searchQuery]);
 
   const handleCardClick = (order: Order) => {
-    setSelectedOrder(order);
-    setIsModalOpen(true);
+    setSearchParams((params) => {
+      params.set('orderId', order.id);
+      return params;
+    });
   };
 
   const handleCloseModal = () => {
-    setIsModalOpen(false);
-    setTimeout(() => setSelectedOrder(null), 300);
+    setSearchParams((params) => {
+      params.delete('orderId');
+      return params;
+    }, { replace: true });
   };
 
   const handleStatusUpdate = async (id: string, newStatus: OrderStatusType, timeInMinutes?: number, driverId?: string) => {
@@ -76,8 +83,7 @@ const OrdersPage: React.FC = () => {
   };
 
   const handleRefund = async (id: string, reason: string) => {
-    const updatedOrder = await refundOrder({ id, reason });
-    setSelectedOrder(updatedOrder);
+    await refundOrder({ id, reason });
   };
 
   return (
@@ -96,6 +102,16 @@ const OrdersPage: React.FC = () => {
       }
     >
       <div className="space-y-6 pb-20">
+        {selectedOrderId && isLoadingDetail && (
+          <p role="status" className="text-text-muted">{t('common.loading_data')}</p>
+        )}
+        {selectedOrderId && isDetailError && (
+          <div role="alert" className="flex items-center gap-4 rounded-xl border border-danger p-4 text-danger">
+            <p>{t('orders.detail_load_error')}</p>
+            <button onClick={() => void refetchDetail()}>{t('orders.retry_detail')}</button>
+            <button onClick={handleCloseModal}>{t('common.close')}</button>
+          </div>
+        )}
         <div className="bg-background-card p-2 rounded-2xl border border-border shadow-sm inline-block w-full overflow-hidden">
           <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
             {TABS.map((tab) => (
@@ -147,16 +163,16 @@ const OrdersPage: React.FC = () => {
            </div>
         )}
 
-        {isModalOpen && selectedOrder && <OrderDetailModal
+        {selectedOrderId && selectedOrder && <OrderDetailModal
             key={selectedOrder.id}
-            isOpen={isModalOpen}
+            isOpen={true}
             order={selectedOrder}
             onClose={handleCloseModal}
             isRefunding={isRefunding}
             onRefund={(reason) => handleRefund(selectedOrder.id, reason)}
             onStatusChange={(newStatus, timeInMinutes, driverId) => {
                if (selectedOrder) {
-                setIsModalOpen(false);
+                handleCloseModal();
                  handleStatusUpdate(selectedOrder.id, newStatus, timeInMinutes, driverId);
                }
             }}

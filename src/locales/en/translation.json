@@ -359,6 +359,8 @@
     "new_order_received": "New order received",
     "more_items": "+ {{count}} more items...",
     "view_details": "View order details",
+    "detail_load_error": "The order details could not be loaded for this restaurant.",
+    "retry_detail": "Retry",
     "cancel_pending": {
       "action": "Cancel",
       "title": "Cancel new order",
