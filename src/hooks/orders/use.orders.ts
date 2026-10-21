@@ -37,8 +37,10 @@ export const useOrders = (statusFilter?: typeof OrderStatus[keyof typeof OrderSt
         (order) => order.refund?.status === RefundStatus.PENDING,
       );
       if (hasPendingRefund) return 10000;
-      return isSocketConnected ? false : 30000;
+      // Reconcile missed socket events even while the transport is connected.
+      return 30000;
     },
+    refetchOnWindowFocus: 'always',
     staleTime: isSocketConnected ? 60000 : 10000,
   });
 
