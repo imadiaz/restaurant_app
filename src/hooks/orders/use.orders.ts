@@ -26,9 +26,9 @@ export const useOrders = (statusFilter?: typeof OrderStatus[keyof typeof OrderSt
     refetch 
   } = useQuery({
     queryKey,
-    queryFn: async () => {
+    queryFn: async ({ signal }) => {
       if (!activeRestaurant?.id) return [];
-      return orderService.getByRestaurant(activeRestaurant.id, statusFilter);
+      return orderService.getByRestaurant(activeRestaurant.id, statusFilter, signal);
     },
     enabled: !!activeRestaurant?.id,
     refetchInterval: (query) => {

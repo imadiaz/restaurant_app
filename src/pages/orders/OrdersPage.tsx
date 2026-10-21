@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 import BasePageLayout from '../../components/layout/BaseLayout';
 import { useOrders } from '../../hooks/orders/use.orders';
 import { useOrder } from '../../hooks/orders/use.order';
-import { OrderStatus, type Order } from '../../service/order.service';
+import { ACTIVE_ORDER_STATUSES, OrderStatus, type Order } from '../../service/order.service';
 import OrderCard from './components/OrderCard';
 import OrderDetailModal from './OrderDetailModal';
 type OrderStatusType = keyof typeof OrderStatus;
@@ -20,22 +20,21 @@ interface OrderTab {
 }
 
 const TABS: OrderTab[] = [
-  { id: 'all', labelKey: 'orders.tabs.all', statuses: [OrderStatus.PENDING, OrderStatus.CONFIRMED, OrderStatus.PREPARING, OrderStatus.READY, OrderStatus.AT_RESTAURANT, OrderStatus.PICKED_UP, OrderStatus.ON_WAY, OrderStatus.ARRIVED_AT_CUSTOMER, OrderStatus.COURIER_ARRIVING] },
   { id: 'new', labelKey: 'orders.tabs.new', statuses: [OrderStatus.PENDING, OrderStatus.CONFIRMED,] },
   { id: 'cooking', labelKey: 'orders.tabs.cooking', statuses: [OrderStatus.PREPARING] },
   { id: 'ready', labelKey: 'orders.tabs.ready', statuses: [OrderStatus.READY] },
   { id: 'active', labelKey: 'orders.tabs.active', statuses: [OrderStatus.AT_RESTAURANT, OrderStatus.PICKED_UP, OrderStatus.ON_WAY, OrderStatus.ARRIVED_AT_CUSTOMER, OrderStatus.COURIER_ARRIVING] },
-  { id: 'completed', labelKey: 'orders.tabs.completed', statuses: [OrderStatus.DELIVERED, OrderStatus.CANCELLED, OrderStatus.INCOMPLETE_PAYMENT] },
+  { id: 'all', labelKey: 'orders.tabs.all', statuses: ACTIVE_ORDER_STATUSES },
 ];
 
 const OrdersPage: React.FC = () => {
   const { t } = useTranslation();
-  const [activeTab, setActiveTab] = useState<string>('all');
+  const [activeTab, setActiveTab] = useState<string>('new');
   const [searchQuery, setSearchQuery] = useState('');
   const [searchParams, setSearchParams] = useSearchParams();
   const selectedOrderId = searchParams.get('orderId') || undefined;
 
-  const { orders, isLoading, updateStatus, assignDriver, refundOrder, isRefunding } = useOrders();
+  const { orders, isLoading, isError, refetch, updateStatus, assignDriver, refundOrder, isRefunding } = useOrders();
   const { data: selectedOrder, isLoading: isLoadingDetail, isError: isDetailError, refetch: refetchDetail } = useOrder(selectedOrderId, orders);
 
   const { counts, filteredOrders } = useMemo(() => {
@@ -102,6 +101,12 @@ const OrdersPage: React.FC = () => {
       }
     >
       <div className="space-y-6 pb-20">
+        {isError && (
+          <div role="alert" className="flex items-center gap-4 rounded-xl border border-danger p-4 text-danger">
+            <p>{t('common.error_loading_data')}</p>
+            <button onClick={() => void refetch()}>{t('orders.retry_detail')}</button>
+          </div>
+        )}
         {selectedOrderId && isLoadingDetail && (
           <p role="status" className="text-text-muted">{t('common.loading_data')}</p>
         )}

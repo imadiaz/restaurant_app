@@ -22,6 +22,12 @@ export const OrderType = {
   PICKUP: "PICKUP",
 } as const;
 
+export const ACTIVE_ORDER_STATUSES: Order['status'][] = [
+  OrderStatus.PENDING, OrderStatus.CONFIRMED, OrderStatus.PREPARING,
+  OrderStatus.READY, OrderStatus.AT_RESTAURANT, OrderStatus.PICKED_UP,
+  OrderStatus.ON_WAY, OrderStatus.ARRIVED_AT_CUSTOMER, OrderStatus.COURIER_ARRIVING,
+];
+
 export const PaymentMethod = {
   CASH: "CASH",
   CARD: "CARD",
@@ -198,13 +204,18 @@ export const orderService = {
   async getByRestaurant(
     restaurantId: string,
     status?: (typeof OrderStatus)[keyof typeof OrderStatus],
+    signal?: AbortSignal,
   ): Promise<Order[]> {
-    const params = { status, limit: 100, offset: 0 };
-    const res = await axiosClient.get<unknown, ApiResponse<Order[]>>(
-      `/orders/restaurant/${restaurantId}`,
-      { params },
-    );
-    return res.data;
+    const orders = new Map<string, Order>();
+    const limit = 100;
+    for (let offset = 0; ; offset += limit) {
+      const res = await axiosClient.get<unknown, ApiResponse<Order[]>>(
+        `/orders/restaurant/${restaurantId}`,
+        { params: { status, activeOnly: !status, limit, offset }, signal },
+      );
+      for (const order of res.data) orders.set(order.id, order);
+      if (res.data.length < limit) return [...orders.values()];
+    }
   },
 
   // 2. Get Details
