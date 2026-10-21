@@ -230,6 +230,7 @@
     "new_order_received": "Nueva orden recibida",
     "more_items": "+ {{count}} artículos más...",
     "view_details": "Ver detalles de la orden",
+    "invalid_preparation_time": "Ingresa un número entero entre 5 y 240 minutos.",
     "detail_load_error": "No se pudo cargar el detalle de la orden para este restaurante.",
     "retry_detail": "Reintentar",
     "cancel_pending": {

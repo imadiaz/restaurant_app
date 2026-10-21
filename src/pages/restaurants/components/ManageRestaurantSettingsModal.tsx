@@ -10,6 +10,7 @@ import type { Restaurant } from '../../../data/models/restaurant/restaurant';
 import { Controller, useForm } from 'react-hook-form';
 import AnatomyTextField from '../../../components/anatomy/AnatomyTextField';
 import { useDialogAccessibility } from '../../../hooks/use.dialog.accessibility';
+import { initialPreparationTime, isValidPreparationTime, MIN_PREPARATION_MINUTES, MAX_PREPARATION_MINUTES } from '../../../config/preparation-time.config';
 
 interface ManageRestaurantSettingsModalProps {
   isOpen: boolean;
@@ -84,10 +85,10 @@ const ManageRestaurantSettingsModal: React.FC<ManageRestaurantSettingsModalProps
   };
 
   const  {updateOperational, isUpdatingOperational} = useRestaurantOperations();
-  const { control, register, handleSubmit} = useForm<SettingsFormData>({
+  const { control, register, handleSubmit, formState: { errors }} = useForm<SettingsFormData>({
     defaultValues: {
       isOpen: restaurant.isOpen,
-      averagePrepTimeMin: restaurant.averagePrepTimeMin,
+      averagePrepTimeMin: initialPreparationTime(restaurant.averagePrepTimeMin),
     }
   });
   const dialogRef = useRef<HTMLDivElement>(null);
@@ -170,7 +171,14 @@ const ManageRestaurantSettingsModal: React.FC<ManageRestaurantSettingsModalProps
                 label={t('settings.prep_time')}
                 type="number"
                 icon={<Clock className="w-4 h-4 text-text-subtle" />}
-                {...register('averagePrepTimeMin', { min: 0, required: true })}
+                min={MIN_PREPARATION_MINUTES}
+                max={MAX_PREPARATION_MINUTES}
+                step={1}
+                error={errors.averagePrepTimeMin?.message}
+                {...register('averagePrepTimeMin', {
+                  valueAsNumber: true,
+                  validate: (value) => isValidPreparationTime(value) || t('orders.invalid_preparation_time'),
+                })}
                 placeholder="20"
               />
             </div>

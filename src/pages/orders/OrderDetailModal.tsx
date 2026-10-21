@@ -38,6 +38,7 @@ import { useDialogAccessibility } from "../../hooks/use.dialog.accessibility";
 import { useAuthStore } from "../../store/auth.store";
 import { ROLES } from "../../config/roles";
 import { useConfirm } from "../../hooks/use.confirm.modal";
+import { initialPreparationTime, isValidPreparationTime, MIN_PREPARATION_MINUTES, MAX_PREPARATION_MINUTES } from '../../config/preparation-time.config';
 
 type OrderStatusType = keyof typeof OrderStatus;
 
@@ -70,7 +71,7 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
 
   // Local State
   const [showPrepTime, setShowPrepTime] = useState(false);
-  const [prepTime, setPrepTime] = useState<number>(activeRestaurant?.averagePrepTimeMin ?? 15);
+  const [prepTime, setPrepTime] = useState<number>(() => initialPreparationTime(activeRestaurant?.averagePrepTimeMin));
   const [selectedDriverId, setSelectedDriverId] = useState<string>(order?.driverId || "");
   const [isHistoryOpen, setIsHistoryOpen] = useState(false); // Collapsible state
   const [showRefundForm, setShowRefundForm] = useState(false);
@@ -130,8 +131,9 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
     : t("orders.pickup_at_restaurant");
 
   const handleStartCooking = () => {
+    if (!isValidPreparationTime(prepTime)) return;
     onStatusChange(OrderStatus.PREPARING, prepTime ?? undefined);
-    setPrepTime(activeRestaurant?.averagePrepTimeMin ?? 15);
+    setPrepTime(initialPreparationTime(activeRestaurant?.averagePrepTimeMin));
   };
 
   const handleReady = () => {
@@ -688,6 +690,10 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
                     <input
                       type="number"
                       value={prepTime}
+                      min={MIN_PREPARATION_MINUTES}
+                      max={MAX_PREPARATION_MINUTES}
+                      step={1}
+                      aria-invalid={!isValidPreparationTime(prepTime)}
                       onChange={(e) => setPrepTime(Number(e.target.value))}
                       className="w-full pl-2 pr-6 py-1.5 text-sm font-bold border border-border rounded-lg bg-background text-center focus:ring-2 ring-primary outline-none"
                     />
@@ -698,10 +704,14 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
 
                   <AnatomyButton
                     onClick={handleStartCooking}
+                    disabled={!isValidPreparationTime(prepTime)}
                     className="bg-warning hover:bg-warning/90 text-white border-transparent"
                   >
                     <Check className="w-4 h-4 mr-2" /> {t("common.confirm")}
                   </AnatomyButton>
+                  {!isValidPreparationTime(prepTime) && (
+                    <span role="alert" className="text-sm text-danger">{t('orders.invalid_preparation_time')}</span>
+                  )}
                   <button
                     onClick={() => setShowPrepTime(false)}
                     className="p-2 text-text-muted hover:text-danger transition-colors"

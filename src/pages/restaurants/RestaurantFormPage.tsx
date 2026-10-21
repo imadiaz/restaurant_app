@@ -22,6 +22,7 @@ import { ROLES } from "../../config/roles";
 import { useTranslation } from "react-i18next";
 import { isBlank, isValidEmail } from "../../utils/validation.utils";
 import { ImageUploadInput } from "../../components/common/ImageUploadInput";
+import { isValidPreparationTime, MIN_PREPARATION_MINUTES, MAX_PREPARATION_MINUTES } from '../../config/preparation-time.config';
 
 const GoogleMapsLocationPicker = lazy(() => import("../../components/common/GoogleMapsLocationPicker"));
 
@@ -129,6 +130,7 @@ const RestaurantFormPage: React.FC = () => {
 
   const handleSave = async () => {
     const nextErrors: Record<string, string> = {};
+    if (!isValidPreparationTime(avgPrepTime)) nextErrors.prepTime = t('orders.invalid_preparation_time');
     if (isBlank(name)) nextErrors.name = t('forms.required');
     if (isBlank(userId)) nextErrors.userId = t('forms.required');
     if (isBlank(description)) nextErrors.description = t('forms.required');
@@ -282,6 +284,10 @@ const RestaurantFormPage: React.FC = () => {
                    label={t('restaurants.time_preparation')}
                    value={avgPrepTime}
                    type="number"
+                   min={MIN_PREPARATION_MINUTES}
+                   max={MAX_PREPARATION_MINUTES}
+                   step={1}
+                   error={fieldErrors.prepTime}
                    onChange={e => setAvgPrepTime(Number(e.target.value))}
                    placeholder="30"
                  />
