@@ -178,7 +178,7 @@ const RestaurantFormPage: React.FC = () => {
         publicPhone, privatePhone, rfc, legalName,
         logoUrl: finalLogoUrl,
         heroImageUrl: finalHeroUrl,
-        isOpen: true,
+        ...(!isEditMode ? { isOpen: true } : {}),
         email
       };
 
