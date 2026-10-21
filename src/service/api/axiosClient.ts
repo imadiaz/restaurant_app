@@ -40,6 +40,7 @@ export const refreshTokens = async (): Promise<string> => {
   }
 
   isRefreshing = true;
+  const sessionRefreshToken = useAuthStore.getState().refreshToken;
 
   try {
     const { refreshToken } = useAuthStore.getState();
@@ -57,12 +58,17 @@ export const refreshTokens = async (): Promise<string> => {
     );
     const { accessToken: newAccessToken, refreshToken: newRefreshToken } =
       response.data.data;
+    if (useAuthStore.getState().refreshToken !== sessionRefreshToken) {
+      throw new Error("Session changed while refreshing credentials");
+    }
     useAuthStore.getState().updateTokens(newAccessToken, newRefreshToken);
     processQueue(null, newAccessToken);
     return newAccessToken;
   } catch (error) {
     processQueue(error, null);
-    useAuthStore.getState().logout();
+    if (useAuthStore.getState().refreshToken === sessionRefreshToken) {
+      useAuthStore.getState().logout();
+    }
     throw error;
   } finally {
     isRefreshing = false;
