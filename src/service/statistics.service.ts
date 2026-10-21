@@ -64,6 +64,7 @@ export interface FinancialSummary {
   totalCashRevenue: number;
   cashOrdersCount: number;
   totalPlatformCommissions: number;
+  totalPlatformSubsidies: number;
   totalDebtSettled: number;
   totalRefunded: number;
   netPlatformProfit: number;

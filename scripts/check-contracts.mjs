@@ -242,4 +242,86 @@ assert.equal(statisticsRequests[0].signal, signal);
 assert.equal(statisticsRequests[1].params, undefined);
 assert.equal(debt.debtAmount, -875);
 console.log('PASS: dashboard dates, metric selection and payment filter keep current debt independent');
+
+// Verify both the real AbortSignal transport and the hook cleanup, without a browser.
+const { driverService } = load('src/service/drivers.service.ts', { './api/axiosClient': axiosModule });
+let locationSignal;
+let abortedLocation = false;
+let markLocationStarted;
+const locationStarted = new Promise((resolve) => { markLocationStarted = resolve; });
+axiosClient.defaults.adapter = (config) => {
+  locationSignal = config.signal;
+  markLocationStarted();
+  return new Promise((resolve, reject) => {
+    config.signal.addEventListener('abort', () => {
+      abortedLocation = true;
+      reject(new axios.CanceledError());
+    }, { once: true });
+  });
+};
+let driverQuery;
+let closeMap;
+const { useDriverLocations } = load('src/hooks/drivers/use.drivers.ts', {
+  react: { useEffect: (effect) => { closeMap = effect(); } },
+  '@tanstack/react-query': { useQueryClient: () => queryClient, useQuery: (options) => { driverQuery = options; return {}; } },
+  '../../service/drivers.service': { driverService },
+  '../../store/app.store': { useAppStore },
+  '../../store/auth.store': { useAuthStore },
+  '../../store/toast.store': {},
+  '../use.error.handler': {},
+  '../../data/models/user/utils/user.utils': {},
+  '../../config/query.keys': { queryKeys },
+});
+useDriverLocations('restaurant', true);
+assert.equal(driverQuery.enabled, true);
+assert.equal(driverQuery.refetchInterval, 60000);
+const pendingLocations = queryClient.fetchQuery(driverQuery);
+const cancelledLocations = assert.rejects(pendingLocations);
+await locationStarted;
+assert.equal(locationSignal.aborted, false);
+closeMap();
+await cancelledLocations;
+assert.equal(locationSignal.aborted, true);
+assert.equal(abortedLocation, true);
+useDriverLocations('restaurant', false);
+assert.equal(driverQuery.enabled, false);
+assert.equal(driverQuery.refetchInterval, false);
+console.log('PASS: closing the driver map stops polling and aborts the active HTTP request');
+
+const { paymentService } = load('src/service/payment.service.ts', { './api/axiosClient': axiosModule });
+let confirmationRequest;
+axiosClient.defaults.adapter = async (config) => {
+  confirmationRequest = config;
+  return { data: { data: { verified: true, pending: false, restaurantId: 'restaurant', amountPaid: 100 } }, status: 200, statusText: 'OK', headers: {}, config };
+};
+await paymentService.confirmDebtSession('restaurant', 'cs_test_123', signal);
+assert.equal(confirmationRequest.method, 'post');
+assert.equal(confirmationRequest.url, '/payments/restaurant/restaurant/platform-debt-session/cs_test_123/confirm');
+assert.equal(confirmationRequest.signal, signal);
+assert.equal(confirmationRequest.data, undefined); // Never accept a browser-supplied paid amount.
+let confirmationQuery;
+const invalidatedKeys = [];
+let confirmedPayment;
+const { useDebtPayment } = load('src/hooks/payments/use.debt.payment.ts', {
+  react: { useEffect: (effect) => effect() },
+  '@tanstack/react-query': {
+    useQueryClient: () => ({ invalidateQueries: ({ queryKey }) => { invalidatedKeys.push(queryKey); } }),
+    useQuery: (options) => { confirmationQuery = options; return { data: confirmedPayment }; },
+  },
+  '../../service/payment.service': { paymentService },
+  '../../config/query.keys': { queryKeys },
+});
+useDebtPayment(null, null, true);
+assert.equal(confirmationQuery.enabled, false);
+assert.equal(invalidatedKeys.length, 0);
+useDebtPayment('restaurant', 'cs_test_123', true);
+assert.equal(confirmationQuery.enabled, true);
+assert.equal(confirmationQuery.refetchInterval({ state: { data: { pending: true }, dataUpdateCount: 1 } }), 3000);
+assert.equal(confirmationQuery.refetchInterval({ state: { data: { pending: true }, dataUpdateCount: 10 } }), false);
+assert.equal(confirmationQuery.refetchInterval({ state: { data: { pending: false, verified: true }, dataUpdateCount: 1 } }), false);
+confirmedPayment = { verified: true };
+useDebtPayment('restaurant', 'cs_test_123', true);
+assert.equal(invalidatedKeys[0][0], 'statistics');
+assert.equal(invalidatedKeys[1][0], 'restaurants');
+console.log('PASS: return-page verification uses the server, bounds polling and refreshes debt only after recording payment');
 queryClient.clear();

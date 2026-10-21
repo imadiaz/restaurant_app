@@ -714,6 +714,12 @@
       "total_refunded":"Total refunded"
   },
   "stripe": {
+    "payment_verifying": "Verifying payment…",
+    "payment_pending": "Payment confirmation pending",
+    "payment_pending_desc": "We are checking Stripe and the payment record. Do not pay again while confirmation is pending.",
+    "payment_missing_session": "This link does not identify the payment. We cannot verify it here. Check your balance or contact support before paying again.",
+    "payment_recorded_desc": "The payment was confirmed with Stripe and recorded in your account. New order commissions may leave a remaining balance.",
+    "payment_recheck": "Check payment again",
     "payment_success":"Your stripe payment to the platform was successful!",
     "payment_success_desc":"If you have any questions about it please contact support",
     "payment_status":"Payment status",

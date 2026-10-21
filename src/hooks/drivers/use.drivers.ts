@@ -1,43 +1,48 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { driverService, type CreateDriverDto, type Driver} from '../../service/drivers.service';
-import { useAppStore } from '../../store/app.store';
-import { useToastStore } from '../../store/toast.store';
-import { useErrorHandler } from '../use.error.handler';
-import { isSuperAdmin } from '../../data/models/user/utils/user.utils';
-import { useAuthStore } from '../../store/auth.store';
-import { queryKeys } from '../../config/query.keys';
-
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  driverService,
+  type CreateDriverDto,
+  type Driver,
+} from "../../service/drivers.service";
+import { useAppStore } from "../../store/app.store";
+import { useToastStore } from "../../store/toast.store";
+import { useErrorHandler } from "../use.error.handler";
+import { isSuperAdmin } from "../../data/models/user/utils/user.utils";
+import { useAuthStore } from "../../store/auth.store";
+import { queryKeys } from "../../config/query.keys";
+import { useEffect } from "react";
 
 export const useDrivers = (restaurantIdOverride?: string) => {
   const queryClient = useQueryClient();
   const { handleError } = useErrorHandler();
   const addToast = useToastStore((state) => state.addToast);
-  
+
   const { activeRestaurant } = useAppStore((state) => state);
   const { user } = useAuthStore((state) => state);
   const effectiveRestaurantId = restaurantIdOverride || activeRestaurant?.id;
 
   const queryKey = queryKeys.drivers.list(effectiveRestaurantId);
 
-  const { 
-    data: drivers = [], 
-    isLoading, 
-    isError 
+  const {
+    data: drivers = [],
+    isLoading,
+    isError,
   } = useQuery({
     queryKey: queryKey,
     queryFn: async () => {
-
       if (effectiveRestaurantId) {
-         return driverService.getAllByRestaurantId(effectiveRestaurantId);
+        return driverService.getAllByRestaurantId(effectiveRestaurantId);
       }
-       if (isSuperAdmin(user)) { return driverService.getAll(); }
+      if (isSuperAdmin(user)) {
+        return driverService.getAll();
+      }
 
-      return []; 
+      return [];
     },
     enabled: true,
   });
 
-  const getDriverById = async (id: string): Promise<Driver| null> => {
+  const getDriverById = async (id: string): Promise<Driver | null> => {
     const cachedDrivers = queryClient.getQueryData<Driver[]>(queryKey);
     const foundDriver = cachedDrivers?.find((d) => d.id === id);
 
@@ -45,7 +50,7 @@ export const useDrivers = (restaurantIdOverride?: string) => {
       return foundDriver;
     }
     try {
-      return await driverService.getDriverById(id); 
+      return await driverService.getDriverById(id);
     } catch (error) {
       handleError(error);
       return null;
@@ -55,32 +60,39 @@ export const useDrivers = (restaurantIdOverride?: string) => {
   const createMutation = useMutation({
     mutationFn: (data: CreateDriverDto) => {
       const finalData = { ...data };
-        if (activeRestaurant?.id && !finalData.restaurantId) {
-          finalData.restaurantId = activeRestaurant.id;
+      if (activeRestaurant?.id && !finalData.restaurantId) {
+        finalData.restaurantId = activeRestaurant.id;
       }
-      
+
       return driverService.create(finalData);
     },
     onSuccess: () => {
-      addToast('Driver created successfully', 'success');
+      addToast("Driver created successfully", "success");
       queryClient.invalidateQueries({ queryKey });
     },
     onError: handleError,
   });
 
   const updateMutation = useMutation({
-    mutationFn: ({ id, data }: { id: string; data: Partial<CreateDriverDto> }) => driverService.update(id, data),
+    mutationFn: ({
+      id,
+      data,
+    }: {
+      id: string;
+      data: Partial<CreateDriverDto>;
+    }) => driverService.update(id, data),
     onSuccess: () => {
-      addToast('Driver updated successfully', 'success');
+      addToast("Driver updated successfully", "success");
       queryClient.invalidateQueries({ queryKey });
     },
     onError: handleError,
   });
 
   const updateStatusMutation = useMutation({
-    mutationFn: ({id, status}: {id: string, status: string}) => driverService.updateStatus({id, status}),
+    mutationFn: ({ id, status }: { id: string; status: string }) =>
+      driverService.updateStatus({ id, status }),
     onSuccess: () => {
-      addToast('Driver status updated', 'info');
+      addToast("Driver status updated", "info");
       queryClient.invalidateQueries({ queryKey });
     },
     onError: handleError,
@@ -97,7 +109,7 @@ export const useDrivers = (restaurantIdOverride?: string) => {
     updateDriver: updateMutation.mutateAsync,
     updateDriverStatus: updateStatusMutation.mutateAsync,
     getDriverById,
-    
+
     // States
     isCreating: createMutation.isPending,
     isUpdating: updateMutation.isPending,
@@ -105,10 +117,28 @@ export const useDrivers = (restaurantIdOverride?: string) => {
   };
 };
 
-export const useDriverLocations = (restaurantId: string | undefined, enabled: boolean) => {
-  const { data: driverLocations = [], isLoading, isError } = useQuery({
+export const useDriverLocations = (
+  restaurantId: string | undefined,
+  enabled: boolean,
+) => {
+  const queryClient = useQueryClient();
+  useEffect(() => {
+    if (!enabled || !restaurantId) return;
+    return () => {
+      void queryClient.cancelQueries({
+        queryKey: queryKeys.drivers.locations(restaurantId),
+        exact: true,
+      });
+    };
+  }, [enabled, restaurantId, queryClient]);
+  const {
+    data: driverLocations = [],
+    isLoading,
+    isError,
+  } = useQuery({
     queryKey: queryKeys.drivers.locations(restaurantId),
-    queryFn: () => driverService.getLocationsByRestaurantId(restaurantId!),
+    queryFn: ({ signal }) =>
+      driverService.getLocationsByRestaurantId(restaurantId!, signal),
     enabled: enabled && Boolean(restaurantId),
     refetchInterval: enabled ? 60_000 : false,
     refetchIntervalInBackground: true,

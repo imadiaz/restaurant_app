@@ -271,6 +271,12 @@
     "phone": "Teléfono de acceso a la aplicación", "status": "Estado del repartidor", "select_driver": "Seleccionar repartidor"
   },
   "stripe": {
+    "payment_verifying": "Verificando pago…",
+    "payment_pending": "Confirmación de pago pendiente",
+    "payment_pending_desc": "Estamos consultando Stripe y el registro del abono. No vuelvas a pagar mientras la confirmación esté pendiente.",
+    "payment_missing_session": "Este enlace no identifica el pago y no podemos verificarlo aquí. Revisa tu saldo o contacta a soporte antes de pagar nuevamente.",
+    "payment_recorded_desc": "El pago fue confirmado con Stripe y registrado en tu cuenta. Las comisiones de pedidos nuevos pueden dejar un saldo pendiente.",
+    "payment_recheck": "Volver a verificar el pago",
     "payment_success": "El pago a la plataforma se realizó correctamente.", "payment_success_desc": "Si tienes preguntas, contacta a soporte.",
     "payment_status": "Estado del pago", "verified": "Verificado", "not_verified": "No verificado", "payment_failure": "El pago con Stripe falló",
     "payment_failure_desc": "No fue posible verificar el pago. Contacta a soporte."

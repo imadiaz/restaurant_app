@@ -13,15 +13,18 @@ export const queryKeys = {
   drivers: {
     all: ["drivers"] as const,
     list: (restaurantId?: string) => ["drivers", scope(restaurantId)] as const,
-    locations: (restaurantId?: string) => ["drivers", scope(restaurantId), "locations"] as const,
+    locations: (restaurantId?: string) =>
+      ["drivers", scope(restaurantId), "locations"] as const,
   },
   menuSections: {
     all: ["menu-sections"] as const,
-    list: (restaurantId?: string) => ["menu-sections", scope(restaurantId)] as const,
+    list: (restaurantId?: string) =>
+      ["menu-sections", scope(restaurantId)] as const,
   },
   modifiers: {
     all: ["modifiers"] as const,
-    list: (restaurantId?: string) => ["modifiers", scope(restaurantId)] as const,
+    list: (restaurantId?: string) =>
+      ["modifiers", scope(restaurantId)] as const,
   },
   orders: {
     all: ["orders"] as const,
@@ -31,7 +34,10 @@ export const queryKeys = {
       ["orders", scope(restaurantId), status] as const,
   },
   payments: {
-    status: (restaurantId?: string) => ["payments", "status", scope(restaurantId)] as const,
+    debtSession: (restaurantId: string | null, sessionId: string | null) =>
+      ["payments", "debt-session", restaurantId, sessionId] as const,
+    status: (restaurantId?: string) =>
+      ["payments", "status", scope(restaurantId)] as const,
   },
   products: {
     all: ["products"] as const,
@@ -39,24 +45,35 @@ export const queryKeys = {
   },
   promotions: {
     all: ["promotions"] as const,
-    list: (restaurantId?: string) => ["promotions", scope(restaurantId)] as const,
+    list: (restaurantId?: string) =>
+      ["promotions", scope(restaurantId)] as const,
   },
   restaurants: {
     all: ["restaurants"] as const,
     list: () => ["restaurants", "all"] as const,
     detail: (restaurantId: string) => ["restaurants", restaurantId] as const,
-    fees: (restaurantId?: string) => ["restaurants", scope(restaurantId), "fees"] as const,
+    fees: (restaurantId?: string) =>
+      ["restaurants", scope(restaurantId), "fees"] as const,
   },
   roles: {
     all: ["roles"] as const,
   },
   schedules: {
-    detail: (restaurantId?: string) => ["schedules", scope(restaurantId)] as const,
-    overrides: (restaurantId?: string) => ["schedules", scope(restaurantId), "overrides"] as const,
+    detail: (restaurantId?: string) =>
+      ["schedules", scope(restaurantId)] as const,
+    overrides: (restaurantId?: string) =>
+      ["schedules", scope(restaurantId), "overrides"] as const,
   },
   statistics: {
     resource: (resource: string, filters: StatisticsFilterDto) =>
-      ["statistics", resource, filters.restaurantId ?? "all", filters.startDate ?? null, filters.endDate ?? null, filters.paymentMethod ?? "all"] as const,
+      [
+        "statistics",
+        resource,
+        filters.restaurantId ?? "all",
+        filters.startDate ?? null,
+        filters.endDate ?? null,
+        filters.paymentMethod ?? "all",
+      ] as const,
   },
   users: {
     all: ["users"] as const,
