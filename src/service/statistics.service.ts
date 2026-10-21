@@ -12,6 +12,7 @@ export interface DashboardSummary {
   receivedOrders: number;
   deliveredOrders: number;
   cancelledOrders: number;
+  cancelledOrdersFromReceived: number;
   pendingOrders: number;
   preparingOrders: number;
   readyOrders: number;

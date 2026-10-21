@@ -393,18 +393,17 @@ const StatisticsPage = () => {
                     </Panel>
                     <Panel
                       title={t("statistics.dashboard.cancelled")}
-                      subtitle={t("statistics.dashboard.of_received", {
-                        count: summary!.receivedOrders,
-                      })}
+                      subtitle={t("statistics.dashboard.cancelled_in_period")}
                     >
                       <div className="flex flex-wrap items-center justify-center gap-4">
                         <CancellationDonut
                           cancelled={summary!.cancelledOrders}
-                          total={summary!.receivedOrders}
+                          cashCancelled={summary!.cashCancelledOrders}
                         />
                         <dl className="space-y-3 text-sm">
                           <div>
                             <dt className="text-text-muted">
+                              <span className="mr-2 inline-block h-2 w-2 rounded-full bg-danger" />
                               {t("statistics.dashboard.cash")}
                             </dt>
                             <dd className="font-bold text-text-main">
@@ -413,6 +412,7 @@ const StatisticsPage = () => {
                           </div>
                           <div>
                             <dt className="text-text-muted">
+                              <span className="mr-2 inline-block h-2 w-2 rounded-full bg-warning" />
                               {t("statistics.dashboard.terminal")}
                             </dt>
                             <dd className="font-bold text-text-main">

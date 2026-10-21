@@ -120,6 +120,7 @@ export interface OrderProduct {
 export interface Order {
   id: string;
   createdAt: string;
+  cancelledAt?: string | null;
   updatedAt: string;
 
   // State

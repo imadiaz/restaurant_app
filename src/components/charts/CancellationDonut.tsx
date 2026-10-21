@@ -2,22 +2,24 @@ import { useTranslation } from "react-i18next";
 
 const CancellationDonut = ({
   cancelled,
-  total,
+  cashCancelled,
 }: {
   cancelled: number;
-  total: number;
+  cashCancelled: number;
 }) => {
   const { t } = useTranslation();
-  const percent = total > 0 ? (cancelled / total) * 100 : 0;
+  const cashFraction =
+    cancelled > 0 ? Math.min(1, Math.max(0, cashCancelled / cancelled)) : 0;
   const circumference = 2 * Math.PI * 58;
   return (
     <div className="relative mx-auto h-44 w-44 shrink-0">
       <svg
         viewBox="0 0 160 160"
         role="img"
-        aria-label={t("statistics.dashboard.cancelled_chart", {
+        aria-label={t("statistics.dashboard.cancelled_activity_chart", {
           cancelled,
-          total,
+          cash: cashCancelled,
+          terminal: cancelled - cashCancelled,
         })}
         className="h-full w-full -rotate-90"
       >
@@ -26,10 +28,14 @@ const CancellationDonut = ({
           cy="80"
           r="58"
           fill="none"
-          stroke="var(--color-surface-muted)"
+          stroke={
+            cancelled > 0
+              ? "var(--color-warning)"
+              : "var(--color-surface-muted)"
+          }
           strokeWidth="18"
         />
-        {total > 0 && (
+        {cancelled > 0 && (
           <circle
             cx="80"
             cy="80"
@@ -37,7 +43,7 @@ const CancellationDonut = ({
             fill="none"
             stroke="var(--color-danger)"
             strokeWidth="18"
-            strokeDasharray={`${(percent / 100) * circumference} ${circumference}`}
+            strokeDasharray={`${cashFraction * circumference} ${circumference}`}
           />
         )}
       </svg>
@@ -45,9 +51,6 @@ const CancellationDonut = ({
         <span className="text-3xl font-bold text-text-main">{cancelled}</span>
         <span className="text-xs text-text-muted">
           {t("statistics.dashboard.cancelled")}
-        </span>
-        <span className="mt-1 text-xs font-medium text-danger">
-          {percent.toFixed(1)}%
         </span>
       </div>
     </div>
