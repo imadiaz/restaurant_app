@@ -21,7 +21,7 @@ export const ImageUploadInput: React.FC<ImageUploadInputProps> = ({
   initialPreview = null,
   label,
   maxSizeMB = 5,
-  allowedTypes = ['image/jpeg', 'image/png', 'image/webp'],
+  allowedTypes = ['image/jpeg', 'image/png'],
   shape = 'avatar',
   sticky = true,
   disabled = false,

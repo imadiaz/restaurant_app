@@ -32,7 +32,7 @@ const processQueue = (error: unknown, token: string | null = null) => {
 /* ------------------------------------------------------------------ */
 /* Centralized refresh function                                         */
 /* ------------------------------------------------------------------ */
-const refreshTokens = async (): Promise<string> => {
+export const refreshTokens = async (): Promise<string> => {
   if (isRefreshing) {
     return new Promise((resolve, reject) => {
       failedQueue.push({ resolve, reject });
@@ -47,7 +47,7 @@ const refreshTokens = async (): Promise<string> => {
       throw new Error("No refresh token available");
     }
     const response = await axios.post<ApiResponse<{ accessToken: string; refreshToken: string }>>(
-      `${import.meta.env.VITE_API_URL}/auth/refresh`,
+      `${import.meta.env.VITE_API_URL || "http://localhost:3000"}/auth/refresh`,
       null,
       {
         headers: {
@@ -75,9 +75,6 @@ const refreshTokens = async (): Promise<string> => {
 
 const axiosClient = axios.create({
   baseURL: import.meta.env.VITE_API_URL || "http://localhost:3000",
-  headers: {
-    "Content-Type": "application/json",
-  },
   timeout: 100000,
 });
 
