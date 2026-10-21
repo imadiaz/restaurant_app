@@ -12,6 +12,7 @@
     "deploy": "gh-pages -d dist",
     "lint": "eslint .",
     "check:i18n": "node scripts/check-i18n.mjs",
+    "check:contracts": "node scripts/check-contracts.mjs",
     "preview": "vite preview"
   },
   "dependencies": {
