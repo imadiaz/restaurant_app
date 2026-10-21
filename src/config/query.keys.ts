@@ -56,7 +56,7 @@ export const queryKeys = {
   },
   statistics: {
     resource: (resource: string, filters: StatisticsFilterDto) =>
-      ["statistics", resource, filters.restaurantId ?? "all", filters.startDate ?? null, filters.endDate ?? null] as const,
+      ["statistics", resource, filters.restaurantId ?? "all", filters.startDate ?? null, filters.endDate ?? null, filters.paymentMethod ?? "all"] as const,
   },
   users: {
     all: ["users"] as const,

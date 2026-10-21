@@ -1,138 +1,34 @@
-import { useQuery } from '@tanstack/react-query';
-import { statisticsService, type StatisticsFilterDto } from '../../service/statistics.service';
-import { useAppStore } from '../../store/app.store';
-import { useErrorHandler } from '../use.error.handler';
-import { queryKeys } from '../../config/query.keys';
+import { useQuery } from "@tanstack/react-query";
+import {
+  statisticsService,
+  type StatisticsFilterDto,
+} from "../../service/statistics.service";
+import { useAppStore } from "../../store/app.store";
+import { queryKeys } from "../../config/query.keys";
 
-
-export const useStatistics = (dates?: { startDate?: string; endDate?: string }) => {
-  const { handleError } = useErrorHandler();
-  const { activeRestaurant } = useAppStore();
-
-  // Combine the dates from the UI with the active restaurant from the global store
-  const filters: StatisticsFilterDto = {
-    startDate: dates?.startDate,
-    endDate: dates?.endDate,
-    restaurantId: activeRestaurant?.id,
-  };
-
-  // -----------------------------------------------------------------
-  // 1. KPI SUMMARY (Totals)
-  // -----------------------------------------------------------------
-  const {
-    data: summary,
-    isLoading: isLoadingSummary,
-    isError: isErrorSummary,
-  } = useQuery({
-    // The queryKey includes the filters so it automatically refetches when dates change
-    queryKey: queryKeys.statistics.resource('summary', filters),
-    queryFn: async () => {
-      try {
-        return await statisticsService.getKpiSummary(filters);
-      } catch (error) {
-        handleError(error);
-        throw error;
-      }
-    },
-    // Optional: Only run if we have a restaurant (remove this if Super Admins can view all)
-    enabled: !!activeRestaurant?.id, 
+export const useStatistics = (
+  selection: Omit<StatisticsFilterDto, "restaurantId">,
+  validRange: boolean,
+) => {
+  const restaurantId = useAppStore((state) => state.activeRestaurant?.id);
+  const filters = { ...selection, restaurantId };
+  const dashboard = useQuery({
+    queryKey: queryKeys.statistics.resource("dashboard", filters),
+    queryFn: ({ signal }) => statisticsService.getDashboard(filters, signal),
+    enabled: Boolean(restaurantId) && validRange,
+    refetchInterval: 60_000,
+    refetchOnWindowFocus: true,
+    staleTime: 30_000,
   });
-
-  // -----------------------------------------------------------------
-  // 2. EARNINGS CHART
-  // -----------------------------------------------------------------
-  const {
-    data: chartData = [],
-    isLoading: isLoadingChart,
-    isError: isErrorChart,
-  } = useQuery({
-    queryKey: queryKeys.statistics.resource('chart', filters),
-    queryFn: async () => {
-      try {
-        return await statisticsService.getEarningsChart(filters);
-      } catch (error) {
-        handleError(error);
-        throw error;
-      }
-    },
-    enabled: !!activeRestaurant?.id,
+  // This is the current ledger balance, never a date/payment-filtered amount.
+  const debt = useQuery({
+    queryKey: queryKeys.statistics.resource("platform-debt", { restaurantId }),
+    queryFn: ({ signal }) =>
+      statisticsService.getPlatformDebt(restaurantId!, signal),
+    enabled: Boolean(restaurantId),
+    refetchInterval: 60_000,
+    refetchOnWindowFocus: "always",
+    staleTime: 0,
   });
-
-  // -----------------------------------------------------------------
-  // 3. TOP PRODUCTS
-  // -----------------------------------------------------------------
-  const {
-    data: topProducts = [],
-    isLoading: isLoadingTopProducts,
-    isError: isErrorTopProducts,
-  } = useQuery({
-    queryKey: queryKeys.statistics.resource('top-products', filters),
-    queryFn: async () => {
-      try {
-        return await statisticsService.getTopProducts(filters);
-      } catch (error) {
-        handleError(error);
-        throw error;
-      }
-    },
-    enabled: !!activeRestaurant?.id,
-  });
-
-  const {
-    data: platformDebt,
-    isLoading: isLoadingPlatformDebt,
-    isError: isErrorPlatformDebt,
-  } = useQuery({
-    queryKey: queryKeys.statistics.resource('platform-debt', filters),
-    queryFn: async () => {
-      try {
-        return await statisticsService.getPlatformDebt(filters.restaurantId!);
-      } catch (error) {
-        handleError(error);
-        throw error;
-      }
-    },
-    enabled: !!activeRestaurant?.id, 
-  });
-
-  const {
-    data: financialSummary,
-    isLoading: isLoadingFinancials,
-    isError: isErrorFinancials,
-  } = useQuery({
-    queryKey: queryKeys.statistics.resource('financials', filters),
-    queryFn: async () => {
-      try {
-        return await statisticsService.getFinancialSummary(filters);
-      } catch (error) {
-        handleError(error);
-        throw error;
-      }
-    },
-    enabled: !!activeRestaurant?.id, 
-  });
-
-
-  return {
-    summary,
-    chartData,
-    topProducts,
-    platformDebt,
-    financialSummary,
-
-    isLoadingSummary,
-    isLoadingChart,
-    isLoadingTopProducts,
-    isLoadingPlatformDebt,
-    isLoadingFinancials,
-    
-    isFetchingAny: isLoadingSummary || isLoadingChart || isLoadingTopProducts || isLoadingPlatformDebt || isLoadingFinancials,
-
-    isErrorSummary,
-    isErrorChart,
-    isErrorTopProducts,
-    isErrorPlatformDebt,
-    isErrorFinancials,
-    hasAnyError: isErrorSummary || isErrorChart || isErrorTopProducts || isErrorPlatformDebt || isErrorFinancials,
-  };
+  return { dashboard, debt };
 };

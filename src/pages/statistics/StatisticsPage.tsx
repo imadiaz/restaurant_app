@@ -1,281 +1,605 @@
-import { BarChart3 } from "lucide-react";
-import React, { useState } from "react";
+import {
+  Banknote,
+  CreditCard,
+  ExternalLink,
+  Loader2,
+  ReceiptText,
+  RefreshCw,
+  Wallet,
+} from "lucide-react";
+import { useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import BasePageLayout from "../../components/layout/BaseLayout";
-import { useStatistics } from "../../hooks/statistics/use.statistics";
 import AnatomyButton from "../../components/anatomy/AnatomyButton";
+import RevenueLineChart from "../../components/charts/RevenueLineChart";
+import CancellationDonut from "../../components/charts/CancellationDonut";
+import { useStatistics } from "../../hooks/statistics/use.statistics";
 import { useRestaurantOperations } from "../../hooks/restaurants/use.operations";
 import { useAppStore } from "../../store/app.store";
 import { useAuthStore } from "../../store/auth.store";
-import { isRestaurantAdmin, isSuperAdmin } from "../../data/models/user/utils/user.utils";
-import RevenueLineChart from "../../components/charts/RevenueLineChart";
+import { ROLES } from "../../config/roles";
+import {
+  dashboardDateRange,
+  dashboardMetric,
+  validDashboardRange,
+  type DashboardMetric,
+} from "../../utils/statistics.utils";
 
-// 🆕 Helper component to create clean dividers between sections
-const SectionHeader = ({ title }: { title: string }) => (
-  <div className="flex items-center space-x-4 mb-4 mt-8 first:mt-0">
-    <h2 className="text-xl font-bold text-text-main">{title}</h2>
-    <div className="flex-1 h-px bg-border"></div>
-  </div>
+const panelClass =
+  "rounded-card border border-border bg-background-card shadow-sm";
+const Panel = ({
+  title,
+  subtitle,
+  children,
+}: {
+  title: string;
+  subtitle?: string;
+  children: ReactNode;
+}) => (
+  <section className={panelClass}>
+    <div className="border-b border-border px-5 py-4">
+      <h2 className="font-bold text-text-main">{title}</h2>
+      {subtitle && <p className="mt-1 text-xs text-text-muted">{subtitle}</p>}
+    </div>
+    <div className="p-5">{children}</div>
+  </section>
 );
 
-const StatisticsPage: React.FC = () => {
-  const { t } = useTranslation();
-  const { activeRestaurant } = useAppStore();
-  const { user } = useAuthStore();
-  
-  const [dates, setDates] = useState(() => {
-    const today = new Date();
-    const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
-    const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0);
-
-    return {
-      startDate: firstDay.toISOString().split("T")[0],
-      endDate: lastDay.toISOString().split("T")[0],
-    };
-  });
-
-  const {
-    summary,
-    chartData,
-    topProducts,
-    platformDebt,
-    financialSummary, // 👈 Destructure our new data
-    isFetchingAny,
-    hasAnyError,
-  } = useStatistics(dates);
-  
-  const { generatePaymentLink, isGeneratingPaymentLink } = useRestaurantOperations();
-
-  // Helper to format currency safely
-  const formatCurrency = (number: number | undefined | null) =>
-    `$${Intl.NumberFormat("en-US", { minimumFractionDigits: 2 }).format(number || 0)}`;
-
-  // Helper to format dates nicely (e.g., "2026-02-01" -> "Feb 1")
-  const formatDate = (dateString: string) => {
-    if (!dateString) return "";
-    const [year, month, day] = dateString.split("-");
-    const date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
-    return new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric" }).format(date);
+const StatisticsPage = () => {
+  const { t, i18n } = useTranslation();
+  const restaurantId = useAppStore((state) => state.activeRestaurant?.id);
+  const role = useAuthStore((state) => state.user?.role.name);
+  const [dates, setDates] = useState(() => dashboardDateRange("7"));
+  const [preset, setPreset] = useState("7");
+  const [method, setMethod] = useState<"" | "CASH" | "CARD_TERMINAL">("");
+  const [metric, setMetric] = useState<DashboardMetric>("sales");
+  const [paymentLink, setPaymentLink] = useState<{
+    restaurantId: string;
+    url: string;
+    amount: number;
+  } | null>(null);
+  const validRange = validDashboardRange(dates.startDate, dates.endDate);
+  const { dashboard, debt } = useStatistics(
+    { ...dates, paymentMethod: method || undefined },
+    validRange,
+  );
+  const { generatePaymentLink, isGeneratingPaymentLink } =
+    useRestaurantOperations();
+  const canPay = role === ROLES.SUPER_ADMIN || role === ROLES.ADMIN;
+  const balance = Number(debt.data?.debtAmount ?? 0);
+  const amountDue = Math.max(0, -balance);
+  const money = (value: number) =>
+    new Intl.NumberFormat(i18n.language, {
+      style: "currency",
+      currency: "MXN",
+    }).format(value);
+  const count = (value: number) =>
+    new Intl.NumberFormat(i18n.language, { maximumFractionDigits: 0 }).format(
+      value,
+    );
+  const data = dashboard.data;
+  const summary = data?.summary;
+  const selectedMetric = data ? dashboardMetric(data, metric) : undefined;
+  const formatMetric = metric === "orders" ? count : money;
+  const dateLabel = (value: string) =>
+    new Intl.DateTimeFormat(i18n.language, {
+      day: "numeric",
+      month: "short",
+      timeZone: "UTC",
+    }).format(new Date(`${value}T12:00:00Z`));
+  const selectDate = (key: "startDate" | "endDate", value: string) => {
+    setPreset("custom");
+    setDates((previous) => ({ ...previous, [key]: value }));
   };
-
-  const handleGeneratePaymentLink = async (restaurantId: string) => {
+  const handlePaymentLink = async () => {
+    if (!restaurantId) return;
+    setPaymentLink(null);
     try {
-      const data = await generatePaymentLink({ id: restaurantId });
-      if(data != null && data?.url) {
-        window.open(data.url, '_blank');
-      }
+      const result = await generatePaymentLink({ id: restaurantId });
+      if (result.url)
+        setPaymentLink({ restaurantId, url: result.url, amount: amountDue });
     } catch {
-      return;
+      // The shared mutation handler presents API errors.
     }
-  }
-
-  if (hasAnyError) {
-    return <div className="p-6 text-danger">{t("common.error_loading_data")}</div>;
-  }
+  };
+  const inputClass =
+    "min-h-11 rounded-control border border-border-strong bg-input px-3 py-2 text-sm text-text-main outline-none focus:ring-2 focus:ring-primary";
 
   return (
     <BasePageLayout
-      title={t("statistics.title", "Dashboard")}
-      subtitle={t("statistics.description", "Monitor your restaurant's performance")}
-      isLoading={isFetchingAny}
-      isEmpty={false}
-      emptyLabel={t("statistics.empty", "No data available")}
-      emptyIcon={BarChart3}
-      renderControls={
-        <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
-          <input
-            type="date"
-            value={dates.startDate}
-            onChange={(e) => setDates((prev) => ({ ...prev, startDate: e.target.value }))}
-            aria-label={t("statistics.start_date", "Start date")}
-            className="w-full sm:w-auto bg-input text-text-main border-border-strong rounded-control shadow-sm text-sm p-2 focus:ring-primary focus:border-primary outline-none border"
-          />
-          <span className="text-text-muted hidden sm:block">{t("common.to", "to")}</span>
-          <input
-            type="date"
-            value={dates.endDate}
-            onChange={(e) => setDates((prev) => ({ ...prev, endDate: e.target.value }))}
-            aria-label={t("statistics.end_date", "End date")}
-            className="w-full sm:w-auto bg-input text-text-main border-border-strong rounded-control shadow-sm text-sm p-2 focus:ring-primary focus:border-primary outline-none border"
-          />
+      title={t("statistics.dashboard.title")}
+      subtitle={t("statistics.dashboard.description")}
+      headerActions={
+        <div className="flex flex-wrap items-end gap-2">
+          <label className="flex flex-col gap-1 text-xs text-text-muted">
+            {t("statistics.dashboard.start_date")}
+            <input
+              type="date"
+              className={inputClass}
+              value={dates.startDate}
+              max={dates.endDate || undefined}
+              onChange={(event) => selectDate("startDate", event.target.value)}
+            />
+          </label>
+          <label className="flex flex-col gap-1 text-xs text-text-muted">
+            {t("statistics.dashboard.end_date")}
+            <input
+              type="date"
+              className={inputClass}
+              value={dates.endDate}
+              min={dates.startDate || undefined}
+              onChange={(event) => selectDate("endDate", event.target.value)}
+            />
+          </label>
+          <label className="flex flex-col gap-1 text-xs text-text-muted">
+            {t("statistics.dashboard.period")}
+            <select
+              className={inputClass}
+              value={preset}
+              onChange={(event) => {
+                setPreset(event.target.value);
+                if (event.target.value !== "custom")
+                  setDates(dashboardDateRange(event.target.value));
+              }}
+            >
+              <option value="7">{t("statistics.dashboard.last_7")}</option>
+              <option value="30">{t("statistics.dashboard.last_30")}</option>
+              <option value="month">
+                {t("statistics.dashboard.this_month")}
+              </option>
+              <option value="custom">{t("statistics.dashboard.custom")}</option>
+            </select>
+          </label>
+          <label className="flex flex-col gap-1 text-xs text-text-muted">
+            {t("orders.payment_method")}
+            <select
+              className={inputClass}
+              value={method}
+              onChange={(event) =>
+                setMethod(event.target.value as typeof method)
+              }
+            >
+              <option value="">{t("statistics.dashboard.both_methods")}</option>
+              <option value="CASH">{t("statistics.dashboard.cash")}</option>
+              <option value="CARD_TERMINAL">
+                {t("statistics.dashboard.terminal")}
+              </option>
+            </select>
+          </label>
         </div>
       }
     >
-      <div className="pb-20 space-y-8">
-        
-        {/* ======================= 1. PLATFORM SECTION ======================= */}
-        <div>
-          {/* ======================= 1. PLATFORM SECTION ======================= */}
-        {/* Only render this section header if the user is a Super Admin OR if they are a restaurant with debt */}
-        {(isSuperAdmin(user) || (isRestaurantAdmin(user) && platformDebt && platformDebt.debtAmount < 0)) && (
-          <div>
-            <SectionHeader title={t("statistics.sections.platform", "Platform & Debt")} />
-            
-            {/* 🔒 SUPER ADMIN ONLY: Platform Financials */}
-            {isSuperAdmin(user) && (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
-                <div className="bg-background-card p-6 rounded-xl shadow-sm border border-border border-t-4 border-t-purple-500">
-                  <h3 className="text-sm font-medium text-text-muted">{t("statistics.total_commissions", "Platform Commissions")}</h3>
-                  <p className="text-3xl font-bold text-text-main mt-2">
-                    {isFetchingAny ? "..." : formatCurrency(financialSummary?.totalPlatformCommissions)}
-                  </p>
-                </div>
-
-                <div className="bg-background-card p-6 rounded-xl shadow-sm border border-border border-t-4 border-t-indigo-500">
-                  <h3 className="text-sm font-medium text-text-muted">{t("statistics.net_profit", "Net Profit (After Refunds)")}</h3>
-                  <p className="text-3xl font-bold text-text-main mt-2">
-                    {isFetchingAny ? "..." : formatCurrency(financialSummary?.netPlatformProfit)}
-                  </p>
-                </div>
-                
-                <div className="bg-background-card p-6 rounded-xl shadow-sm border border-border border-t-4 border-t-teal-500">
-                  <h3 className="text-sm font-medium text-text-muted">{t("statistics.debt_settled", "Total Debt Settled")}</h3>
-                  <p className="text-3xl font-bold text-text-main mt-2">
-                    {isFetchingAny ? "..." : formatCurrency(financialSummary?.totalDebtSettled)}
-                  </p>
-                </div>
-              </div>
-            )}
-
-            {/* ⚠️ RESTAURANT ADMIN ONLY: Conditional Debt Warning Block */}
-            {isRestaurantAdmin(user) && platformDebt && platformDebt.debtAmount < 0 && (
-              <div className="bg-danger-surface p-6 rounded-card shadow-sm border border-danger/20 border-t-4 border-t-danger mb-6">
-                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                  <div>
-                    <h3 className="text-lg font-bold text-danger">
-                      {t("statistics.platform_debt", "Platform Debt Attention")}
-                    </h3>
-                    <p className="text-sm text-danger mt-1">
-                      {t("statistics.platform_debt_description", "You have an outstanding balance from cash order commissions.")}
-                    </p>
-                    <p className="text-3xl font-black text-danger mt-3">
-                      {isFetchingAny ? "..." : formatCurrency(Math.abs(platformDebt.debtAmount))}
-                    </p>
-                  </div>
-                  <div>
-                    <AnatomyButton variant="danger" isLoading={isGeneratingPaymentLink} onClick={() => handleGeneratePaymentLink(activeRestaurant?.id || "")}>
-                      {t("statistics.generate_payment_link", "Pay Outstanding Debt")}
-                    </AnatomyButton>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-        )}
-        </div>
-
-        {/* ======================= 2. FINANCIAL SECTION ======================= */}
-        <div>
-          <SectionHeader title={t("statistics.sections.financial", "Financial Overview")} />
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            
-            <div className="bg-background-card p-6 rounded-xl shadow-sm border border-border border-t-4 border-t-orange-500">
-              <h3 className="text-sm font-medium text-text-muted">{t("statistics.total_revenue", "Total Revenue")}</h3>
-              <p className="text-3xl font-bold text-text-main mt-2">
-                {isFetchingAny ? "..." : formatCurrency(summary?.totalEarnings)}
-              </p>
-            </div>
-
-            <div className="bg-background-card p-6 rounded-xl shadow-sm border border-border border-t-4 border-t-blue-500">
-              <h3 className="text-sm font-medium text-text-muted">{t("statistics.card_revenue", "Card Revenue")}</h3>
-              <p className="text-3xl font-bold text-text-main mt-2">
-                {isFetchingAny ? "..." : formatCurrency(financialSummary?.totalCardRevenue)}
-              </p>
-            </div>
-
-            <div className="bg-background-card p-6 rounded-xl shadow-sm border border-border border-t-4 border-t-green-500">
-              <h3 className="text-sm font-medium text-text-muted">{t("statistics.cash_revenue", "Cash Revenue")}</h3>
-              <p className="text-3xl font-bold text-text-main mt-2">
-                {isFetchingAny ? "..." : formatCurrency(financialSummary?.totalCashRevenue)}
-              </p>
-            </div>
-
-            <div className="bg-background-card p-6 rounded-xl shadow-sm border border-border border-t-4 border-t-rose-500">
-              <h3 className="text-sm font-medium text-text-muted">{t("statistics.total_refunded", "Total Refunded")}</h3>
-              <p className="text-3xl font-bold text-rose-600 mt-2">
-                {isFetchingAny ? "..." : `-${formatCurrency(financialSummary?.totalRefunded)}`}
-              </p>
-            </div>
-
-          </div>
-        </div>
-
-        {/* ======================= 3. ORDERS SECTION ======================= */}
-        <div>
-          <SectionHeader title={t("statistics.sections.orders", "Orders & Products")} />
-          
-          <div className="mb-6 bg-background-card p-6 rounded-xl shadow-sm border border-border border-l-4 border-l-blue-500 inline-block pr-12">
-            <h3 className="text-sm font-medium text-text-muted">{t("statistics.total_orders", "Total Delivered Orders")}</h3>
-            <p className="text-3xl font-bold text-text-main mt-2">
-              {isFetchingAny ? "..." : summary?.totalOrders || 0}
+      {!restaurantId ? (
+        <p className="text-text-muted">
+          {t("statistics.dashboard.select_restaurant")}
+        </p>
+      ) : (
+        <div className="space-y-6">
+          {!validRange && (
+            <p role="alert" className="text-sm text-danger">
+              {t("statistics.dashboard.invalid_range")}
             </p>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div className="col-span-1 lg:col-span-2 bg-background-card p-6 rounded-xl shadow-sm border border-border">
-              <h3 className="text-lg font-semibold text-text-main mb-6">
-                {t("statistics.revenue_over_time", "Revenue Over Time")}
-              </h3>
-              <div className="h-[320px] w-full overflow-x-auto">
-                <div className="h-full min-w-[560px]">
-                  <RevenueLineChart
-                    labels={chartData.map((item) => formatDate(item.date))}
-                    values={chartData.map((item) => item.dailyEarnings)}
-                    formatValue={formatCurrency}
-                    accessibleLabel={t("statistics.revenue_chart_label", "Revenue by date")}
-                    emptyLabel={t("statistics.no_sales_data", "No sales data for this period.")}
-                  />
+          )}
+          <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">
+            <div className="contents">
+              {dashboard.isError ? (
+                <div role="alert" className={`${panelClass} p-6 text-danger`}>
+                  <p>{t("common.error_loading_data")}</p>
+                  <AnatomyButton
+                    variant="secondary"
+                    onClick={() => void dashboard.refetch()}
+                    disabled={!validRange}
+                  >
+                    {t("orders.retry_detail")}
+                  </AnatomyButton>
                 </div>
-              </div>
-            </div>
+              ) : !data || !validRange ? (
+                <div
+                  className={`${panelClass} flex min-h-80 items-center justify-center text-text-muted`}
+                  role="status"
+                >
+                  {validRange && (
+                    <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                  )}
+                  {t(
+                    validRange
+                      ? "common.loading_data"
+                      : "statistics.dashboard.invalid_range",
+                  )}
+                </div>
+              ) : (
+                <>
+                  <section
+                    className={`${panelClass} min-w-0 overflow-hidden xl:col-span-2`}
+                  >
+                    <div
+                      className="flex overflow-x-auto border-b border-border"
+                      role="tablist"
+                      aria-label={t("statistics.dashboard.metrics")}
+                    >
+                      {(["sales", "orders", "ticket"] as const).map((value) => (
+                        <button
+                          key={value}
+                          role="tab"
+                          aria-selected={metric === value}
+                          aria-controls="dashboard-chart"
+                          id={`dashboard-tab-${value}`}
+                          onClick={() => setMetric(value)}
+                          className={`min-w-36 flex-1 border-b-4 px-5 py-4 text-left transition-colors ${metric === value ? "border-primary bg-primary/5" : "border-transparent hover:bg-surface-hover"}`}
+                        >
+                          <span className="text-xs font-medium text-text-muted">
+                            {t(`statistics.dashboard.${value}`)}
+                          </span>
+                          <span className="mt-1 block whitespace-nowrap text-xl font-bold text-text-main">
+                            {value === "orders"
+                              ? count(dashboardMetric(data, value).total)
+                              : money(dashboardMetric(data, value).total)}
+                          </span>
+                        </button>
+                      ))}
+                    </div>
+                    <div
+                      className="p-5"
+                      role="tabpanel"
+                      id="dashboard-chart"
+                      aria-labelledby={`dashboard-tab-${metric}`}
+                    >
+                      <div className="mb-5 flex flex-wrap items-start justify-between gap-2">
+                        <div>
+                          <p className="text-2xl font-bold text-text-main">
+                            {formatMetric(selectedMetric!.total)}
+                          </p>
+                          <p className="mt-1 text-xs text-text-muted">
+                            {t("statistics.dashboard.delivered_only")}
+                          </p>
+                        </div>
+                        <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
+                          {dateLabel(dates.startDate)} —{" "}
+                          {dateLabel(dates.endDate)}
+                        </span>
+                      </div>
+                      <div className="h-72 w-full overflow-x-auto">
+                        <div className="h-full min-w-[460px]">
+                          <RevenueLineChart
+                            labels={data.chart.map((day) =>
+                              dateLabel(day.date),
+                            )}
+                            values={selectedMetric!.values}
+                            formatValue={formatMetric}
+                            accessibleLabel={t(
+                              `statistics.dashboard.${metric}`,
+                            )}
+                            emptyLabel={t("statistics.dashboard.no_data")}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </section>
 
-            <div className="col-span-1 bg-background-card p-6 rounded-xl shadow-sm border border-border flex flex-col h-full">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-text-main">
-                  {t("statistics.top_products", "Top Selling Products")}
-                </h3>
-                <span className="bg-success-surface text-success text-xs font-medium px-2.5 py-0.5 rounded-full">
-                  {t("statistics.best_sellers", "Best Sellers")}
-                </span>
-              </div>
-
-              <div className="overflow-x-auto flex-1">
-                <table className="w-full text-sm text-left text-text-muted">
-                  <thead className="text-xs text-text-main uppercase border-b border-border">
-                    <tr>
-                      <th scope="col" className="px-4 py-3 font-medium">{t("common.product", "Product")}</th>
-                      <th scope="col" className="px-4 py-3 font-medium text-right">{t("common.sold", "Sold")}</th>
-                      <th scope="col" className="px-4 py-3 font-medium text-right">{t("common.revenue", "Revenue")}</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {topProducts.map((product) => (
-                      <tr key={product.productId || product.productName} className="border-b border-border last:border-0 hover:bg-surface-hover">
-                        <td className="px-4 py-3 font-medium text-text-main truncate max-w-[120px]" title={product.productName}>
-                          {product.productName}
-                        </td>
-                        <td className="px-4 py-3 text-right">{product.totalSold}</td>
-                        <td className="px-4 py-3 text-right font-medium text-text-main">
-                          {formatCurrency(product.revenueGenerated)}
-                        </td>
-                      </tr>
+                  <div className="grid min-w-0 gap-4 sm:grid-cols-3 xl:col-span-2">
+                    {[
+                      {
+                        label: "received",
+                        value: count(summary!.receivedOrders),
+                        icon: ReceiptText,
+                      },
+                      {
+                        label: "cash_revenue",
+                        value: money(summary!.cashRevenue),
+                        icon: Banknote,
+                      },
+                      {
+                        label: "terminal_revenue",
+                        value: money(summary!.terminalRevenue),
+                        icon: CreditCard,
+                      },
+                    ].map(({ label, value, icon: Icon }) => (
+                      <div className={`${panelClass} p-5`} key={label}>
+                        <Icon className="mb-3 h-5 w-5 text-primary" />
+                        <p className="text-xs text-text-muted">
+                          {t(`statistics.dashboard.${label}`)}
+                        </p>
+                        <p className="mt-1 break-words text-xl font-bold text-text-main">
+                          {value}
+                        </p>
+                      </div>
                     ))}
+                  </div>
 
-                    {topProducts.length === 0 && !isFetchingAny && (
-                      <tr>
-                        <td colSpan={3} className="px-4 py-8 text-center text-text-muted">
-                          {t("statistics.no_sales_data", "No sales data for this period.")}
-                        </td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
-              </div>
+                  <div className="grid min-w-0 gap-6 lg:grid-cols-2">
+                    <Panel
+                      title={t("statistics.dashboard.top_products")}
+                      subtitle={t("statistics.dashboard.ranked_by_units")}
+                    >
+                      {data.topProducts.length ? (
+                        <ol className="space-y-4">
+                          {data.topProducts.map((product, index) => (
+                            <li
+                              key={`${product.productId}-${product.productName}`}
+                              className="flex items-center gap-3"
+                            >
+                              <span
+                                className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold ${index === 0 ? "bg-primary/15 text-primary" : "bg-surface-muted text-text-muted"}`}
+                              >
+                                {String(index + 1).padStart(2, "0")}
+                              </span>
+                              <div className="min-w-0 flex-1">
+                                <p
+                                  className="truncate text-sm font-medium text-text-main"
+                                  title={product.productName}
+                                >
+                                  {product.productName}
+                                </p>
+                                <p className="text-xs text-text-muted">
+                                  {money(product.revenueGenerated)}
+                                </p>
+                              </div>
+                              <span className="text-sm font-bold text-text-main">
+                                {count(product.totalSold)}
+                              </span>
+                            </li>
+                          ))}
+                        </ol>
+                      ) : (
+                        <p className="py-8 text-center text-sm text-text-muted">
+                          {t("statistics.dashboard.no_data")}
+                        </p>
+                      )}
+                    </Panel>
+                    <Panel
+                      title={t("statistics.dashboard.payment_mix")}
+                      subtitle={t("statistics.dashboard.delivered_only")}
+                    >
+                      <div className="space-y-6">
+                        {[
+                          {
+                            label: "cash",
+                            amount: summary!.cashRevenue,
+                            orders: summary!.cashOrders,
+                            color: "bg-primary",
+                          },
+                          {
+                            label: "terminal",
+                            amount: summary!.terminalRevenue,
+                            orders: summary!.terminalOrders,
+                            color: "bg-info",
+                          },
+                        ].map((payment) => (
+                          <div key={payment.label}>
+                            <div className="flex justify-between gap-2 text-sm">
+                              <span className="text-text-muted">
+                                {t(`statistics.dashboard.${payment.label}`)}
+                              </span>
+                              <span className="font-bold text-text-main">
+                                {money(payment.amount)}
+                              </span>
+                            </div>
+                            <div className="mt-2 h-2 overflow-hidden rounded-full bg-surface-muted">
+                              <div
+                                className={`h-full rounded-full ${payment.color}`}
+                                style={{
+                                  width: `${summary!.totalRevenue ? (payment.amount / summary!.totalRevenue) * 100 : 0}%`,
+                                }}
+                              />
+                            </div>
+                            <p className="mt-1 text-xs text-text-subtle">
+                              {t("statistics.dashboard.order_count", {
+                                count: payment.orders,
+                              })}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+                    </Panel>
+                    <Panel
+                      title={t("statistics.dashboard.cancelled")}
+                      subtitle={t("statistics.dashboard.of_received", {
+                        count: summary!.receivedOrders,
+                      })}
+                    >
+                      <div className="flex flex-wrap items-center justify-center gap-4">
+                        <CancellationDonut
+                          cancelled={summary!.cancelledOrders}
+                          total={summary!.receivedOrders}
+                        />
+                        <dl className="space-y-3 text-sm">
+                          <div>
+                            <dt className="text-text-muted">
+                              {t("statistics.dashboard.cash")}
+                            </dt>
+                            <dd className="font-bold text-text-main">
+                              {summary!.cashCancelledOrders}
+                            </dd>
+                          </div>
+                          <div>
+                            <dt className="text-text-muted">
+                              {t("statistics.dashboard.terminal")}
+                            </dt>
+                            <dd className="font-bold text-text-main">
+                              {summary!.terminalCancelledOrders}
+                            </dd>
+                          </div>
+                        </dl>
+                      </div>
+                    </Panel>
+                    <Panel
+                      title={t("statistics.dashboard.period_commissions")}
+                      subtitle={t("statistics.dashboard.delivered_only")}
+                    >
+                      <Wallet className="mb-4 h-7 w-7 text-primary" />
+                      <p className="text-3xl font-bold text-text-main">
+                        {money(summary!.platformCommissions)}
+                      </p>
+                      <p className="mt-3 text-sm leading-relaxed text-text-muted">
+                        {t("statistics.dashboard.commission_hint")}
+                      </p>
+                    </Panel>
+                    <p className="text-xs text-text-subtle lg:col-span-2">
+                      {t("statistics.dashboard.cohort_note")}
+                    </p>
+                  </div>
+                </>
+              )}
             </div>
+
+            <aside className="space-y-6 xl:sticky xl:top-6">
+              <section
+                className={`${panelClass} overflow-hidden border-t-4 border-t-primary`}
+              >
+                <div className="p-5">
+                  <div className="mb-4 flex items-center gap-2 text-primary">
+                    <Wallet className="h-5 w-5" />
+                    <h2 className="font-bold">
+                      {t("statistics.platform_debt")}
+                    </h2>
+                  </div>
+                  {debt.isError ? (
+                    <div role="alert">
+                      <p className="text-sm text-danger">
+                        {t("statistics.dashboard.debt_error")}
+                      </p>
+                      <AnatomyButton
+                        variant="ghost"
+                        onClick={() => void debt.refetch()}
+                      >
+                        {t("orders.retry_detail")}
+                      </AnatomyButton>
+                    </div>
+                  ) : debt.isLoading ? (
+                    <p role="status" className="text-sm text-text-muted">
+                      {t("common.loading_data")}
+                    </p>
+                  ) : (
+                    <>
+                      <p
+                        className={`text-3xl font-bold ${amountDue > 0 ? "text-danger" : "text-success"}`}
+                      >
+                        {money(amountDue)}
+                      </p>
+                      <p className="mt-1 text-xs text-text-muted">
+                        {t("statistics.dashboard.current_balance")}
+                      </p>
+                      {balance > 0 && (
+                        <p className="mt-2 text-xs text-success">
+                          {t("statistics.dashboard.credit", {
+                            amount: money(balance),
+                          })}
+                        </p>
+                      )}
+                    </>
+                  )}
+                  <p className="my-4 text-sm leading-relaxed text-text-muted">
+                    {t("statistics.dashboard.debt_hint")}
+                  </p>
+                  {canPay ? (
+                    <AnatomyButton
+                      fullWidth
+                      isLoading={isGeneratingPaymentLink}
+                      disabled={
+                        debt.isLoading || debt.isError || amountDue <= 0
+                      }
+                      onClick={() => void handlePaymentLink()}
+                    >
+                      {t("statistics.generate_payment_link")}
+                    </AnatomyButton>
+                  ) : (
+                    <p className="text-xs text-text-muted">
+                      {t("statistics.dashboard.owner_payment")}
+                    </p>
+                  )}
+                  {!debt.isLoading && !debt.isError && amountDue === 0 && (
+                    <p className="mt-3 text-sm text-success">
+                      {t("statistics.dashboard.no_debt")}
+                    </p>
+                  )}
+                  {paymentLink?.restaurantId === restaurantId &&
+                    canPay &&
+                    !debt.isError &&
+                    paymentLink.amount === amountDue &&
+                    amountDue > 0 && (
+                      <a
+                        href={paymentLink.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="mt-3 flex items-center justify-center gap-2 rounded-control border border-primary px-3 py-3 text-sm font-bold text-primary"
+                      >
+                        {t("statistics.dashboard.open_payment")}
+                        <ExternalLink className="h-4 w-4" />
+                      </a>
+                    )}
+                  <button
+                    type="button"
+                    className="mt-4 inline-flex items-center gap-1 text-xs text-text-muted hover:text-primary"
+                    onClick={() => {
+                      setPaymentLink(null);
+                      void debt.refetch();
+                    }}
+                  >
+                    <RefreshCw className="h-3 w-3" />
+                    {t("statistics.dashboard.refresh_balance")}
+                  </button>
+                </div>
+              </section>
+              {summary && validRange && (
+                <Panel
+                  title={t("statistics.dashboard.operations")}
+                  subtitle={t("statistics.dashboard.current_status")}
+                >
+                  <dl className="divide-y divide-border">
+                    {[
+                      {
+                        label: "pending",
+                        value: summary.pendingOrders,
+                        color: "text-primary",
+                      },
+                      {
+                        label: "cooking",
+                        value: summary.preparingOrders,
+                        color: "text-warning",
+                      },
+                      {
+                        label: "ready",
+                        value: summary.readyOrders,
+                        color: "text-info",
+                      },
+                      {
+                        label: "in_progress",
+                        value: summary.inProgressOrders,
+                        color: "text-info",
+                      },
+                      {
+                        label: "delivered",
+                        value: summary.deliveredOrders,
+                        color: "text-success",
+                      },
+                      {
+                        label: "cancelled",
+                        value: summary.cancelledOrders,
+                        color: "text-danger",
+                      },
+                      {
+                        label: "incomplete",
+                        value: summary.incompletePaymentOrders,
+                        color: "text-danger",
+                      },
+                    ].map(({ label, value, color }) => (
+                      <div
+                        key={label}
+                        className="flex items-center justify-between gap-3 py-3 first:pt-0 last:pb-0"
+                      >
+                        <dt className="text-sm text-text-muted">
+                          {t(`statistics.dashboard.${label}`)}
+                        </dt>
+                        <dd className={`font-bold ${color}`}>{count(value)}</dd>
+                      </div>
+                    ))}
+                  </dl>
+                </Panel>
+              )}
+            </aside>
           </div>
         </div>
-
-      </div>
+      )}
     </BasePageLayout>
   );
 };

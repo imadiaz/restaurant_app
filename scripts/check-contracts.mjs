@@ -212,4 +212,34 @@ for (const valid of [5, 20, 240]) assert.equal(isValidPreparationTime(valid), tr
 assert.equal(initialPreparationTime(0), 5);
 assert.equal(initialPreparationTime(300), 240);
 console.log('PASS: preparation times match backend bounds and normalize historical defaults');
+
+const statisticsUtils = load('src/utils/statistics.utils.ts');
+assert.equal(statisticsUtils.mexicoCityDate(new Date('2026-10-21T01:00:00Z')), '2026-10-20');
+assert.equal(statisticsUtils.validDashboardRange('2026-10-01', '2026-10-21'), true);
+assert.equal(statisticsUtils.validDashboardRange('2026-10-21', '2026-10-01'), false);
+assert.equal(statisticsUtils.validDashboardRange('2026-02-30', '2026-03-05'), false);
+assert.equal(statisticsUtils.validDashboardRange('2025-01-01', '2026-10-21'), false);
+const sevenDays = statisticsUtils.dashboardDateRange('7');
+assert.equal((Date.parse(sevenDays.endDate) - Date.parse(sevenDays.startDate)) / 86400000, 6);
+const dashboardFixture = {
+  summary: { totalRevenue: 300, deliveredOrders: 3, averageTicket: 100 },
+  chart: [{ dailyEarnings: 50, ordersCount: 1, averageTicket: 50 }, { dailyEarnings: 250, ordersCount: 2, averageTicket: 125 }],
+};
+assert.equal(statisticsUtils.dashboardMetric(dashboardFixture, 'ticket').total, 100);
+assert.equal(statisticsUtils.dashboardMetric(dashboardFixture, 'orders').values[1], 2);
+const statsFilters = { restaurantId: 'restaurant', ...sevenDays, paymentMethod: 'CARD_TERMINAL' };
+assert.notDeepEqual(queryKeys.statistics.resource('dashboard', statsFilters), queryKeys.statistics.resource('dashboard', { ...statsFilters, paymentMethod: 'CASH' }));
+const statisticsRequests = [];
+axiosClient.defaults.adapter = async (config) => {
+  statisticsRequests.push(config);
+  return { data: { data: config.url.includes('platform-debt') ? { debtAmount: -875 } : dashboardFixture }, status: 200, statusText: 'OK', headers: {}, config };
+};
+const { statisticsService } = load('src/service/statistics.service.ts', { './api/axiosClient': axiosModule });
+await statisticsService.getDashboard(statsFilters, signal);
+const debt = await statisticsService.getPlatformDebt('restaurant', signal);
+assert.equal(statisticsRequests[0].params.paymentMethod, 'CARD_TERMINAL');
+assert.equal(statisticsRequests[0].signal, signal);
+assert.equal(statisticsRequests[1].params, undefined);
+assert.equal(debt.debtAmount, -875);
+console.log('PASS: dashboard dates, metric selection and payment filter keep current debt independent');
 queryClient.clear();
