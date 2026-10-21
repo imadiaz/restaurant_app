@@ -3,6 +3,8 @@ import { persist, createJSONStorage } from "zustand/middleware";
 import type { User } from "../data/models/user/user";
 import { decodeExp } from "../config/auth.config";
 import { useSocketStore } from "./socket.store";
+import queryClient from "../config/query.client.config";
+import { useAppStore } from "./app.store";
 
 interface AuthState {
   user: User | null;
@@ -17,7 +19,7 @@ interface AuthState {
 
 export const useAuthStore = create<AuthState>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       user: null,
       accessToken: null,
       refreshToken: null,
@@ -25,6 +27,11 @@ export const useAuthStore = create<AuthState>()(
       isAuthenticated: false,
 
       setCredentials: (user, accessToken, refreshToken) => {
+        if (get().user?.id !== user.id) {
+          void queryClient.cancelQueries();
+          queryClient.clear();
+          useAppStore.getState().setActiveRestaurant(null);
+        }
         set({
           user,
           accessToken,
@@ -45,6 +52,9 @@ export const useAuthStore = create<AuthState>()(
 
       logout: () => {
         useSocketStore.getState().disconnect();
+        void queryClient.cancelQueries();
+        queryClient.clear();
+        useAppStore.getState().setActiveRestaurant(null);
         set({
           user: null,
           accessToken: null,
