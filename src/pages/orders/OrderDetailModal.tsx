@@ -17,6 +17,7 @@ import {
   History,
   RotateCcw,
   AlertCircle,
+  Ban,
 } from "lucide-react";
 import AnatomyText from "../../components/anatomy/AnatomyText";
 import AnatomyButton from "../../components/anatomy/AnatomyButton";
@@ -39,6 +40,8 @@ import { useAuthStore } from "../../store/auth.store";
 import { ROLES } from "../../config/roles";
 import { useConfirm } from "../../hooks/use.confirm.modal";
 import { initialPreparationTime, isValidPreparationTime, MIN_PREPARATION_MINUTES, MAX_PREPARATION_MINUTES } from '../../config/preparation-time.config';
+import { canCancelBeforePreparation, requiresOnlineRefund } from '../../utils/order.actions';
+import OrderNumber from '../../components/common/OrderNumber';
 
 type OrderStatusType = keyof typeof OrderStatus;
 
@@ -53,6 +56,8 @@ interface OrderDetailModalProps {
   ) => void;
   onRefund: (reason: string) => Promise<void>;
   isRefunding: boolean;
+  onCancel: () => Promise<void>;
+  isCancelling: boolean;
 }
 
 const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
@@ -62,6 +67,8 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
   onStatusChange,
   onRefund,
   isRefunding,
+  onCancel,
+  isCancelling,
 }) => {
   const { t } = useTranslation();
   const { activeRestaurant } = useAppStore((state) => state);
@@ -153,9 +160,24 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
     (user?.role.name === ROLES.SUPER_ADMIN || user?.role.name === ROLES.ADMIN) &&
     order.paymentMethod === PaymentMethod.CARD &&
     order.paymentStatus === PaymentStatus.PAID &&
-    order.status !== OrderStatus.DELIVERED &&
-    order.status !== OrderStatus.INCOMPLETE_PAYMENT &&
+    canCancelBeforePreparation(order) &&
     order.refund?.status !== RefundStatus.SUCCEEDED;
+
+  const canCancel = canCancelBeforePreparation(order) &&
+    (!requiresOnlineRefund(order) || canRefund);
+  const refundPending = order.refund?.status === RefundStatus.PENDING;
+  const requestCancellation = () => confirm({
+    title: t('orders.cancel_pending.title'),
+    message: t(requiresOnlineRefund(order)
+      ? 'orders.cancel_pending.card_message'
+      : order.paymentMethod === PaymentMethod.CASH
+        ? 'orders.cancel_pending.cash_message'
+        : 'orders.cancel_pending.terminal_message',
+      { amount: Number(order.totalAmount).toFixed(2) }),
+    confirmText: t('orders.cancel_pending.confirm_action'),
+    variant: 'danger',
+    onConfirm: onCancel,
+  });
 
   const requestRefund = () => {
     const reason = refundReason.trim();
@@ -186,7 +208,7 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
           <div>
             <div className="flex items-center gap-3 mb-1">
               <AnatomyText.H3 id="order-detail-title" className="text-2xl mb-0">
-                {t("orders.order")} #{order.id.slice(0, 6)}
+                <OrderNumber id={order.id} />
               </AnatomyText.H3>
               <AnatomyTag variant={getStatusVariant(order.status)}>
                 {t(`orders.status.${order.status.toLowerCase()}`)}
@@ -644,6 +666,12 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
           </AnatomyButton>
 
           <div className="flex flex-wrap gap-3">
+            {canCancel && (
+              <AnatomyButton variant="danger" onClick={requestCancellation} isLoading={isCancelling} disabled={isRefunding}>
+                <Ban className="mr-2 h-4 w-4" />
+                {t('orders.cancel_pending.action')}
+              </AnatomyButton>
+            )}
             {canRefund && !showRefundForm && (
               <AnatomyButton
                 onClick={() => setShowRefundForm(true)}
@@ -662,6 +690,7 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
             {order.status === OrderStatus.PENDING && (
               <AnatomyButton
                 onClick={handleAcceptOrder}
+                disabled={isCancelling || isRefunding || refundPending}
                 className="bg-warning hover:bg-warning/90 text-white border-transparent"
               >
                 <Check className="w-4 h-4 mr-2" /> {t("common.acceptOrder")}
@@ -704,7 +733,7 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
 
                   <AnatomyButton
                     onClick={handleStartCooking}
-                    disabled={!isValidPreparationTime(prepTime)}
+                    disabled={!isValidPreparationTime(prepTime) || isCancelling || isRefunding || refundPending}
                     className="bg-warning hover:bg-warning/90 text-white border-transparent"
                   >
                     <Check className="w-4 h-4 mr-2" /> {t("common.confirm")}

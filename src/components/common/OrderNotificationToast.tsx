@@ -40,7 +40,9 @@ const OrderNotificationToast: React.FC<OrderNotificationToastProps> = ({ order, 
       message: t(
         requiresRefund
           ? 'orders.cancel_pending.card_message'
-          : 'orders.cancel_pending.cash_message',
+          : order.paymentMethod === PaymentMethod.CASH
+            ? 'orders.cancel_pending.cash_message'
+            : 'orders.cancel_pending.terminal_message',
         { amount: Number(order.totalAmount).toFixed(2) },
       ),
       confirmText: t('orders.cancel_pending.confirm_action'),

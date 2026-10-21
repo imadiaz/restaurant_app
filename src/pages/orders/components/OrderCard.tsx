@@ -10,7 +10,6 @@ import {
   MapPin,
   Bike,
   Phone,
-  Copy,
   Check,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
@@ -23,7 +22,7 @@ import {
   OrderType,
   type Order,
 } from "../../../service/order.service";
-import { useToastStore } from "../../../store/toast.store";
+import OrderNumber from '../../../components/common/OrderNumber';
 import { useTranslation } from "react-i18next";
 
 type OrderStatusType = keyof typeof OrderStatus;
@@ -34,7 +33,6 @@ interface OrderCardProps {
 }
 
 const OrderCard: React.FC<OrderCardProps> = ({ order, onClick }) => {
-  const { addToast } = useToastStore();
   const { t } = useTranslation();
   const getStatusConfig = (
     status: OrderStatusType,
@@ -140,12 +138,6 @@ const OrderCard: React.FC<OrderCardProps> = ({ order, onClick }) => {
     return format(new Date(order.createdAt), "d MMM, h:mm a");
   };
 
-  const handleCopyId = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    navigator.clipboard.writeText(order.id);
-    addToast(t("common.copied_to_clipboard"), "success");
-  };
-
   return (
     <div className="bg-background-card p-5 rounded-3xl shadow-sm border border-border flex flex-col h-full hover:shadow-md transition-all duration-300 group relative">
       <div className="cursor-pointer flex-1" onClick={onClick}>
@@ -157,20 +149,7 @@ const OrderCard: React.FC<OrderCardProps> = ({ order, onClick }) => {
             <Icon className="w-3.5 h-3.5" />
             <span className="font-semibold">{t(config.textKey)}</span>
           </AnatomyTag>
-          <div className="flex flex-col items-end">
-            <div
-              className="flex items-center gap-1.5 bg-surface-muted pl-2 pr-1 py-1 rounded-md border border-border/50 group/copy hover:border-primary/30 transition-colors"
-              onClick={handleCopyId} // Allow clicking the whole box to copy
-              title={t("common.click_to_copy")}
-            >
-              <span className="text-xs font-mono text-text-main font-medium">
-                #{order.id.slice(0, 8)}
-              </span>
-              <button aria-label={t('common.copy')} className="p-1 rounded bg-background-card text-text-muted group-hover/copy:text-primary group-hover/copy:bg-primary/10 transition-all">
-                <Copy className="w-3 h-3" />
-              </button>
-            </div>
-          </div>
+          <OrderNumber id={order.id} />
         </div>
 
         {/* Row B: Customer Name (Full Width) */}

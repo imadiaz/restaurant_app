@@ -7,6 +7,7 @@ import { useErrorHandler } from '../use.error.handler';
 import { queryKeys } from '../../config/query.keys';
 import { useSocketStore } from '../../store/socket.store';
 import { syncOrderInCache } from '../../utils/order.cache.utils';
+import { canCancelBeforePreparation, requiresOnlineRefund } from '../../utils/order.actions';
 
 
 export const useOrders = (statusFilter?: typeof OrderStatus[keyof typeof OrderStatus]) => {
@@ -97,6 +98,27 @@ export const useOrders = (statusFilter?: typeof OrderStatus[keyof typeof OrderSt
     onError: handleError,
   });
 
+  const cancelOrder = useMutation({
+    mutationFn: async (id: string) => {
+      const order = await orderService.getOne(id);
+      if (!canCancelBeforePreparation(order)) {
+        throw new Error(t('orders.cancel_pending.unavailable'));
+      }
+      const reason = t('orders.cancel_pending.reason');
+      return requiresOnlineRefund(order)
+        ? orderService.refund(id, { requestId: crypto.randomUUID(), reason })
+        : orderService.updateStatus(id, { status: OrderStatus.CANCELLED, note: reason });
+    },
+    onSuccess: (order) => {
+      syncOrderInCache(queryClient, order.restaurantId, order);
+      addToast(t(order.refund?.status === RefundStatus.PENDING
+        ? 'orders.cancel_pending.refund_pending'
+        : 'orders.cancel_pending.cancelled'), 'success');
+    },
+    onError: handleError,
+    onSettled: () => queryClient.invalidateQueries({ queryKey: queryKeys.orders.all }),
+  });
+
   return {
     // Data
     orders,
@@ -109,10 +131,12 @@ export const useOrders = (statusFilter?: typeof OrderStatus[keyof typeof OrderSt
     updateStatus: updateStatus.mutateAsync,
     assignDriver: assignDriver.mutateAsync,
     refundOrder: refundOrder.mutateAsync,
+    cancelOrder: cancelOrder.mutateAsync,
 
     // Loading States
     isUpdating: updateStatus.isPending,
     isAssigning: assignDriver.isPending,
     isRefunding: refundOrder.isPending,
+    isCancelling: cancelOrder.isPending,
   };
 };

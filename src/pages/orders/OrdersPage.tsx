@@ -34,7 +34,7 @@ const OrdersPage: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const selectedOrderId = searchParams.get('orderId') || undefined;
 
-  const { orders, isLoading, isError, refetch, updateStatus, assignDriver, refundOrder, isRefunding } = useOrders();
+  const { orders, isLoading, isError, refetch, updateStatus, assignDriver, refundOrder, isRefunding, cancelOrder, isCancelling } = useOrders();
   const { data: selectedOrder, isLoading: isLoadingDetail, isError: isDetailError, refetch: refetchDetail } = useOrder(selectedOrderId, orders);
 
   const { counts, filteredOrders } = useMemo(() => {
@@ -174,6 +174,11 @@ const OrdersPage: React.FC = () => {
             order={selectedOrder}
             onClose={handleCloseModal}
             isRefunding={isRefunding}
+            isCancelling={isCancelling}
+            onCancel={async () => {
+              await cancelOrder(selectedOrder.id);
+              handleCloseModal();
+            }}
             onRefund={(reason) => handleRefund(selectedOrder.id, reason)}
             onStatusChange={(newStatus, timeInMinutes, driverId) => {
                if (selectedOrder) {

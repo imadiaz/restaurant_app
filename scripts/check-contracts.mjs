@@ -23,6 +23,7 @@ function load(file, dependencies = {}, globals = {}) {
       module: ts.ModuleKind.CommonJS,
       target: ts.ScriptTarget.ES2022,
       esModuleInterop: true,
+      jsx: ts.JsxEmit.ReactJSX,
     },
   }).outputText;
   vm.runInNewContext(code, {
@@ -87,6 +88,37 @@ console.log('PASS: pending orders past the first 100 records are retrieved');
 const queryClient = load('src/config/query.client.config.ts').default;
 const { queryKeys } = load('src/config/query.keys.ts');
 const orderModule = load('src/service/order.service.ts', { './api/axiosClient': axiosModule });
+const actions = load('src/utils/order.actions.ts', {
+  '../service/order.service': orderModule,
+});
+for (const status of [OrderStatus.PENDING, OrderStatus.CONFIRMED]) {
+  assert.equal(actions.canCancelBeforePreparation({ status }), true);
+}
+for (const status of [OrderStatus.PREPARING, OrderStatus.READY, OrderStatus.ON_WAY, OrderStatus.DELIVERED]) {
+  assert.equal(actions.canCancelBeforePreparation({ status }), false);
+}
+assert.equal(actions.requiresOnlineRefund({ paymentMethod: 'CARD', paymentStatus: 'PAID' }), true);
+assert.equal(actions.requiresOnlineRefund({ paymentMethod: 'CARD_TERMINAL', paymentStatus: 'PAID' }), false);
+const fullId = 'f0829fc6-1234-4321-8888-123456789012';
+assert.equal(actions.shortOrderId(fullId), 'f0829');
+assert.equal(fullId.length, 36);
+console.log('PASS: cancellation stops at preparation; online refunds and short order IDs match the contract');
+let copiedId;
+let stopped = false;
+const copyMessages = [];
+const { default: OrderNumber } = load('src/components/common/OrderNumber.tsx', {
+  'react-i18next': { useTranslation: () => ({ t: (key) => key }) },
+  '../../store/toast.store': { useToastStore: (select) => select({ addToast: (...args) => copyMessages.push(args) }) },
+  '../../utils/order.actions': actions,
+}, {
+  navigator: { clipboard: { writeText: (value) => { copiedId = value; return Promise.resolve(); } } },
+});
+const copyButton = OrderNumber({ id: fullId });
+await copyButton.props.onClick({ stopPropagation: () => { stopped = true; } });
+assert.equal(copiedId, fullId);
+assert.equal(stopped, true);
+assert.equal(copyMessages[0][1], 'success');
+console.log('PASS: order number copy handler copies the full UUID without opening the card');
 const { syncOrderInCache } = load('src/utils/order.cache.utils.ts', {
   '../config/query.keys': { queryKeys },
   '../service/order.service': orderModule,

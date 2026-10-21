@@ -31,6 +31,7 @@ export const ACTIVE_ORDER_STATUSES: Order['status'][] = [
 export const PaymentMethod = {
   CASH: "CASH",
   CARD: "CARD",
+  CARD_TERMINAL: "CARD_TERMINAL",
 } as const;
 
 export const PaymentStatus = {
