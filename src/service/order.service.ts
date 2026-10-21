@@ -219,9 +219,10 @@ export const orderService = {
   },
 
   // 2. Get Details
-  async getOne(id: string): Promise<Order> {
+  async getOne(id: string, signal?: AbortSignal): Promise<Order> {
     const res = await axiosClient.get<unknown, ApiResponse<Order>>(
       `/orders/${id}`,
+      { signal },
     );
     return res.data;
   },
