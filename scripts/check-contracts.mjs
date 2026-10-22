@@ -68,22 +68,36 @@ const firstPage = Array.from({ length: 100 }, (_, index) => ({
   id: `order-${index}`, restaurantId: 'restaurant', status: OrderStatus.READY,
 }));
 const missedOrder = { id: 'old-pending', restaurantId: 'restaurant', status: OrderStatus.PENDING };
-const offsets = [];
+const cursors = [];
 const signal = new AbortController().signal;
 axiosClient.defaults.adapter = async (config) => {
-  offsets.push(config.params.offset);
+  cursors.push(config.params.cursorId);
   assert.equal(config.params.activeOnly, true);
   assert.equal(config.signal, signal);
   return {
-    data: { data: config.params.offset === 0 ? firstPage : [missedOrder] },
+    data: { data: config.params.cursorId === undefined ? firstPage : [missedOrder] },
     status: 200, statusText: 'OK', headers: {}, config,
   };
 };
 const orders = await orderService.getByRestaurant('restaurant', undefined, signal);
 assert.equal(orders.length, 101);
 assert.ok(orders.some((order) => order.id === missedOrder.id));
-assert.deepEqual(offsets, [0, 100]);
+assert.deepEqual(cursors, [undefined, 'order-99']);
 console.log('PASS: pending orders past the first 100 records are retrieved');
+
+const pagedRows = Array.from({ length: 101 }, (_, index) => ({ id: `order-${index}`, restaurantId: 'restaurant', status: OrderStatus.PENDING }));
+let listCalls = 0;
+axiosClient.defaults.adapter = async (config) => {
+  listCalls++;
+  const cursorIndex = config.params.cursorId ? pagedRows.findIndex((order) => order.id === config.params.cursorId) : -1;
+  // The first row left the active set between requests. Its removal must not shift a numeric offset.
+  const activeRows = pagedRows.filter((_, index) => index > cursorIndex && !(listCalls > 1 && index === 0));
+  return { data: { data: activeRows.slice(0, config.params.limit) }, status: 200, statusText: 'OK', headers: {}, config };
+};
+const changingOrders = await orderService.getByRestaurant('restaurant', undefined, signal);
+assert.ok(changingOrders.some((order) => order.id === 'order-100'));
+assert.equal(new Set(changingOrders.map((order) => order.id)).size, changingOrders.length);
+console.log('PASS: an order leaving the active set between pages cannot hide an older pending order');
 
 const queryClient = load('src/config/query.client.config.ts').default;
 const { queryKeys } = load('src/config/query.keys.ts');
@@ -324,4 +338,68 @@ useDebtPayment('restaurant', 'cs_test_123', true);
 assert.equal(invalidatedKeys[0][0], 'statistics');
 assert.equal(invalidatedKeys[1][0], 'restaurants');
 console.log('PASS: return-page verification uses the server, bounds polling and refreshes debt only after recording payment');
+
+const { createPendingOrderAlerts } = load('src/utils/pending.order.alerts.ts', { '../service/order.service': orderModule });
+const pendingAlerts = createPendingOrderAlerts('restaurant', 'user');
+const pendingAlertOrder = { id: 'recovered-order', restaurantId: 'restaurant', status: OrderStatus.PENDING };
+assert.equal(pendingAlerts.claim(pendingAlertOrder), true); // HTTP recovery first.
+assert.equal(pendingAlerts.claim(pendingAlertOrder), false); // Socket duplicate.
+assert.equal(pendingAlerts.claim(pendingAlertOrder), false); // Poll after dismissal.
+assert.equal(pendingAlerts.claim({ ...pendingAlertOrder, id: 'foreign', restaurantId: 'other' }), false);
+assert.equal(pendingAlerts.claim({ ...pendingAlertOrder, id: 'accepted', status: OrderStatus.CONFIRMED }), false);
+pendingAlerts.rememberResolved({ ...pendingAlertOrder, id: 'resolved', status: OrderStatus.CANCELLED });
+assert.equal(pendingAlerts.claim({ ...pendingAlertOrder, id: 'resolved' }), false);
+pendingAlerts.reset(); // StrictMode teardown must not swallow recovered alerts on replay.
+assert.equal(pendingAlerts.claim(pendingAlertOrder), true);
+
+const recoveryEffects = [];
+let refIndex = 0;
+let recoveryQuery;
+let socketOrderEvent;
+let soundsPlayed = 0;
+const customNotifications = [];
+const audio = { play: () => { soundsPlayed++; return Promise.resolve(); }, pause: () => {}, currentTime: 0 };
+const hookReact = {
+  ...require('react'),
+  useCallback: (callback) => callback,
+  useMemo: (factory) => factory(),
+  useRef: (initial) => ({ current: refIndex++ === 0 ? audio : initial }),
+  useEffect: (effect) => recoveryEffects.push(effect),
+};
+const { default: RecoveryManager } = load('src/components/managers/SocketManager.tsx', {
+  react: hookReact,
+  '@tanstack/react-query': { useQueryClient: () => queryClient, useQuery: (options) => { recoveryQuery = options; return { data: [pendingAlertOrder] }; } },
+  '../../store/socket.store': { useSocketStore: () => ({ connect: (_id, callback) => { socketOrderEvent = callback; }, disconnect: () => {} }) },
+  '../../store/app.store': { useAppStore: () => ({ activeRestaurant: { id: 'restaurant' } }) },
+  '../../store/auth.store': { useAuthStore: () => ({ isAuthenticated: true, user: { id: 'user', role: { name: 'restaurant_admin' } } }) },
+  '../../store/toast.store': { useToastStore: (select) => select({ addToast: () => {}, removeToast: () => {}, addCustomToast: (content) => { customNotifications.push(content); } }) },
+  '../common/OrderNotificationToast': { default: () => null, __esModule: true },
+  '../../service/order.service': orderModule,
+  '../../utils/order.cache.utils': { syncOrderInCache },
+  '../../hooks/use.error.handler': { useErrorHandler: () => ({ handleError: () => {} }) },
+  'react-i18next': { useTranslation: () => ({ t: (key) => key }) },
+  '../../config/roles': { ROLES: { ADMIN: 'restaurant_admin', SUPER_ADMIN: 'super_admin' } },
+  '../../config/query.keys': { queryKeys },
+  '../../utils/pending.order.alerts': { createPendingOrderAlerts },
+}, { window: { removeEventListener: () => {}, addEventListener: () => {} } });
+RecoveryManager();
+const recoveryCleanups = recoveryEffects.map((effect) => effect());
+assert.equal(recoveryQuery.enabled, true);
+assert.equal(recoveryQuery.refetchInterval, 30000);
+assert.equal(recoveryQuery.refetchIntervalInBackground, true);
+assert.equal(customNotifications.length, 1);
+assert.equal(soundsPlayed, 1);
+socketOrderEvent(pendingAlertOrder, 'newOrder');
+assert.equal(customNotifications.length, 1);
+customNotifications[0].props.onClose();
+socketOrderEvent(pendingAlertOrder, 'newOrder');
+assert.equal(soundsPlayed, 1);
+recoveryCleanups.forEach((cleanup) => cleanup?.());
+console.log('PASS: global polling recovers audible order alerts and deduplicates socket/poll/dismissal events');
+
+// Modal placement is independent of the list's loading/empty branch. No browser/UI test.
+const driversPage = readFileSync('src/pages/drivers/DriversPage.tsx', 'utf8');
+assert.ok(driversPage.indexOf('</BasePageLayout>') < driversPage.indexOf('<DriversMapModal'));
+assert.ok(driversPage.indexOf('</BasePageLayout>') < driversPage.indexOf('<DriverDetailModal'));
+console.log('PASS: driver dialogs are outside the layout branch that hides empty search results');
 queryClient.clear();

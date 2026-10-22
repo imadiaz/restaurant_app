@@ -22,10 +22,16 @@ export const OrderType = {
   PICKUP: "PICKUP",
 } as const;
 
-export const ACTIVE_ORDER_STATUSES: Order['status'][] = [
-  OrderStatus.PENDING, OrderStatus.CONFIRMED, OrderStatus.PREPARING,
-  OrderStatus.READY, OrderStatus.AT_RESTAURANT, OrderStatus.PICKED_UP,
-  OrderStatus.ON_WAY, OrderStatus.ARRIVED_AT_CUSTOMER, OrderStatus.COURIER_ARRIVING,
+export const ACTIVE_ORDER_STATUSES: Order["status"][] = [
+  OrderStatus.PENDING,
+  OrderStatus.CONFIRMED,
+  OrderStatus.PREPARING,
+  OrderStatus.READY,
+  OrderStatus.AT_RESTAURANT,
+  OrderStatus.PICKED_UP,
+  OrderStatus.ON_WAY,
+  OrderStatus.ARRIVED_AT_CUSTOMER,
+  OrderStatus.COURIER_ARRIVING,
 ];
 
 export const PaymentMethod = {
@@ -210,13 +216,18 @@ export const orderService = {
   ): Promise<Order[]> {
     const orders = new Map<string, Order>();
     const limit = 100;
-    for (let offset = 0; ; offset += limit) {
+    let cursorId: string | undefined;
+    for (;;) {
       const res = await axiosClient.get<unknown, ApiResponse<Order[]>>(
         `/orders/restaurant/${restaurantId}`,
-        { params: { status, activeOnly: !status, limit, offset }, signal },
+        { params: { status, activeOnly: !status, limit, cursorId }, signal },
       );
       for (const order of res.data) orders.set(order.id, order);
       if (res.data.length < limit) return [...orders.values()];
+      const nextCursor = res.data.at(-1)!.id;
+      if (nextCursor === cursorId)
+        throw new Error("Order pagination did not advance.");
+      cursorId = nextCursor;
     }
   },
 
