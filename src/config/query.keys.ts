@@ -43,6 +43,10 @@ export const queryKeys = {
     all: ["products"] as const,
     list: (restaurantId?: string) => ["products", scope(restaurantId)] as const,
   },
+  productImports: {
+    list: (restaurantId: string) => ['product-imports', restaurantId] as const,
+    detail: (restaurantId: string, id?: string) => ['product-import', restaurantId, id] as const,
+  },
   promotions: {
     all: ["promotions"] as const,
     list: (restaurantId?: string) =>

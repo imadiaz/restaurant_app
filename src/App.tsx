@@ -17,6 +17,7 @@ const UsersPage = lazy(() => import("./pages/users/UsersPage"));
 const UserFormPage = lazy(() => import("./pages/users/UserFormPage"));
 const ProductsPage = lazy(() => import("./pages/products/ProductsPage"));
 const ProductFormPage = lazy(() => import("./pages/products/ProductFormPage"));
+const ProductImportPage = lazy(() => import("./pages/products/ProductImportPage"));
 const RestaurantsPage = lazy(() => import("./pages/restaurants/RestaurantPage"));
 const RestaurantFormPage = lazy(() => import("./pages/restaurants/RestaurantFormPage"));
 const SchedulePage = lazy(() => import("./pages/schedule/SchedulesPage"));
@@ -117,6 +118,7 @@ function App() {
             />
             <Route path="products" element={<ProductsPage />} />
             <Route path="products/add" element={<ProductFormPage />} />
+            <Route path="products/import" element={<ProductImportPage />} />
             <Route path="products/edit/:id" element={<ProductFormPage />} />
             <Route path="schedule" element={<SchedulePage />} />
             <Route path="schedule/add" element={<ScheduleFormPage />} />

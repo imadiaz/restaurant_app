@@ -425,3 +425,49 @@ assert.ok(driversPage.indexOf('</BasePageLayout>') < driversPage.indexOf('<Drive
 assert.ok(driversPage.indexOf('</BasePageLayout>') < driversPage.indexOf('<DriverDetailModal'));
 console.log('PASS: driver dialogs are outside the layout branch that hides empty search results');
 queryClient.clear();
+
+const importUtils = load('src/utils/product.import.utils.ts');
+const importSections = [{ id: 'section-a', name: 'Sushi', status: 'active' }];
+const importRow = {
+  sourceRow: 2, sourceCategory: 'Sushi', name: 'Roll', description: '', price: 0,
+  menuSectionId: 'section-a', prepTimeMin: null, prepTimeMax: null,
+  status: 'pending', productId: null, version: 3, duplicateProductId: null,
+};
+assert.equal(importUtils.importRowIssues(importRow, importSections).length, 0);
+assert.ok(importUtils.importRowIssues({ ...importRow, price: null }, importSections).includes('price_error'));
+assert.ok(importUtils.importRowIssues({ ...importRow, price: -1 }, importSections).includes('price_error'));
+assert.ok(importUtils.importRowIssues({ ...importRow, price: 10.001 }, importSections).includes('price_error'));
+assert.ok(importUtils.importRowIssues({ ...importRow, menuSectionId: 'foreign' }, importSections).includes('section_error'));
+assert.ok(importUtils.importRowIssues({ ...importRow, prepTimeMin: 20, prepTimeMax: 10 }, importSections).includes('prep_error'));
+const importEdit = importUtils.toImportEdit(importRow, { price: null, prepTimeMin: 0, allowDuplicate: true, productId: 'injected' });
+assert.equal(importEdit.price, null);
+assert.equal(importEdit.prepTimeMin, 0);
+assert.equal(importEdit.expectedVersion, 3);
+assert.equal(importUtils.toImportEdit({ ...importRow, version: 8 }, { expectedVersion: 3, name: 'Local edit' }).expectedVersion, 3);
+assert.equal(importEdit.allowDuplicate, true);
+assert.ok(!('productId' in importEdit));
+assert.equal(importUtils.hasImportDuplicate(importRow, [importRow, { ...importRow, sourceRow: 3, name: '  Róll ' }]), true);
+assert.equal(importUtils.hasImportDuplicate(importRow, [importRow, { ...importRow, sourceRow: 3, name: 'Roll', status: 'skipped' }]), false);
+assert.deepEqual([...importUtils.importDuplicateRows([importRow, { ...importRow, sourceRow: 3, name: '  Róll ' }])], [2, 3]);
+assert.equal(importUtils.applyImportDraft({ ...importRow, duplicateProductId: 'old-match' }, { name: 'Different roll' }).duplicateProductId, null);
+console.log('PASS: Excel import draft validation preserves blanks/zero, checks duplicates, and allowlists idempotent row commits');
+
+const importService = load('src/service/product.import.service.ts', { './api/axiosClient': axiosModule }).productImportService;
+axiosClient.defaults.adapter = async (config) => {
+  requests.push(config);
+  return { data: { data: {} }, status: 200, statusText: 'OK', headers: {}, config };
+};
+const menuFile = new File(['xlsx-bytes'], 'Menu.xlsx', { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+await importService.upload('restaurant-a', menuFile);
+const menuUpload = requests.at(-1);
+assert.ok(menuUpload.data instanceof FormData);
+assert.equal(await menuUpload.data.get('file').text(), 'xlsx-bytes');
+await importService.commit('import-a', importEdit);
+assert.equal(requests.at(-1).url, '/product-imports/import-a/rows/2/commit');
+assert.equal(JSON.parse(requests.at(-1).data).expectedVersion, 3);
+console.log('PASS: Excel file bytes use multipart upload and row saves carry their stable import/row/version');
+const importApp = readFileSync('src/App.tsx', 'utf8');
+assert.ok(importApp.includes('path="products/import"'));
+assert.ok(readFileSync('src/pages/products/ProductsPage.tsx', 'utf8').includes('Routes.ProductImport'));
+assert.ok(importApp.includes('path="products/add"'));
+console.log('PASS: Excel import has its own route and leaves the ordinary product creation route intact');

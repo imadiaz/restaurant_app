@@ -11,6 +11,7 @@ export const Routes = {
   MenuSectionsAdd: '/menu-sections/add',
   MenuSectionsEdit: (id: string) => `/menu-sections/edit/${id}`,
   ProudctAdd: '/products/add',
+  ProductImport: '/products/import',
   ProudctEdit: (id: string) => `/products/edit/${id}`,
   ScheduleAddOrEdit: '/schedule/add',
   Drivers: '/drivers',
