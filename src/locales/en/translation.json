@@ -356,6 +356,20 @@
     "select_driver": "Select a driver"
   },
   "orders": {
+    "pickup": {
+      "label": "Pick up · Collect in store",
+      "scheduled_at": "Collection: {{date}}",
+      "unscheduled": "No collection time recorded",
+      "deliver_action": "Hand over order",
+      "instructions": "Ask the customer for the delivery code shown in their order details. Enter it to confirm you are handing over the correct order.",
+      "code_label": "Customer delivery code",
+      "invalid_code": "Enter a valid 6-character code.",
+      "verification_failed": "Could not confirm handover. Check the code and current order status before retrying.",
+      "confirm": "Confirm handover",
+      "delivered": "Pickup order delivered",
+      "unavailable": "This order is no longer ready for handover. Check its updated status.",
+      "payment_hint": "Before confirming, verify payment in store for cash or card terminal orders."
+    },
     "new_order_received": "New order received",
     "more_items": "+ {{count}} more items...",
     "view_details": "View order details",

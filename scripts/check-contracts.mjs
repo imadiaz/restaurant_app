@@ -117,6 +117,28 @@ const fullId = 'f0829fc6-1234-4321-8888-123456789012';
 assert.equal(actions.shortOrderId(fullId), 'f0829');
 assert.equal(fullId.length, 36);
 console.log('PASS: cancellation stops at preparation; online refunds and short order IDs match the contract');
+for (const type of ['PICKUP', 'DELIVERY']) {
+  for (const status of Object.values(OrderStatus)) {
+    assert.equal(actions.canCompletePickup({ type, status }), type === 'PICKUP' && status === 'READY');
+  }
+}
+const pickupUtils = load('src/utils/pickup.utils.ts');
+assert.equal(pickupUtils.normalizePickupCode(' abc234 '), 'ABC234');
+assert.equal(pickupUtils.isValidPickupCode(' abc234 '), true);
+for (const value of ['', 'ABC23', 'ABC2345', 'O0IL12']) assert.equal(pickupUtils.isValidPickupCode(value), false);
+assert.equal(pickupUtils.formatPickupSchedule(null, 'es-MX'), null);
+assert.equal(pickupUtils.formatPickupSchedule('invalid', 'es-MX'), null);
+const pickupDate = '2026-10-23T17:00:00.000Z';
+assert.equal(pickupUtils.formatPickupSchedule(pickupDate, 'es-MX'), new Intl.DateTimeFormat('es-MX', { timeZone: 'America/Mexico_City', dateStyle: 'medium', timeStyle: 'short' }).format(new Date(pickupDate)));
+axiosClient.defaults.adapter = async (config) => {
+  assert.equal(config.method, 'patch');
+  assert.equal(config.url, '/orders/pickup-order/pickup/complete');
+  assert.deepEqual(JSON.parse(config.data), { verificationCode: 'ABC234' });
+  return { data: { data: { id: 'pickup-order', type: 'PICKUP', status: 'DELIVERED' } }, status: 200, statusText: 'OK', headers: {}, config };
+};
+assert.equal((await orderService.completePickup('pickup-order', 'ABC234')).status, 'DELIVERED');
+console.log('PASS: pickup completion requires READY, validates code format, uses Mexico City schedule and the dedicated verification endpoint');
+
 let copiedId;
 let stopped = false;
 const copyMessages = [];

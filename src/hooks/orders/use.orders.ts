@@ -119,6 +119,17 @@ export const useOrders = (statusFilter?: typeof OrderStatus[keyof typeof OrderSt
     onSettled: () => queryClient.invalidateQueries({ queryKey: queryKeys.orders.all }),
   });
 
+  const completePickup = useMutation({
+    mutationFn: ({ id, verificationCode }: { id: string; verificationCode: string }) =>
+      orderService.completePickup(id, verificationCode),
+    onSuccess: (order) => {
+      syncOrderInCache(queryClient, order.restaurantId, order);
+      addToast(t('orders.pickup.delivered'), 'success');
+    },
+    onError: handleError,
+    onSettled: () => queryClient.invalidateQueries({ queryKey: queryKeys.orders.all }),
+  });
+
   return {
     // Data
     orders,
@@ -132,6 +143,8 @@ export const useOrders = (statusFilter?: typeof OrderStatus[keyof typeof OrderSt
     assignDriver: assignDriver.mutateAsync,
     refundOrder: refundOrder.mutateAsync,
     cancelOrder: cancelOrder.mutateAsync,
+    completePickup: completePickup.mutateAsync,
+    isCompletingPickup: completePickup.isPending,
 
     // Loading States
     isUpdating: updateStatus.isPending,

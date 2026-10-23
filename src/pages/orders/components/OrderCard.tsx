@@ -1,3 +1,6 @@
+import PickupOrderBanner from './PickupOrderBanner';
+import AnatomyButton from '../../../components/anatomy/AnatomyButton';
+import { canCompletePickup } from '../../../utils/order.actions';
 import { format } from "date-fns";
 import {
   Sparkles,
@@ -30,9 +33,11 @@ type OrderStatusType = keyof typeof OrderStatus;
 interface OrderCardProps {
   order: Order;
   onClick: () => void;
+  onDeliver?: () => void;
+  isDelivering?: boolean;
 }
 
-const OrderCard: React.FC<OrderCardProps> = ({ order, onClick }) => {
+const OrderCard: React.FC<OrderCardProps> = ({ order, onClick, onDeliver, isDelivering }) => {
   const { t } = useTranslation();
   const getStatusConfig = (
     status: OrderStatusType,
@@ -152,6 +157,8 @@ const OrderCard: React.FC<OrderCardProps> = ({ order, onClick }) => {
           <OrderNumber id={order.id} />
         </div>
 
+        <PickupOrderBanner order={order} />
+
         {/* Row B: Customer Name (Full Width) */}
         <div className="mb-4">
           <AnatomyText.H3
@@ -177,7 +184,7 @@ const OrderCard: React.FC<OrderCardProps> = ({ order, onClick }) => {
             {t(`orders.type.${order.type.toLowerCase()}`)}
           </div>
           {/* Driver Info Card */}
-          {order.driverSnapshot && (
+          {order.type === OrderType.DELIVERY && order.driverSnapshot && (
             <div className="mt-3 flex items-center gap-3 bg-surface-muted p-2.5 rounded-xl border border-border/50">
               <div className="w-9 h-9 rounded-full bg-surface-hover overflow-hidden shrink-0 border border-border relative">
                 {order.driverSnapshot.photoUrl ? (
@@ -225,14 +232,16 @@ const OrderCard: React.FC<OrderCardProps> = ({ order, onClick }) => {
           )}
         </div>
 
-        <div className="flex justify-between items-center mb-2">
-          <AnatomyText.Label className="ml-0 text-text-main">
-            {t("orders.pickup_code")}
-          </AnatomyText.Label>
-          <AnatomyText.H3 className="ml-0 text-primary mb-0">
-            {order.pickupCode}
-          </AnatomyText.H3>
-        </div>
+        {order.type === OrderType.DELIVERY && (
+          <div className="flex justify-between items-center mb-2">
+            <AnatomyText.Label className="ml-0 text-text-main">
+              {t("orders.pickup_code")}
+            </AnatomyText.Label>
+            <AnatomyText.H3 className="ml-0 text-primary mb-0">
+              {order.pickupCode}
+            </AnatomyText.H3>
+          </div>
+        )}
 
         <div className="border-b border-dashed border-border my-3"></div>
 
@@ -263,6 +272,12 @@ const OrderCard: React.FC<OrderCardProps> = ({ order, onClick }) => {
           )}
         </div>
       </div>
+      {canCompletePickup(order) && onDeliver && (
+        <AnatomyButton fullWidth disabled={isDelivering} onClick={(event) => { event.stopPropagation(); onDeliver(); }}>
+          <ShoppingBag className="mr-2 h-4 w-4" />
+          {t('orders.pickup.deliver_action')}
+        </AnatomyButton>
+      )}
     </div>
   );
 };

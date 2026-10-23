@@ -1,4 +1,6 @@
-import React, { useMemo, useState } from 'react';
+import PickupCompletionModal from './components/PickupCompletionModal';
+import { useAppStore } from '../../store/app.store';
+import React, { useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import AnatomyText from '../../components/anatomy/AnatomyText';
 import { ShoppingBag} from 'lucide-react';
@@ -32,10 +34,15 @@ const OrdersPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<string>('new');
   const [searchQuery, setSearchQuery] = useState('');
   const [searchParams, setSearchParams] = useSearchParams();
+  const [pickupOrderId, setPickupOrderId] = useState<string>();
+  const statusBusy = useRef(false);
+  const restaurantId = useAppStore((state) => state.activeRestaurant?.id);
   const selectedOrderId = searchParams.get('orderId') || undefined;
 
-  const { orders, isLoading, isError, refetch, updateStatus, assignDriver, refundOrder, isRefunding, cancelOrder, isCancelling } = useOrders();
+  const { orders, isLoading, isError, refetch, updateStatus, assignDriver, refundOrder, isRefunding, cancelOrder, isCancelling, completePickup, isCompletingPickup, isUpdating, isAssigning } = useOrders();
   const { data: selectedOrder, isLoading: isLoadingDetail, isError: isDetailError, refetch: refetchDetail } = useOrder(selectedOrderId, orders);
+
+  const { data: pickupOrder, isLoading: isPickupLoading, isError: isPickupError, refetch: refetchPickup } = useOrder(pickupOrderId, orders);
 
   const { counts, filteredOrders } = useMemo(() => {
      const newCounts: Record<string, number> = { all: 0 };
@@ -150,7 +157,9 @@ const OrdersPage: React.FC = () => {
                 <OrderCard
                   key={order.id} 
                   order={order}
-                  onClick={() => handleCardClick(order)} 
+                  onClick={() => handleCardClick(order)}
+                  onDeliver={() => setPickupOrderId(order.id)}
+                  isDelivering={isCompletingPickup}
                 /> 
               ))}
            </div>
@@ -174,6 +183,8 @@ const OrdersPage: React.FC = () => {
             order={selectedOrder}
             onClose={handleCloseModal}
             isRefunding={isRefunding}
+            isUpdating={isUpdating || isAssigning}
+            onDeliver={() => { handleCloseModal(); setPickupOrderId(selectedOrder.id); }}
             isCancelling={isCancelling}
             onCancel={async () => {
               await cancelOrder(selectedOrder.id);
@@ -181,13 +192,32 @@ const OrdersPage: React.FC = () => {
             }}
             onRefund={(reason) => handleRefund(selectedOrder.id, reason)}
             onStatusChange={(newStatus, timeInMinutes, driverId) => {
-               if (selectedOrder) {
-                handleCloseModal();
-                 handleStatusUpdate(selectedOrder.id, newStatus, timeInMinutes, driverId);
-               }
+              if (statusBusy.current) return;
+              statusBusy.current = true;
+              void handleStatusUpdate(selectedOrder.id, newStatus, timeInMinutes, driverId)
+                .then(handleCloseModal)
+                .catch(() => { /* useOrders reports the error; leave the details open to retry. */ })
+                .finally(() => { statusBusy.current = false; });
             }}
           />}
 
+        {pickupOrderId && isPickupLoading && !pickupOrder && <p role="status" className="text-text-muted">{t('common.loading_data')}</p>}
+        {pickupOrderId && isPickupError && !pickupOrder && (
+          <div role="alert" className="flex items-center gap-4 rounded-xl border border-danger p-4 text-danger">
+            <p>{t('orders.detail_load_error')}</p>
+            <button onClick={() => void refetchPickup()}>{t('orders.retry_detail')}</button>
+            <button onClick={() => setPickupOrderId(undefined)}>{t('common.close')}</button>
+          </div>
+        )}
+        {pickupOrderId && pickupOrder && pickupOrder.restaurantId === restaurantId && (
+          <PickupCompletionModal
+            key={`${restaurantId}:${pickupOrder.id}`}
+            order={pickupOrder}
+            isCompleting={isCompletingPickup}
+            onClose={() => setPickupOrderId(undefined)}
+            onComplete={(verificationCode) => completePickup({ id: pickupOrder.id, verificationCode })}
+          />
+        )}
       </div>
     </BasePageLayout>
   );

@@ -132,6 +132,8 @@ export interface Order {
   // State
   status: (typeof OrderStatus)[keyof typeof OrderStatus];
   type: (typeof OrderType)[keyof typeof OrderType];
+  scheduledPickupAt?: string | null;
+  pickupAddress?: DeliveryAddressSnapshot | null;
 
   // Security
   pickupCode?: string | null;
@@ -245,6 +247,13 @@ export const orderService = {
     const res = await axiosClient.patch<unknown, ApiResponse<Order>>(
       `/orders/${id}/status`,
       data,
+    );
+    return res.data;
+  },
+
+  async completePickup(id: string, verificationCode: string): Promise<Order> {
+    const res = await axiosClient.patch<unknown, ApiResponse<Order>>(
+      `/orders/${id}/pickup/complete`, { verificationCode },
     );
     return res.data;
   },

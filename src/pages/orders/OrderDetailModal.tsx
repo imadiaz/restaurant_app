@@ -1,3 +1,4 @@
+import PickupOrderBanner from './components/PickupOrderBanner';
 import React, { useRef, useState } from "react";
 import {
   X,
@@ -58,6 +59,8 @@ interface OrderDetailModalProps {
   isRefunding: boolean;
   onCancel: () => Promise<void>;
   isCancelling: boolean;
+  isUpdating: boolean;
+  onDeliver: () => void;
 }
 
 const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
@@ -69,6 +72,8 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
   isRefunding,
   onCancel,
   isCancelling,
+  isUpdating,
+  onDeliver,
 }) => {
   const { t } = useTranslation();
   const { activeRestaurant } = useAppStore((state) => state);
@@ -133,8 +138,10 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
     }
   };
 
-  const formattedAddress = order.deliveryAddress
-    ? `${order.deliveryAddress.streetAddress}, ${order.deliveryAddress.colony}, ${order.deliveryAddress.city}`
+  const address = order.type === OrderType.PICKUP ? order.pickupAddress : order.deliveryAddress;
+  const hasCoordinates = address?.lat != null && address?.lng != null && Number.isFinite(Number(address.lat)) && Number.isFinite(Number(address.lng));
+  const formattedAddress = address
+    ? `${address.streetAddress}, ${address.colony}, ${address.city}`
     : t("orders.pickup_at_restaurant");
 
   const handleStartCooking = () => {
@@ -228,6 +235,8 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
             <X className="w-6 h-6" />
           </button>
         </div>
+
+        {order.type === OrderType.PICKUP && <div className="px-8 pt-4"><PickupOrderBanner order={order} /></div>}
 
         {/* --- BODY --- */}
         <div className="flex-1 overflow-y-auto">
@@ -327,7 +336,7 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
                     </AnatomyText.Body>
 
                     <a
-                      href={`https://www.google.com/maps/search/?api=1&query=${order.deliveryAddress?.lat},${order.deliveryAddress?.lng}`}
+                      href={hasCoordinates ? `https://www.google.com/maps/search/?api=1&query=${address?.lat},${address?.lng}` : undefined}
                       target="_blank"
                       rel="noopener noreferrer"
                       onClick={(e) => e.stopPropagation()}
@@ -338,9 +347,9 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
                         {formattedAddress}
                       </AnatomyText.Small>
                     </a>
-                    {order.deliveryAddress?.details && (
+                    {address?.details && (
                       <AnatomyText.Small className="text-primary mt-1 font-medium">
-                        {""} {order.deliveryAddress.details}
+                        {""} {address.details}
                       </AnatomyText.Small>
                     )}
                   </div>
@@ -388,7 +397,7 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
                     </div>
                   )}
                 </div>
-                {order.driverSnapshot && (
+                {order.type === OrderType.DELIVERY && order.driverSnapshot && (
                   <div className="mt-3 flex items-center gap-3 bg-background-card p-3 rounded-xl border border-border/60 shadow-sm">
                     <div className="w-9 h-9 rounded-full bg-surface-hover overflow-hidden shrink-0 border border-border flex items-center justify-center">
                       {order.driverSnapshot.photoUrl ? (
@@ -665,7 +674,7 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
             {t("common.print_receipt")}
           </AnatomyButton>
 
-          <div className="flex flex-wrap gap-3">
+          <fieldset disabled={isUpdating} aria-busy={isUpdating || undefined} className="flex flex-wrap gap-3 disabled:opacity-60">
             {canCancel && (
               <AnatomyButton variant="danger" onClick={requestCancellation} isLoading={isCancelling} disabled={isRefunding}>
                 <Ban className="mr-2 h-4 w-4" />
@@ -822,14 +831,14 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
             {order.status === OrderStatus.READY &&
               order.type === OrderType.PICKUP && (
                 <AnatomyButton
-                  onClick={() => onStatusChange(OrderStatus.DELIVERED)}
+                  onClick={onDeliver}
                   className="bg-success hover:bg-success/90 text-white border-transparent"
                 >
                   <Check className="w-4 h-4 mr-2" />
-                  {t("orders.actions.mark_delivered")}
+                  {t("orders.pickup.deliver_action")}
                 </AnatomyButton>
               )}
-          </div>
+          </fieldset>
         </div>
       </div>
     </div>

@@ -287,6 +287,20 @@
   "order": { "order": "Orden" },
   "erros": { "error": "Error", "no_active_restaurant": "No hay un restaurante activo seleccionado.", "no_active_restaurant_description": "Abre el panel de un restaurante antes de crear esta sección." },
   "orders": {
+    "pickup": {
+      "label": "Pick up · Recoge en tienda",
+      "scheduled_at": "Recogida: {{date}}",
+      "unscheduled": "Sin horario de recogida registrado",
+      "deliver_action": "Entregar orden",
+      "instructions": "Pide al cliente el código de entrega que aparece en el detalle de su pedido. Ingresa el código para confirmar que entregas la orden correcta.",
+      "code_label": "Código de entrega del cliente",
+      "invalid_code": "Ingresa un código válido de 6 caracteres.",
+      "verification_failed": "No se pudo confirmar la entrega. Revisa el código y el estado de la orden antes de reintentar.",
+      "confirm": "Confirmar entrega",
+      "delivered": "Orden pick up entregada",
+      "unavailable": "Esta orden ya no está lista para entregar. Revisa su estado actualizado.",
+      "payment_hint": "Antes de confirmar, verifica que el cliente haya pagado en tienda si eligió efectivo o tarjeta con terminal."
+    },
     "new_order_received": "Nueva orden recibida",
     "more_items": "+ {{count}} artículos más...",
     "view_details": "Ver detalles de la orden",
