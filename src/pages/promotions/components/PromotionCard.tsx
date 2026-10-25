@@ -6,7 +6,7 @@ import AnatomyCardActions from '../../../components/anatomy/AnatomyCardActions';
 import AnatomySelect from '../../../components/anatomy/AnatomySelect';
 import AnatomyTag, { type TagVariant } from '../../../components/anatomy/AnatomyTag';
 import AnatomyText from '../../../components/anatomy/AnatomyText';
-import { PromotionType, type Promotion } from '../../../service/promotion.service';
+import { PromotionScope, PromotionType, type Promotion } from '../../../service/promotion.service';
 
 
 interface PromotionCardProps {
@@ -67,7 +67,7 @@ const PromotionCard: React.FC<PromotionCardProps> = ({
             {/* Products Count Badge */}
             <AnatomyTag variant="default">
               <Layers className="w-3 h-3 mr-1" />
-              {promotion.products?.length || 0}
+              {t(promotion.scope === PromotionScope.SECTIONS ? 'promotions.section_count' : 'promotions.product_count', { count: promotion.scope === PromotionScope.SECTIONS ? promotion.menuSections?.length || 0 : promotion.products?.filter(p => p.status === 'active').length || 0 })}
             </AnatomyTag>
 
              <AnatomyTag variant={promotion.isActive ? 'success' :'error'} className="font-bold">
@@ -78,6 +78,7 @@ const PromotionCard: React.FC<PromotionCardProps> = ({
       </div>
 
       <div className="mb-4">
+        <p className="text-xs font-medium text-primary mb-2 break-words">{promotion.scope === PromotionScope.SECTIONS ? `${t('promotions.scope_sections')}: ${promotion.menuSections?.map(s => s.name).join(', ') || '—'}` : t('promotions.scope_products')}</p>
         <p className="text-sm text-muted-foreground line-clamp-2 min-h-[40px]">
             {promotion.description || t('common.no_description')}
         </p>

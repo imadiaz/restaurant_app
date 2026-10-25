@@ -1,5 +1,6 @@
 import type { ApiResponse } from "../data/models/api/api.types";
 import type { Product } from "../data/models/products/product";
+import type { MenuSection } from "../data/models/menu/menu.section";
 import axiosClient from "./api/axiosClient";
 
 
@@ -11,6 +12,12 @@ export const PromotionType = {
 
 export type PromotionType =
   typeof PromotionType[keyof typeof PromotionType];
+
+export const PromotionScope = { PRODUCTS: 'products', SECTIONS: 'sections' } as const;
+export type PromotionScope = typeof PromotionScope[keyof typeof PromotionScope];
+export type PromotionTargets =
+  | { scope: 'products'; productIds: string[]; sectionIds?: never }
+  | { scope: 'sections'; sectionIds: string[]; productIds?: never };
 
 export interface Promotion {
   id: string;
@@ -25,6 +32,8 @@ export interface Promotion {
   createdAt: string;
   updatedAt: string;
   products?: PromotionProduct[]; 
+  scope?: PromotionScope; // Old product promotions default to products.
+  menuSections?: MenuSection[];
 }
 
 export interface PromotionProduct {
@@ -36,7 +45,7 @@ export interface PromotionProduct {
 
 // --- 2. DTOs (Data Transfer Objects) ---
 
-export interface CreatePromotionDto {
+interface PromotionDetails {
   restaurantId: string;
   name: string;
   description?: string;
@@ -44,12 +53,10 @@ export interface CreatePromotionDto {
   value: number;
   startDate: string; // Se envía como string ISO
   endDate: string;
-  productIds: string[]; // Array de UUIDs de los productos a aplicar
 }
 
-export interface UpdatePromotionDto extends Partial<Omit<CreatePromotionDto, 'restaurantId' | 'productIds'>> {
-  isActive?: boolean; // Campo específico para pausar/activar
-}
+export type CreatePromotionDto = PromotionDetails & PromotionTargets;
+export type UpdatePromotionDto = Partial<Omit<PromotionDetails, 'restaurantId'>> & Partial<PromotionTargets> & { isActive?: boolean };
 
 // --- 3. El Servicio ---
 

@@ -471,3 +471,42 @@ assert.ok(importApp.includes('path="products/import"'));
 assert.ok(readFileSync('src/pages/products/ProductsPage.tsx', 'utf8').includes('Routes.ProductImport'));
 assert.ok(importApp.includes('path="products/add"'));
 console.log('PASS: Excel import has its own route and leaves the ordinary product creation route intact');
+
+const promoService = load('src/service/promotion.service.ts', { './api/axiosClient': axiosModule });
+const promoUtils = load('src/utils/promotion.utils.ts', { '../service/promotion.service': promoService });
+const promoSections = [{ id: 'sushi', name: 'Sushi', status: 'active' }, { id: 'specials', name: 'Especiales', status: 'active' }, { id: 'paused', status: 'inactive' }];
+const promoProducts = [
+  { id: 'roll', status: 'active', menuSections: [promoSections[0], promoSections[1]] },
+  { id: 'new', status: 'active', menuSections: [promoSections[0]] },
+  { id: 'inactive', status: 'inactive', menuSections: [promoSections[0]] },
+];
+const sectionTargets = promoUtils.promotionTargets('sections', ['roll'], ['sushi', 'specials', 'sushi']);
+assert.equal(sectionTargets.scope, 'sections');
+assert.deepEqual([...sectionTargets.sectionIds], ['sushi', 'specials']);
+assert.ok(!('productIds' in sectionTargets));
+const productTargets = promoUtils.promotionTargets('products', ['roll'], ['sushi']);
+assert.deepEqual([...productTargets.productIds], ['roll']);
+assert.ok(!('sectionIds' in productTargets));
+assert.deepEqual([...promoUtils.includedPromotionProducts(promoProducts, promoSections, 'sections', [], ['sushi', 'specials']).map(p => p.id)], ['roll', 'new']);
+assert.deepEqual([...promoUtils.includedPromotionProducts(promoProducts, promoSections, 'products', ['roll'], ['sushi']).map(p => p.id)], ['roll']);
+const promoForm = { name: 'Promo', description: '', type: 'percentage', value: '20', startDate: '2026-10-24T12:00', endDate: '2026-10-31T23:59', scope: 'sections', sectionIds: ['sushi'], productIds: [] };
+assert.equal(Object.keys(promoUtils.validatePromotionForm(promoForm, promoProducts, promoSections)).length, 0);
+for (const value of ['', '-1', '101', 'NaN', '10.123']) assert.ok(promoUtils.validatePromotionForm({ ...promoForm, value }, promoProducts, promoSections).value);
+assert.ok(!promoUtils.validatePromotionForm({ ...promoForm, type: 'bogo', value: '' }, promoProducts, promoSections).value);
+assert.ok(promoUtils.validatePromotionForm({ ...promoForm, sectionIds: [] }, promoProducts, promoSections).targets);
+assert.ok(promoUtils.validatePromotionForm({ ...promoForm, sectionIds: ['foreign'] }, promoProducts, promoSections).targets);
+assert.ok(promoUtils.validatePromotionForm({ ...promoForm, sectionIds: ['paused'] }, promoProducts, promoSections).targets);
+assert.ok(promoUtils.validatePromotionForm({ ...promoForm, endDate: promoForm.startDate }, promoProducts, promoSections).endDate);
+assert.ok(promoUtils.validatePromotionForm({ ...promoForm, startDate: 'invalid' }, promoProducts, promoSections).startDate);
+assert.ok(promoUtils.validatePromotionForm({ ...promoForm, name: '   ' }, promoProducts, promoSections).name);
+assert.ok(promoUtils.validatePromotionForm({ ...promoForm, description: 'x'.repeat(256) }, promoProducts, promoSections).description);
+const originalIso = '2026-10-24T18:00:00.000Z';
+assert.equal(new Date(promoUtils.promotionDateInput(originalIso)).toISOString(), originalIso);
+await promoService.promotionsService.create({ restaurantId: 'restaurant', ...sectionTargets });
+assert.equal(requests.at(-1).url, '/promotions');
+assert.equal(JSON.parse(requests.at(-1).data).scope, 'sections');
+assert.ok(!('productIds' in JSON.parse(requests.at(-1).data)));
+await promoService.promotionsService.update('promo', productTargets);
+assert.equal(requests.at(-1).url, '/promotions/promo');
+assert.deepEqual(JSON.parse(requests.at(-1).data), { scope: 'products', productIds: ['roll'] });
+console.log('PASS: promotions keep product/section payloads exclusive, deduplicate previews, validate selections/discounts and round-trip local dates');

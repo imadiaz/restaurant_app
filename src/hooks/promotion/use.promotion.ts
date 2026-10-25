@@ -4,6 +4,7 @@ import { useErrorHandler } from '../use.error.handler';
 import { promotionsService, type CreatePromotionDto, type Promotion, type UpdatePromotionDto } from '../../service/promotion.service';
 import { useAppStore } from '../../store/app.store';
 import { queryKeys } from '../../config/query.keys';
+import { useCallback } from 'react';
 
 
 
@@ -33,8 +34,8 @@ export const usePromotions = () => {
   });
 
   // --- 2. GET BY ID (Cache First Strategy) ---
-  const getPromotionById = async (id: string): Promise<Promotion | null> => {
-    const cachedList = queryClient.getQueryData<Promotion[]>(queryKey);
+  const getPromotionById = useCallback(async (id: string): Promise<Promotion | null> => {
+    const cachedList = queryClient.getQueryData<Promotion[]>(queryKeys.promotions.list(activeRestaurant?.id));
     const found = cachedList?.find((p) => p.id === id);
 
     if (found) {
@@ -47,7 +48,7 @@ export const usePromotions = () => {
       handleError(error);
       return null;
     }
-  };
+  }, [queryClient, activeRestaurant?.id, handleError]);
 
   // --- 3. CREATE ---
   const createMutation = useMutation({
