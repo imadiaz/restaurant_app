@@ -111,6 +111,8 @@ export interface OrderProductModifier {
   name: string;
   groupName: string;
   price: number;
+  quantity?: number;
+  totalPrice?: number;
 }
 
 export interface OrderProduct {

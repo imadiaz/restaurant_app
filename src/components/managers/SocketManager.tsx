@@ -13,6 +13,7 @@ import { useAuthStore } from "../../store/auth.store";
 import { useToastStore } from "../../store/toast.store";
 import OrderNotificationToast from "../common/OrderNotificationToast";
 import { syncOrderInCache } from "../../utils/order.cache.utils";
+import { shortOrderId } from "../../utils/order.actions";
 import { useErrorHandler } from "../../hooks/use.error.handler";
 import { useTranslation } from "react-i18next";
 import { ROLES } from "../../config/roles";
@@ -203,7 +204,7 @@ const SocketManager: React.FC = () => {
           dismissOrderNotification(updatedOrder.id, activeToastId);
         }
 
-        const shortId = updatedOrder.id.slice(0, 5);
+        const shortId = shortOrderId(updatedOrder.id);
         const message =
           updatedOrder.status === "ON_WAY"
             ? `Driver picked up Order #${shortId}`

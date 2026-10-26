@@ -41,7 +41,7 @@ import { useAuthStore } from "../../store/auth.store";
 import { ROLES } from "../../config/roles";
 import { useConfirm } from "../../hooks/use.confirm.modal";
 import { initialPreparationTime, isValidPreparationTime, MIN_PREPARATION_MINUTES, MAX_PREPARATION_MINUTES } from '../../config/preparation-time.config';
-import { canCancelBeforePreparation, requiresOnlineRefund } from '../../utils/order.actions';
+import { canCancelBeforePreparation, requiresOnlineRefund, orderModifierSummary } from '../../utils/order.actions';
 import OrderNumber from '../../components/common/OrderNumber';
 
 type OrderStatusType = keyof typeof OrderStatus;
@@ -265,23 +265,24 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
                           {item.name}
                         </AnatomyText.Body>
                         <AnatomyText.Body className="font-bold text-text-main">
-                          ${(Number(item.price) * item.quantity).toFixed(2)}
+                          ${Number(item.totalPrice).toFixed(2)}
                         </AnatomyText.Body>
                       </div>
 
                       {/* Modifiers */}
                       {item.modifiers && item.modifiers.length > 0 && (
                         <div className="mt-2 space-y-1">
+                          <AnatomyText.Small className="text-text-muted">{t('orders.modifiers_included')}</AnatomyText.Small>
                           {item.modifiers.map((mod, mIdx) => (
                             <div
                               key={mIdx}
                               className="flex justify-between pl-2 border-l-2 border-border"
                             >
                               <AnatomyText.Small className="text-text-muted">
-                                + {mod.name}
+                                + {orderModifierSummary(mod, item.quantity).quantity}× {mod.name}
                               </AnatomyText.Small>
                               <AnatomyText.Small className="text-text-muted">
-                                ${Number(mod.price).toFixed(2)}
+                                ${orderModifierSummary(mod, item.quantity).total.toFixed(2)}
                               </AnatomyText.Small>
                             </div>
                           ))}

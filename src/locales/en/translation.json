@@ -423,6 +423,7 @@
     "select_driver": "Select a driver"
   },
   "orders": {
+    "modifiers_included": "Extras included in the product total (total quantities)",
     "pickup": {
       "label": "Pick up · Collect in store",
       "scheduled_at": "Collection: {{date}}",

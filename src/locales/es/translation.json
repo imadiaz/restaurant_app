@@ -389,6 +389,7 @@
   "order": { "order": "Orden" },
   "erros": { "error": "Error", "no_active_restaurant": "No hay un restaurante activo seleccionado.", "no_active_restaurant_description": "Abre el panel de un restaurante antes de crear esta sección." },
   "orders": {
+    "modifiers_included": "Extras incluidos en el total del producto (cantidades totales)",
     "pickup": {
       "label": "Pick up · Recoge en tienda",
       "scheduled_at": "Recogida: {{date}}",

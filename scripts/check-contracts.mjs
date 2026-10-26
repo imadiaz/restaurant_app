@@ -114,7 +114,7 @@ for (const status of [OrderStatus.PREPARING, OrderStatus.READY, OrderStatus.ON_W
 assert.equal(actions.requiresOnlineRefund({ paymentMethod: 'CARD', paymentStatus: 'PAID' }), true);
 assert.equal(actions.requiresOnlineRefund({ paymentMethod: 'CARD_TERMINAL', paymentStatus: 'PAID' }), false);
 const fullId = 'f0829fc6-1234-4321-8888-123456789012';
-assert.equal(actions.shortOrderId(fullId), 'f0829');
+assert.equal(actions.shortOrderId(fullId), 'F0829F');
 assert.equal(fullId.length, 36);
 console.log('PASS: cancellation stops at preparation; online refunds and short order IDs match the contract');
 for (const type of ['PICKUP', 'DELIVERY']) {
@@ -398,6 +398,7 @@ const { default: RecoveryManager } = load('src/components/managers/SocketManager
   '../common/OrderNotificationToast': { default: () => null, __esModule: true },
   '../../service/order.service': orderModule,
   '../../utils/order.cache.utils': { syncOrderInCache },
+  '../../utils/order.actions': actions,
   '../../hooks/use.error.handler': { useErrorHandler: () => ({ handleError: () => {} }) },
   'react-i18next': { useTranslation: () => ({ t: (key) => key }) },
   '../../config/roles': { ROLES: { ADMIN: 'restaurant_admin', SUPER_ADMIN: 'super_admin' } },
@@ -510,3 +511,10 @@ await promoService.promotionsService.update('promo', productTargets);
 assert.equal(requests.at(-1).url, '/promotions/promo');
 assert.deepEqual(JSON.parse(requests.at(-1).data), { scope: 'products', productIds: ['roll'] });
 console.log('PASS: promotions keep product/section payloads exclusive, deduplicate previews, validate selections/discounts and round-trip local dates');
+
+// The kitchen needs total quantities across all parent-product units.
+assert.equal(actions.orderModifierSummary({ id: 'extra', name: 'Cheese', groupName: 'Extras', price: 12, quantity: 3, totalPrice: 36 }, 2).quantity, 6);
+assert.equal(actions.orderModifierSummary({ id: 'extra', name: 'Cheese', groupName: 'Extras', price: 12, quantity: 3, totalPrice: 36 }, 2).total, 72);
+assert.equal(actions.orderModifierSummary({ id: 'legacy-extra', name: 'Cheese', groupName: 'Extras', price: 12 }, 2).quantity, 2);
+assert.equal(actions.orderModifierSummary({ id: 'legacy-extra', name: 'Cheese', groupName: 'Extras', price: 12 }, 2).total, 24);
+console.log('PASS: modifier totals preserve per-product quantities and legacy defaults');
