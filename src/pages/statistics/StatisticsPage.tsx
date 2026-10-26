@@ -63,8 +63,7 @@ const StatisticsPage = () => {
     { ...dates, paymentMethod: method || undefined },
     validRange,
   );
-  const { generatePaymentLink, isGeneratingPaymentLink } =
-    useRestaurantOperations();
+  const { isGeneratingPaymentLink } = useRestaurantOperations();
   const canPay = role === ROLES.SUPER_ADMIN || role === ROLES.ADMIN;
   const balance = Number(debt.data?.debtAmount ?? 0);
   const amountDue = Math.max(0, -balance);
@@ -93,14 +92,6 @@ const StatisticsPage = () => {
   };
   const handlePaymentLink = async () => {
     if (!restaurantId) return;
-    // setPaymentLink(null);
-    // try {
-    //   const result = await generatePaymentLink({ id: restaurantId });
-    //   if (result.url)
-    //     setPaymentLink({ restaurantId, url: result.url, amount: amountDue });
-    // } catch {
-    //   // The shared mutation handler presents API errors.
-    // }
     alert("Contacta a soporte para generar el link de pago.");
   };
   const inputClass =
