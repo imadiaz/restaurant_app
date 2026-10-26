@@ -31,4 +31,8 @@ export const syncOrderInCache = (
     queryKeys.orders.detail(restaurantId, updatedOrder.id),
     updatedOrder,
   );
+  // Status changes can move records between pages and change filtered totals.
+  void queryClient.invalidateQueries({
+    queryKey: queryKeys.orders.historyScope(restaurantId),
+  });
 };

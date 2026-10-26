@@ -40,7 +40,10 @@ const Sidebar: React.FC<SidebarProps> = ({ mobile = false, onNavigate }) => {
     ? getMenuForRole(user.role.name as UserRole, !!activeRestaurant) 
     : [];
 
-  const isActive = (path: string) => location.pathname.includes(path);
+  const activePath = menuItems
+    .filter(({ path }) => location.pathname === path || location.pathname.startsWith(`${path}/`))
+    .sort((a, b) => b.path.length - a.path.length)[0]?.path;
+  const isActive = (path: string) => path === activePath;
 
   const getSidebarTitle = () => {
     if (activeRestaurant) return activeRestaurant.name;

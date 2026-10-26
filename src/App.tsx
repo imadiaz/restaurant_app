@@ -13,6 +13,7 @@ const DashboardLayout = lazy(() => import("./components/layout/DashboardLayout")
 const LoginPage = lazy(() => import("./pages/auth/LoginPage"));
 const UnauthorizedPage = lazy(() => import("./pages/error/UnauthorizedPage"));
 const OrdersPage = lazy(() => import("./pages/orders/OrdersPage"));
+const OrderHistoryPage = lazy(() => import("./pages/orders/OrderHistoryPage"));
 const UsersPage = lazy(() => import("./pages/users/UsersPage"));
 const UserFormPage = lazy(() => import("./pages/users/UserFormPage"));
 const ProductsPage = lazy(() => import("./pages/products/ProductsPage"));
@@ -101,6 +102,7 @@ function App() {
           <Route path="/dashboard" element={<DashboardLayout />}>
             <Route path="home"  element={<StatisticsPage />} />
             <Route path="orders" element={<OrdersPage />} />
+            <Route path="orders/history" element={<OrderHistoryPage />} />
             <Route path="users" element={<UsersPage />} />
             <Route
               element={

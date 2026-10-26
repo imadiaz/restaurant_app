@@ -1,18 +1,22 @@
 import PickupCompletionModal from './components/PickupCompletionModal';
 import { useAppStore } from '../../store/app.store';
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import AnatomyText from '../../components/anatomy/AnatomyText';
 import { ShoppingBag} from 'lucide-react';
 import AnatomySearchBar from '../../components/anatomy/AnatomySearchBar';
+import AnatomySelect from '../../components/anatomy/AnatomySelect';
+import AnatomyButton from '../../components/anatomy/AnatomyButton';
 import { useTranslation } from 'react-i18next';
 import BasePageLayout from '../../components/layout/BaseLayout';
 import { useOrders } from '../../hooks/orders/use.orders';
 import { useOrder } from '../../hooks/orders/use.order';
+import { useOrderHistory } from '../../hooks/orders/use.order.history';
 import { ACTIVE_ORDER_STATUSES, OrderStatus, type Order } from '../../service/order.service';
 import OrderCard from './components/OrderCard';
 import OrderDetailModal from './OrderDetailModal';
 type OrderStatusType = keyof typeof OrderStatus;
+const EMPTY_ORDERS: Order[] = [];
 
 
 interface OrderTab {
@@ -29,22 +33,44 @@ const TABS: OrderTab[] = [
   { id: 'all', labelKey: 'orders.tabs.all', statuses: ACTIVE_ORDER_STATUSES },
 ];
 
-const OrdersPage: React.FC = () => {
+const OrdersPage: React.FC<{ mode?: 'active' | 'history' }> = ({ mode = 'active' }) => {
+  const isHistory = mode === 'history';
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<string>('new');
   const [searchQuery, setSearchQuery] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
+  const [historyStatus, setHistoryStatus] = useState<Order['status'] | ''>('');
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(20);
   const [searchParams, setSearchParams] = useSearchParams();
   const [pickupOrderId, setPickupOrderId] = useState<string>();
   const statusBusy = useRef(false);
   const restaurantId = useAppStore((state) => state.activeRestaurant?.id);
   const selectedOrderId = searchParams.get('orderId') || undefined;
 
-  const { orders, isLoading, isError, refetch, updateStatus, assignDriver, refundOrder, isRefunding, cancelOrder, isCancelling, completePickup, isCompletingPickup, isUpdating, isAssigning } = useOrders();
+  const { orders: activeOrders, isLoading: isActiveLoading, isError: isActiveError, refetch: refetchActive, updateStatus, assignDriver, refundOrder, isRefunding, cancelOrder, isCancelling, completePickup, isCompletingPickup, isUpdating, isAssigning } = useOrders(undefined, !isHistory);
+  const history = useOrderHistory({ search: debouncedSearch, status: historyStatus || undefined, page, pageSize }, isHistory);
+  const orders = isHistory ? history.data?.items ?? EMPTY_ORDERS : activeOrders;
+  const isLoading = isHistory ? history.isLoading : isActiveLoading;
+  const isError = isHistory ? history.isError : isActiveError;
+  const refetch = isHistory ? history.refetch : refetchActive;
+  const currentPage = history.data?.page ?? page;
+  const isSearching = searchQuery.trim().replace(/\s+/g, ' ') !== debouncedSearch;
+
+  useEffect(() => {
+    if (!isHistory || !isSearching) return;
+    const timer = window.setTimeout(() => {
+      setDebouncedSearch(searchQuery.trim().replace(/\s+/g, ' '));
+      setPage(1);
+    }, 300);
+    return () => window.clearTimeout(timer);
+  }, [isHistory, isSearching, searchQuery]);
   const { data: selectedOrder, isLoading: isLoadingDetail, isError: isDetailError, refetch: refetchDetail } = useOrder(selectedOrderId, orders);
 
   const { data: pickupOrder, isLoading: isPickupLoading, isError: isPickupError, refetch: refetchPickup } = useOrder(pickupOrderId, orders);
 
   const { counts, filteredOrders } = useMemo(() => {
+     if (isHistory) return { counts: {}, filteredOrders: orders };
      const newCounts: Record<string, number> = { all: 0 };
      TABS.forEach(t => newCounts[t.id] = 0);
      const filtered = orders.filter(order => {
@@ -64,7 +90,7 @@ const OrdersPage: React.FC = () => {
      });
 
      return { counts: newCounts, filteredOrders: filtered };
-  }, [orders, activeTab, searchQuery]);
+  }, [orders, activeTab, searchQuery, isHistory]);
 
   const handleCardClick = (order: Order) => {
     setSearchParams((params) => {
@@ -94,16 +120,32 @@ const OrdersPage: React.FC = () => {
 
   return (
     <BasePageLayout
-      title={t('orders.title')}
-      subtitle={t('orders.subtitle')}
+      title={t(isHistory ? 'orders.history.title' : 'orders.title')}
+      subtitle={t(isHistory ? 'orders.history.subtitle' : 'orders.subtitle')}
       isLoading={isLoading}
       renderControls={
-        <div className="w-full md:w-full">
+        <div className="flex w-full flex-col gap-4 md:flex-row md:items-end">
+          <div className="min-w-0 flex-1">
             <AnatomySearchBar
+                aria-label={t('orders.search_placeholder')}
                 placeholder={t('orders.search_placeholder')}
                 value={searchQuery}
+                maxLength={isHistory ? 200 : undefined}
                 onChange={(e) => setSearchQuery(e.target.value)}
             />
+          </div>
+          {isHistory && <div className="w-full md:w-72">
+            <AnatomySelect
+              label={t('orders.history.status')}
+              value={historyStatus}
+              onChange={(event) => { setHistoryStatus(event.target.value as Order['status'] | ''); setPage(1); }}
+            >
+              <option value="">{t('orders.history.all_statuses')}</option>
+              {Object.values(OrderStatus).map((status) => (
+                <option key={status} value={status}>{t(`orders.status.${status.toLowerCase()}`)}</option>
+              ))}
+            </AnatomySelect>
+          </div>}
         </div>
       }
     >
@@ -124,7 +166,7 @@ const OrdersPage: React.FC = () => {
             <button onClick={handleCloseModal}>{t('common.close')}</button>
           </div>
         )}
-        <div className="bg-background-card p-2 rounded-2xl border border-border shadow-sm inline-block w-full overflow-hidden">
+        {!isHistory && <div className="bg-background-card p-2 rounded-2xl border border-border shadow-sm inline-block w-full overflow-hidden">
           <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
             {TABS.map((tab) => (
               <button
@@ -149,8 +191,11 @@ const OrdersPage: React.FC = () => {
               </button>
             ))}
           </div>
-        </div>
+        </div>}
 
+        {isHistory && history.data && <p role="status" className="text-sm text-text-muted">
+          {t('orders.history.results', { count: history.data.total })}
+        </p>}
         {filteredOrders.length > 0 ? (
            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
               {filteredOrders.map((order) => (
@@ -163,19 +208,39 @@ const OrdersPage: React.FC = () => {
                 /> 
               ))}
            </div>
-        ) : (
+        ) : !isError && (
            <div className="flex flex-col items-center justify-center py-20 bg-background-card rounded-3xl border border-dashed border-border text-center">
               <div className="p-4 bg-surface-muted rounded-full mb-4">
                  <ShoppingBag className="w-10 h-10 text-text-muted opacity-50" />
               </div>
               <AnatomyText.H3 className="text-text-muted mb-2">
-                 {t('orders.empty_list')}
+                 {t(isHistory ? 'orders.history.empty' : 'orders.empty_list')}
               </AnatomyText.H3>
               <AnatomyText.Small className="text-text-muted max-w-xs mx-auto">
-                 {t('orders.empty_list_description')}
+                 {t(isHistory ? 'orders.history.empty_description' : 'orders.empty_list_description')}
               </AnatomyText.Small>
            </div>
         )}
+
+        {isHistory && <nav aria-label={t('orders.history.pagination')} className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-border bg-background-card p-4">
+          <div className="w-44">
+            <AnatomySelect label={t('orders.history.page_size')} value={pageSize} onChange={(event) => { setPageSize(Number(event.target.value)); setPage(1); }}>
+              {[10, 20, 50].map((size) => <option key={size} value={size}>{size}</option>)}
+            </AnatomySelect>
+          </div>
+          {history.data && <p className="text-sm text-text-muted">
+            {t('orders.history.range', {
+              from: history.data.total ? (currentPage - 1) * pageSize + 1 : 0,
+              to: Math.min(currentPage * pageSize, history.data.total),
+              total: history.data.total,
+            })}
+          </p>}
+          <div className="flex flex-wrap items-center gap-3">
+            <AnatomyButton variant="secondary" disabled={!history.data || isError || history.isFetching || isSearching || currentPage <= 1} onClick={() => setPage(currentPage - 1)}>{t('common.previous')}</AnatomyButton>
+            <span className="text-sm text-text-muted">{t('orders.history.page', { page: currentPage, total: history.data?.totalPages ?? 1 })}</span>
+            <AnatomyButton variant="secondary" disabled={!history.data || isError || history.isFetching || isSearching || currentPage >= history.data.totalPages} onClick={() => setPage(currentPage + 1)}>{t('common.next')}</AnatomyButton>
+          </div>
+        </nav>}
 
         {selectedOrderId && selectedOrder && <OrderDetailModal
             key={selectedOrder.id}

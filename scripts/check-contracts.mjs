@@ -99,6 +99,19 @@ assert.ok(changingOrders.some((order) => order.id === 'order-100'));
 assert.equal(new Set(changingOrders.map((order) => order.id)).size, changingOrders.length);
 console.log('PASS: an order leaving the active set between pages cannot hide an older pending order');
 
+const historicalPage = {
+  items: [{ id: 'cancelled-order', restaurantId: 'restaurant', status: OrderStatus.CANCELLED }],
+  total: 41, page: 3, pageSize: 20, totalPages: 3,
+};
+axiosClient.defaults.adapter = async (config) => {
+  assert.equal(config.url, '/orders/restaurant/restaurant/history');
+  assert.equal(config.signal, signal);
+  assert.deepEqual({ ...config.params }, { search: 'Ana Pérez', status: 'CANCELLED', page: 3, limit: 20 });
+  return { data: { data: historicalPage }, status: 200, statusText: 'OK', headers: {}, config };
+};
+assert.deepEqual(await orderService.getHistory('restaurant', { search: 'Ana Pérez', status: OrderStatus.CANCELLED, page: 3, pageSize: 20 }, signal), historicalPage);
+console.log('PASS: history sends search, status and pagination to the dedicated endpoint and preserves page metadata');
+
 const queryClient = load('src/config/query.client.config.ts').default;
 const { queryKeys } = load('src/config/query.keys.ts');
 const orderModule = load('src/service/order.service.ts', { './api/axiosClient': axiosModule });
@@ -160,10 +173,21 @@ const { syncOrderInCache } = load('src/utils/order.cache.utils.ts', {
   '../service/order.service': orderModule,
 });
 queryClient.setQueryData(queryKeys.orders.list('restaurant'), orders);
+const historyKey = queryKeys.orders.history('restaurant', 'Ana', 'CANCELLED', 2, 20);
+const otherHistoryKey = queryKeys.orders.history('other-restaurant', '', 'all', 1, 20);
+queryClient.setQueryData(historyKey, historicalPage);
+queryClient.setQueryData(otherHistoryKey, historicalPage);
 syncOrderInCache(queryClient, 'restaurant', { ...missedOrder, status: OrderStatus.CANCELLED });
 assert.equal(queryClient.getQueryData(queryKeys.orders.list('restaurant')).length, 100);
 assert.equal(queryClient.getQueryData(queryKeys.orders.detail('restaurant', missedOrder.id)).status, OrderStatus.CANCELLED);
+assert.equal(queryClient.getQueryState(historyKey).isInvalidated, true);
+assert.equal(queryClient.getQueryState(otherHistoryKey).isInvalidated, false);
+assert.deepEqual(queryClient.getQueryData(historyKey), historicalPage);
+assert.notDeepEqual(historyKey, queryKeys.orders.history('restaurant', 'Ana', 'DELIVERED', 2, 20));
+assert.notDeepEqual(historyKey, queryKeys.orders.history('restaurant', 'Ana', 'CANCELLED', 1, 20));
+assert.notDeepEqual(historyKey, queryKeys.orders.history('restaurant', 'Luis', 'CANCELLED', 2, 20));
 console.log('PASS: completed orders leave active lists while their detail stays current');
+console.log('PASS: history filters/pages have separate caches and order events invalidate only their restaurant history');
 
 const listeners = new Map();
 let timer;

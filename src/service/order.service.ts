@@ -210,8 +210,30 @@ export interface RefundOrderDto {
   reason: string;
 }
 
+export interface OrderHistoryFilters {
+  search?: string;
+  status?: Order['status'];
+  page: number;
+  pageSize: number;
+}
+
+export interface OrderHistoryPage {
+  items: Order[];
+  total: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
+}
+
 // --- SERVICE IMPLEMENTATION ---
 export const orderService = {
+  async getHistory(restaurantId: string, filters: OrderHistoryFilters, signal?: AbortSignal): Promise<OrderHistoryPage> {
+    const res = await axiosClient.get<unknown, ApiResponse<OrderHistoryPage>>(
+      `/orders/restaurant/${restaurantId}/history`,
+      { params: { search: filters.search, status: filters.status, page: filters.page, limit: filters.pageSize }, signal },
+    );
+    return res.data;
+  },
   // 1. Get List by Restaurant
   async getByRestaurant(
     restaurantId: string,

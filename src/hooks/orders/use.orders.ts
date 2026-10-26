@@ -10,7 +10,7 @@ import { syncOrderInCache } from '../../utils/order.cache.utils';
 import { canCancelBeforePreparation, requiresOnlineRefund } from '../../utils/order.actions';
 
 
-export const useOrders = (statusFilter?: typeof OrderStatus[keyof typeof OrderStatus]) => {
+export const useOrders = (statusFilter?: typeof OrderStatus[keyof typeof OrderStatus], enabled = true) => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   const { handleError } = useErrorHandler();
@@ -31,7 +31,7 @@ export const useOrders = (statusFilter?: typeof OrderStatus[keyof typeof OrderSt
       if (!activeRestaurant?.id) return [];
       return orderService.getByRestaurant(activeRestaurant.id, statusFilter, signal);
     },
-    enabled: !!activeRestaurant?.id,
+    enabled: enabled && !!activeRestaurant?.id,
     refetchInterval: (query) => {
       const currentOrders = (query.state.data ?? []) as Order[];
       const hasPendingRefund = currentOrders.some(

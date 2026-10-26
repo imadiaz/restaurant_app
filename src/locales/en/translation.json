@@ -423,6 +423,20 @@
     "select_driver": "Select a driver"
   },
   "orders": {
+    "history": {
+      "title": "Order history",
+      "subtitle": "Browse all restaurant orders, including delivered and cancelled orders",
+      "status": "Order status",
+      "all_statuses": "All statuses",
+      "empty": "No orders found",
+      "empty_description": "Try another customer name, order ID or status.",
+      "results_one": "{{count}} order found",
+      "results_other": "{{count}} orders found",
+      "pagination": "Order history pagination",
+      "page_size": "Orders per page",
+      "range": "{{from}}–{{to}} of {{total}} orders",
+      "page": "Page {{page}} of {{total}}"
+    },
     "modifiers_included": "Extras included in the product total (total quantities)",
     "pickup": {
       "label": "Pick up · Collect in store",

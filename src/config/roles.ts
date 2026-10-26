@@ -1,5 +1,6 @@
 import {
   ShoppingBag,
+  History,
   Coffee,
   Users,
   Building2,
@@ -39,6 +40,7 @@ const MENUS = {
   RESTAURANT: [
     { label: "Dashboard", labelKey: "statistics.title", path: "/dashboard/home", icon: ChartArea },
     { label: 'Orders', labelKey: "orders.title", path: '/dashboard/orders', icon: ShoppingBag },
+    { label: 'History', labelKey: "orders.history.title", path: '/dashboard/orders/history', icon: History },
     { label: "Products", labelKey: "products.title", path: "/dashboard/products", icon: Coffee },
     { label: "Schedule", labelKey: "schedules.title", path: "/dashboard/schedule", icon: Calendar },
     { label: "Team", labelKey: "users.title", path: `/dashboard${Routes.Users}`, icon: Users },
