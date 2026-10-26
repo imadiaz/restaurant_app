@@ -542,3 +542,54 @@ assert.equal(actions.orderModifierSummary({ id: 'extra', name: 'Cheese', groupNa
 assert.equal(actions.orderModifierSummary({ id: 'legacy-extra', name: 'Cheese', groupName: 'Extras', price: 12 }, 2).quantity, 2);
 assert.equal(actions.orderModifierSummary({ id: 'legacy-extra', name: 'Cheese', groupName: 'Extras', price: 12 }, 2).total, 24);
 console.log('PASS: modifier totals preserve per-product quantities and legacy defaults');
+
+const commissionRestaurantModule = load('src/service/restaurant.service.ts', { './api/axiosClient': axiosModule });
+const commissionUtils = load('src/utils/commission.utils.ts', { '../service/restaurant.service': commissionRestaurantModule });
+for (const raw of ['', ' ', '-1', '101', 'Infinity', 'NaN', '0.001']) assert.ok(commissionUtils.commissionValidation('percentage', raw));
+for (const raw of ['0', '100', '12.5']) assert.equal(commissionUtils.commissionValidation('percentage', raw), undefined);
+assert.equal(commissionUtils.commissionValidation('fixed_amount', '150.50'), undefined);
+assert.equal(commissionUtils.commissionValidation('fixed_amount', '99999999.99'), undefined);
+assert.ok(commissionUtils.commissionValidation('fixed_amount', '100000000'));
+assert.ok(commissionUtils.commissionValidation('invalid', '20'));
+assert.throws(() => commissionUtils.commissionPayload('percentage', '150'));
+assert.equal(commissionUtils.commissionAmount('percentage', 20, 200), 40);
+assert.equal(commissionUtils.commissionAmount('fixed_amount', 15.5, 200), 15.5);
+assert.equal(commissionUtils.formatCommission('percentage', '12.50', 'es-MX'), '12.5%');
+assert.ok(commissionUtils.formatCommission('fixed_amount', '12.50', 'es-MX').includes('12.50'));
+assert.equal(commissionUtils.formatCommission(undefined, undefined, 'es-MX'), '—');
+axiosClient.defaults.adapter = async config => {
+  requests.push(config);
+  return { data: { data: { id: 'restaurant', commissionType: 'fixed_amount', commissionValue: '15.50' } }, status: 200, statusText: 'OK', headers: {}, config };
+};
+await commissionRestaurantModule.restaurantService.updateCommission('restaurant', { ...commissionUtils.commissionPayload('fixed_amount', '15.50'), currentBalance: 0, stripeFeePct: 0 });
+assert.equal(requests.at(-1).method, 'patch');
+assert.equal(requests.at(-1).url, '/restaurants/restaurant/admin-config');
+assert.deepEqual(JSON.parse(requests.at(-1).data), { commissionType: 'fixed_amount', commissionValue: 15.5 });
+
+const commissionMutations = [];
+const commissionInvalidations = [];
+const commissionHook = load('src/hooks/restaurants/use.operations.ts', {
+  '@tanstack/react-query': {
+    useQuery: () => ({}),
+    useQueryClient: () => ({ setQueryData: (key, data) => queryClient.setQueryData(key, data), invalidateQueries: ({ queryKey }) => { commissionInvalidations.push(queryKey); return Promise.resolve(); } }),
+    useMutation: options => { commissionMutations.push(options); return { mutateAsync: options.mutationFn, isPending: false }; },
+  },
+  'react-i18next': { useTranslation: () => ({ t: key => key }) },
+  '../../service/restaurant.service': commissionRestaurantModule,
+  '../../store/toast.store': { useToastStore: selector => selector({ addToast: () => {} }) },
+  '../use.error.handler': { useErrorHandler: () => ({ handleError: () => {} }) },
+  '../../config/query.keys': { queryKeys },
+  '../../store/app.store': { useAppStore },
+});
+commissionHook.useRestaurantOperations();
+useAppStore.getState().setActiveRestaurant({ id: 'restaurant', name: 'Current', currentBalance: -100 });
+const savedCommission = { id: 'restaurant', commissionType: 'fixed_amount', commissionValue: '15.50' };
+commissionMutations[0].onSuccess(savedCommission, { id: 'restaurant' });
+assert.equal(queryClient.getQueryData(queryKeys.restaurants.detail('restaurant')).commissionValue, '15.50');
+assert.equal(useAppStore.getState().activeRestaurant.commissionValue, '15.50');
+assert.equal(useAppStore.getState().activeRestaurant.currentBalance, -100);
+assert.ok(commissionInvalidations.some(key => JSON.stringify(key) === JSON.stringify(queryKeys.restaurants.all)));
+useAppStore.getState().setActiveRestaurant({ id: 'other-restaurant', commissionValue: '5' });
+commissionMutations[0].onSuccess(savedCommission, { id: 'restaurant' });
+assert.equal(useAppStore.getState().activeRestaurant.commissionValue, '5');
+console.log('PASS: restaurant commissions validate percentage/fixed limits, send only scoped fields and refresh caches without altering debt or another restaurant');

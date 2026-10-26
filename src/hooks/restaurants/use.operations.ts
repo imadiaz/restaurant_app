@@ -1,17 +1,32 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { restaurantService, type BulkCreateRestaurantFeesDto, type UpdateRestaurantOperationalDto, } from '../../service/restaurant.service';
+import { restaurantService, type BulkCreateRestaurantFeesDto, type UpdateRestaurantOperationalDto, type UpdateRestaurantCommissionDto } from '../../service/restaurant.service';
 import { useToastStore } from '../../store/toast.store';
 import { useErrorHandler } from '../use.error.handler';
 import { queryKeys } from '../../config/query.keys';
+import { useTranslation } from 'react-i18next';
+import { useAppStore } from '../../store/app.store';
 
 
 // ---------------------------------------------------------
 // 🛠️ RESTAURANT OPERATIONS (Mutations)
 // ---------------------------------------------------------
 export const useRestaurantOperations = () => {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const { handleError } = useErrorHandler();
   const addToast = useToastStore((state) => state.addToast);
+
+  const commissionMutation = useMutation({
+    mutationFn: ({ id, data }: { id: string; data: UpdateRestaurantCommissionDto }) => restaurantService.updateCommission(id, data),
+    onSuccess: (restaurant, variables) => {
+      queryClient.setQueryData(queryKeys.restaurants.detail(variables.id), restaurant);
+      void queryClient.invalidateQueries({ queryKey: queryKeys.restaurants.all });
+      const active = useAppStore.getState().activeRestaurant;
+      if (active?.id === restaurant.id) useAppStore.getState().setActiveRestaurant({ ...active, commissionType: restaurant.commissionType, commissionValue: restaurant.commissionValue });
+      addToast(t('settings.commission_saved'), 'success');
+    },
+    onError: handleError,
+  });
 
 
    const operationalMutation = useMutation({
@@ -63,6 +78,7 @@ export const useRestaurantOperations = () => {
     generatePaymentLink: generatePaymentLink.mutateAsync,
     syncRestaurantFees: syncRestaurantFees.mutateAsync, 
     updateOperational: operationalMutation.mutateAsync,
+    updateCommission: commissionMutation.mutateAsync,
 
 
     // Loading States
@@ -70,6 +86,7 @@ export const useRestaurantOperations = () => {
     isGeneratingPaymentLink: generatePaymentLink.isPending,
     isSyncingFees: syncRestaurantFees.isPending,
     isUpdatingOperational: operationalMutation.isPending,
+    isUpdatingCommission: commissionMutation.isPending,
   };
 };
 

@@ -45,7 +45,7 @@ export interface Restaurant {
   status: string;
   categories?: Category[];
     deliveryFee?: number;
-  commissionValue?: string;
+  commissionValue?: string | number;
   commissionType?: CommissionType;
   stripeFeePct?: number;
   stripeFeeFixed?: number;

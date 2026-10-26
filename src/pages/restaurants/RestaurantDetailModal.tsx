@@ -12,6 +12,7 @@ import { useAppStore } from '../../store/app.store';
 import { useTranslation } from 'react-i18next';
 import { STATUS } from '../../config/status.config';
 import { useDialogAccessibility } from '../../hooks/use.dialog.accessibility';
+import { formatCommission } from '../../utils/commission.utils';
 
 
 
@@ -24,7 +25,7 @@ interface RestaurantDetailModalProps {
 const RestaurantDetailModal: React.FC<RestaurantDetailModalProps> = ({ 
   restaurant, isOpen, onClose
 }) => {
-  const {t} = useTranslation();
+  const {t, i18n} = useTranslation();
   const { navigateTo } = useAppNavigation();
   const setActiveRestaurant = useAppStore((state) => state.setActiveRestaurant);
   const dialogRef = useRef<HTMLDivElement>(null);
@@ -108,7 +109,7 @@ const RestaurantDetailModal: React.FC<RestaurantDetailModalProps> = ({
 
                   <div className="p-4 rounded-2xl bg-surface-muted border border-border">
                      <AnatomyText.Label>{t('restaurants.commission_rate')}</AnatomyText.Label>
-                     <AnatomyText.H3>{restaurant.commissionType?.toString()}%</AnatomyText.H3>
+                     <AnatomyText.H3>{formatCommission(restaurant.commissionType, restaurant.commissionValue, i18n.language)}</AnatomyText.H3>
                   </div>
 
                   <div className="p-4 rounded-2xl bg-surface-muted border border-border">

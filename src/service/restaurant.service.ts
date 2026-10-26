@@ -85,6 +85,11 @@ export interface UpdateRestaurantOperationalDto {
   averagePrepTimeMin?: number;
 }
 
+export interface UpdateRestaurantCommissionDto {
+  commissionType: CommissionType;
+  commissionValue: number;
+}
+
 
 export const restaurantService = {
   
@@ -129,13 +134,13 @@ export const restaurantService = {
     );
     return response.data;
   },
-  // async updateAdminConfig(id: string, data: AdminUpdateRestaurantDto): Promise<Restaurant> {
-  //   const response = await axiosClient.patch<ApiResponse<Restaurant>>(
-  //     `/restaurants/${id}/admin-config`,
-  //     data
-  //   );
-  //   return response.data.data ?? response.data;
-  // },
+  async updateCommission(id: string, data: UpdateRestaurantCommissionDto): Promise<Restaurant> {
+    const response = await axiosClient.patch<unknown, ApiResponse<Restaurant>>(
+      `/restaurants/${id}/admin-config`,
+      { commissionType: data.commissionType, commissionValue: data.commissionValue },
+    );
+    return response.data;
+  },
 
   async setPaymentConfig(id: string): Promise<PaymentLinkResponse> {
     const response = await axiosClient.post<unknown, ApiResponse<PaymentLinkResponse>>(

@@ -11,6 +11,7 @@ import { Controller, useForm } from 'react-hook-form';
 import AnatomyTextField from '../../../components/anatomy/AnatomyTextField';
 import { useDialogAccessibility } from '../../../hooks/use.dialog.accessibility';
 import { initialPreparationTime, isValidPreparationTime, MIN_PREPARATION_MINUTES, MAX_PREPARATION_MINUTES } from '../../../config/preparation-time.config';
+import RestaurantCommissionSettings from './RestaurantCommissionSettings';
 
 interface ManageRestaurantSettingsModalProps {
   isOpen: boolean;
@@ -331,7 +332,7 @@ const ManageRestaurantSettingsModal: React.FC<ManageRestaurantSettingsModalProps
                 </div>
 
                 <div className="bg-primary/5 p-5 rounded-2xl border border-primary/20 space-y-5">
-                   {/* Put your existing admin inputs like commission % here */}
+                  <RestaurantCommissionSettings restaurantId={restaurant.id} onSuccess={onSuccess} />
                 </div>
               </section>
             </>
