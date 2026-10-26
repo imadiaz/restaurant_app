@@ -93,14 +93,15 @@ const StatisticsPage = () => {
   };
   const handlePaymentLink = async () => {
     if (!restaurantId) return;
-    setPaymentLink(null);
-    try {
-      const result = await generatePaymentLink({ id: restaurantId });
-      if (result.url)
-        setPaymentLink({ restaurantId, url: result.url, amount: amountDue });
-    } catch {
-      // The shared mutation handler presents API errors.
-    }
+    // setPaymentLink(null);
+    // try {
+    //   const result = await generatePaymentLink({ id: restaurantId });
+    //   if (result.url)
+    //     setPaymentLink({ restaurantId, url: result.url, amount: amountDue });
+    // } catch {
+    //   // The shared mutation handler presents API errors.
+    // }
+    alert("Contacta a soporte para generar el link de pago.");
   };
   const inputClass =
     "min-h-11 rounded-control border border-border-strong bg-input px-3 py-2 text-sm text-text-main outline-none focus:ring-2 focus:ring-primary";
