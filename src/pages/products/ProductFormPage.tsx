@@ -391,7 +391,7 @@ const {navigateTo} = useAppNavigation();
 
   const handleSave = async () => {
     if (!name || !price || menuSectionIds.length === 0) {
-      addToast(t("Name, Price, Category are required"), "error");
+      addToast(t("products.required_fields"), "error");
       return;
     }
     if (!activeRestaurant) return;

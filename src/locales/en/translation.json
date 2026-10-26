@@ -1,4 +1,13 @@
 {
+  "notifications": {
+    "title": "Notifications"
+  },
+  "navigation": {
+    "close_menu": "Close menu",
+    "main": "Main navigation",
+    "open_menu": "Open menu",
+    "toggle_sidebar": "Toggle sidebar"
+  },
   "product_import": {
     "action": "Import from Excel",
     "title": "Import dishes from Excel",
@@ -76,6 +85,19 @@
     "drag_pin_after": "to the location; the address will update automatically."
   },
   "common": {
+    "previous": "Previous page",
+    "next": "Next page",
+    "click_to_copy": "Click to copy",
+    "information": "Information",
+    "no_results_found": "No results found.",
+    "no_results": "No results found.",
+    "error_loading_data": "Could not load the data. Please try again.",
+    "guest": "Guest",
+    "more": "more",
+    "error_generic": "Something went wrong. Please try again.",
+    "error_no_restaurant_selected": "Select a restaurant to continue.",
+    "type": "Type",
+    "value": "Value",
     "save": "Save",
     "cancel": "Cancel",
     "edit": "Edit",
@@ -208,6 +230,7 @@
     "error_invalid_format": "Invalid format. Use: {{formats}}"
   },
   "users": {
+    "title": "Users",
     "user": "User",
     "description": "Manage team members and permissions",
     "empty": "No users found matching your search.",
@@ -240,6 +263,7 @@
     "select_role": "Select a role"
   },
   "menuSections": {
+    "title": "Menu sections",
     "edit": "Edit Section",
     "menuSections": "Menu sections",
     "description": "Organize your menu categories (e.g. Starters, Drinks)",
@@ -299,6 +323,10 @@
     "min_length": "Must be at least {{min}} characters"
   },
   "products": {
+    "edit_detach_group": "Edit a copy of this group",
+    "no_description": "No description provided.",
+    "required_fields": "Name, price and menu section are required.",
+    "title": "Products",
     "products": "Products",
     "descriptions": "Manage your food items and availability",
     "add": "Add Product",
@@ -351,6 +379,8 @@
     "confirm_detach": "Yes, Edit Copy"
   },
   "modifiers": {
+    "options_label_one": "option",
+    "options_label_other": "options",
     "title": "Modifiers group",
     "subtitle": "Create your group modifiers for your products.",
     "validation_error": "Group Name is required",
@@ -711,6 +741,14 @@
     "status_paused": "Paused"
   },
   "settings": {
+    "section_fees": "Additional fees and surcharges",
+    "add_fee": "Add fee",
+    "no_fees": "No additional fees configured.",
+    "fee_name": "Fee name",
+    "remove_fee": "Remove fee",
+    "fee_description_label": "Description (optional)",
+    "fee_description_placeholder": "e.g. Required for eco-friendly containers",
+    "save_fees": "Save fees",
     "title": "Restaurant Settings",
     "admin_title": "Admin Configuration",
     "operational_title": "Store Operations",
@@ -776,6 +814,7 @@
     }
   },
   "statistics": {
+    "title": "Dashboard",
     "dashboard": {
       "title": "Dashboard",
       "description": "Restaurant sales and operations",

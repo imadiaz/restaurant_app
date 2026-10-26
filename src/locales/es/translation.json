@@ -1,4 +1,13 @@
 {
+  "notifications": {
+    "title": "Notificaciones"
+  },
+  "navigation": {
+    "close_menu": "Cerrar menú",
+    "main": "Navegación principal",
+    "open_menu": "Abrir menú",
+    "toggle_sidebar": "Mostrar u ocultar menú lateral"
+  },
   "product_import": {
     "action": "Importar por Excel",
     "title": "Importar platillos por Excel",
@@ -76,6 +85,19 @@
     "drag_pin_after": "al lugar; la dirección se actualizará automáticamente."
   },
   "common": {
+    "previous": "Página anterior",
+    "next": "Página siguiente",
+    "click_to_copy": "Haz clic para copiar",
+    "information": "Información",
+    "no_results_found": "No se encontraron resultados.",
+    "no_results": "No se encontraron resultados.",
+    "error_loading_data": "No se pudieron cargar los datos. Intenta de nuevo.",
+    "guest": "Invitado",
+    "more": "más",
+    "error_generic": "Ocurrió un error. Intenta de nuevo.",
+    "error_no_restaurant_selected": "Selecciona un restaurante para continuar.",
+    "type": "Tipo",
+    "value": "Valor",
     "save": "Guardar",
     "cancel": "Cancelar",
     "edit": "Editar",
@@ -234,6 +256,7 @@
     "validate_fields": "La fecha o el horario no es válido", "currently_closed": "Cerrado actualmente"
   },
   "users": {
+    "title": "Usuarios",
     "user": "Usuario", "description": "Administra miembros del equipo y permisos",
     "empty": "No se encontraron usuarios.", "fields_validation": "Revisa los campos obligatorios del usuario",
     "validation_role": "Selecciona un rol", "validation_phone": "El teléfono debe tener al menos 10 dígitos",
@@ -247,6 +270,14 @@
     "email": "Correo electrónico"
   },
   "settings": {
+    "section_fees": "Cargos adicionales",
+    "add_fee": "Agregar cargo",
+    "no_fees": "No hay cargos adicionales configurados.",
+    "fee_name": "Nombre del cargo",
+    "remove_fee": "Eliminar cargo",
+    "fee_description_label": "Descripción (opcional)",
+    "fee_description_placeholder": "Ej. Cargo por envases ecológicos",
+    "save_fees": "Guardar cargos",
     "title": "Configuración del restaurante", "admin_title": "Configuración administrativa",
     "operational_title": "Operación del restaurante",
     "operational_subtitle": "Actualiza la configuración diaria, tarifas y estado de apertura.",
@@ -286,6 +317,7 @@
     "delete": "Eliminar", "delete_title": "¿Eliminar cupón?", "delete_description": "¿Deseas eliminar el cupón «{{item}}»? Esta acción no se puede deshacer."
   },
   "statistics": {
+    "title": "Panel",
     "dashboard": {
       "title": "Dashboard",
       "description": "Ventas y operación de tu restaurante",
@@ -346,6 +378,8 @@
     "card_revenue": "Ingresos con tarjeta", "cash_revenue": "Ingresos en efectivo", "total_refunded": "Total reembolsado"
   },
   "modifiers": {
+    "options_label_one": "opción",
+    "options_label_other": "opciones",
     "title": "Grupos de modificadores", "subtitle": "Crea grupos de personalización para tus productos.", "validation_error": "El nombre del grupo es obligatorio",
     "error_min_negative": "La selección mínima no puede ser negativa", "error_max_invalid": "La selección máxima debe ser al menos 1",
     "error_max_low": "La selección máxima no puede ser menor que la mínima", "error_option_name": "Todas las opciones deben tener nombre",
@@ -353,6 +387,7 @@
     "empty_list": "Aún no hay modificadores.", "update_main_modifier": "Editar el modificador principal para todos los productos"
   },
   "menuSections": {
+    "title": "Secciones del menú",
     "edit": "Editar sección", "menuSections": "Secciones del menú", "description": "Organiza las categorías del menú", "add": "Agregar sección",
     "empty": "No hay secciones. Crea una para comenzar.", "visibility_status": "Estado de visibilidad", "validation_name": "El nombre es obligatorio",
     "add_description": "Crea una categoría para los productos", "section_name": "Nombre de la sección", "sort_order": "Orden",
@@ -652,6 +687,10 @@
     }
   },
   "products": {
+    "edit_detach_group": "Editar una copia de este grupo",
+    "no_description": "Sin descripción.",
+    "required_fields": "El nombre, el precio y la sección del menú son obligatorios.",
+    "title": "Productos",
     "products": "Productos",
     "descriptions": "Administra los platillos y su disponibilidad",
     "add": "Agregar producto",

@@ -135,7 +135,7 @@ const DayRow: React.FC<DayRowProps> = ({
              {isClosed ? (
                 <div className="flex items-center text-text-muted h-10 bg-surface-muted rounded-xl px-4 border border-dashed border-border w-full md:w-auto self-start">
                    <CalendarOff className="w-4 h-4 mr-2 opacity-50" />
-                   <span className="text-sm italic">{t('no_shifts_configured')}</span>
+                   <span className="text-sm italic">{t('schedules.no_shifts_configured')}</span>
                 </div>
              ) : (
                 slots.map((slot, idx) => (
