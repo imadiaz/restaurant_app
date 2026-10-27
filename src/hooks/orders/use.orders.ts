@@ -7,7 +7,7 @@ import { useErrorHandler } from '../use.error.handler';
 import { queryKeys } from '../../config/query.keys';
 import { useSocketStore } from '../../store/socket.store';
 import { syncOrderInCache } from '../../utils/order.cache.utils';
-import { canCancelBeforePreparation, requiresOnlineRefund } from '../../utils/order.actions';
+import { canCancelOrder, requiresOnlineRefund } from '../../utils/order.actions';
 
 
 export const useOrders = (statusFilter?: typeof OrderStatus[keyof typeof OrderStatus], enabled = true) => {
@@ -101,7 +101,7 @@ export const useOrders = (statusFilter?: typeof OrderStatus[keyof typeof OrderSt
   const cancelOrder = useMutation({
     mutationFn: async (id: string) => {
       const order = await orderService.getOne(id);
-      if (!canCancelBeforePreparation(order)) {
+      if (!canCancelOrder(order)) {
         throw new Error(t('orders.cancel_pending.unavailable'));
       }
       const reason = t('orders.cancel_pending.reason');

@@ -41,7 +41,7 @@ import { useAuthStore } from "../../store/auth.store";
 import { ROLES } from "../../config/roles";
 import { useConfirm } from "../../hooks/use.confirm.modal";
 import { initialPreparationTime, isValidPreparationTime, MIN_PREPARATION_MINUTES, MAX_PREPARATION_MINUTES } from '../../config/preparation-time.config';
-import { canCancelBeforePreparation, requiresOnlineRefund, orderModifierSummary } from '../../utils/order.actions';
+import { canCancelOrder, requiresOnlineRefund, orderModifierSummary } from '../../utils/order.actions';
 import OrderNumber from '../../components/common/OrderNumber';
 
 type OrderStatusType = keyof typeof OrderStatus;
@@ -168,10 +168,10 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
     (user?.role.name === ROLES.SUPER_ADMIN || user?.role.name === ROLES.ADMIN) &&
     order.paymentMethod === PaymentMethod.CARD &&
     order.paymentStatus === PaymentStatus.PAID &&
-    canCancelBeforePreparation(order) &&
+    canCancelOrder(order) &&
     order.refund?.status !== RefundStatus.SUCCEEDED;
 
-  const canCancel = canCancelBeforePreparation(order) &&
+  const canCancel = canCancelOrder(order) &&
     (!requiresOnlineRefund(order) || canRefund);
   const refundPending = order.refund?.status === RefundStatus.PENDING;
   const requestCancellation = () => confirm({
@@ -180,7 +180,9 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
       ? 'orders.cancel_pending.card_message'
       : order.paymentMethod === PaymentMethod.CASH
         ? 'orders.cancel_pending.cash_message'
-        : 'orders.cancel_pending.terminal_message',
+        : order.paymentMethod === PaymentMethod.CARD_TERMINAL
+          ? 'orders.cancel_pending.terminal_message'
+          : 'orders.cancel_pending.card_unpaid_message',
       { amount: Number(order.totalAmount).toFixed(2) }),
     confirmText: t('orders.cancel_pending.confirm_action'),
     variant: 'danger',

@@ -118,18 +118,63 @@ const orderModule = load('src/service/order.service.ts', { './api/axiosClient': 
 const actions = load('src/utils/order.actions.ts', {
   '../service/order.service': orderModule,
 });
-for (const status of [OrderStatus.PENDING, OrderStatus.CONFIRMED]) {
-  assert.equal(actions.canCancelBeforePreparation({ status }), true);
+for (const status of Object.values(OrderStatus)) {
+  assert.equal(actions.canCancelOrder({ status }), ![OrderStatus.DELIVERED, OrderStatus.CANCELLED].includes(status));
 }
-for (const status of [OrderStatus.PREPARING, OrderStatus.READY, OrderStatus.ON_WAY, OrderStatus.DELIVERED]) {
-  assert.equal(actions.canCancelBeforePreparation({ status }), false);
-}
+assert.equal(actions.canCancelOrder({ status: 'UNKNOWN' }), false);
 assert.equal(actions.requiresOnlineRefund({ paymentMethod: 'CARD', paymentStatus: 'PAID' }), true);
 assert.equal(actions.requiresOnlineRefund({ paymentMethod: 'CARD_TERMINAL', paymentStatus: 'PAID' }), false);
 const fullId = 'f0829fc6-1234-4321-8888-123456789012';
 assert.equal(actions.shortOrderId(fullId), 'F0829F');
 assert.equal(fullId.length, 36);
-console.log('PASS: cancellation stops at preparation; online refunds and short order IDs match the contract');
+console.log('PASS: cancellation is available until delivery, excludes cancelled/unknown states, and preserves online refunds and short order IDs');
+
+let cancellationOrder;
+const cancellationRequests = [];
+const { useOrders } = load('src/hooks/orders/use.orders.ts', {
+  '@tanstack/react-query': {
+    useQuery: () => ({ data: [], refetch: () => {} }),
+    useQueryClient: () => queryClient,
+    useMutation: options => ({ mutateAsync: options.mutationFn, isPending: false }),
+  },
+  'react-i18next': { useTranslation: () => ({ t: key => key }) },
+  '../../service/order.service': {
+    ...orderModule,
+    orderService: {
+      getOne: async () => cancellationOrder,
+      refund: async (id, data) => { cancellationRequests.push({ kind: 'refund', id, data }); },
+      updateStatus: async (id, data) => { cancellationRequests.push({ kind: 'cancel', id, data }); },
+    },
+  },
+  '../../store/app.store': { useAppStore: select => select({ activeRestaurant: { id: 'restaurant' } }) },
+  '../../store/toast.store': { useToastStore: select => select({ addToast: () => {} }) },
+  '../../store/socket.store': { useSocketStore: select => select({ isConnected: true }) },
+  '../use.error.handler': { useErrorHandler: () => ({ handleError: () => {} }) },
+  '../../config/query.keys': { queryKeys },
+  '../../utils/order.cache.utils': { syncOrderInCache: () => {} },
+  '../../utils/order.actions': actions,
+}, { crypto: { randomUUID: () => 'refund-request-id' } });
+const cancellationHook = useOrders();
+for (const status of Object.values(OrderStatus)) {
+  for (const [paymentMethod, paymentStatus] of [['CASH', 'PENDING'], ['CARD_TERMINAL', 'PAID'], ['CARD', 'PAID'], ['CARD', 'PENDING']]) {
+    cancellationOrder = { id: 'order', restaurantId: 'restaurant', status, paymentMethod, paymentStatus };
+    cancellationRequests.length = 0;
+    if ([OrderStatus.DELIVERED, OrderStatus.CANCELLED].includes(status)) {
+      await assert.rejects(cancellationHook.cancelOrder('order'), /orders.cancel_pending.unavailable/);
+      assert.equal(cancellationRequests.length, 0);
+    } else {
+      await cancellationHook.cancelOrder('order');
+      assert.equal(cancellationRequests.length, 1);
+      const request = cancellationRequests[0];
+      const onlineRefund = paymentMethod === 'CARD' && paymentStatus === 'PAID';
+      assert.equal(request.kind, onlineRefund ? 'refund' : 'cancel');
+      assert.equal(request.id, 'order');
+      if (onlineRefund) assert.equal(request.data.requestId, 'refund-request-id');
+      else assert.equal(request.data.status, OrderStatus.CANCELLED);
+    }
+  }
+}
+console.log('PASS: cancellation mutation rechecks the latest status, blocks delivered/cancelled orders and uses the correct payment workflow in every allowed state');
 for (const type of ['PICKUP', 'DELIVERY']) {
   for (const status of Object.values(OrderStatus)) {
     assert.equal(actions.canCompletePickup({ type, status }), type === 'PICKUP' && status === 'READY');

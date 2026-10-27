@@ -1,7 +1,8 @@
 import { OrderStatus, OrderType, PaymentMethod, PaymentStatus, type Order, type OrderProductModifier } from '../service/order.service';
 
-export const canCancelBeforePreparation = (order: Pick<Order, 'status'>) =>
-  order.status === OrderStatus.PENDING || order.status === OrderStatus.CONFIRMED;
+export const canCancelOrder = (order: Pick<Order, 'status'>) =>
+  Object.values(OrderStatus).includes(order.status) &&
+  order.status !== OrderStatus.DELIVERED && order.status !== OrderStatus.CANCELLED;
 
 export const requiresOnlineRefund = (order: Pick<Order, 'paymentMethod' | 'paymentStatus'>) =>
   order.paymentMethod === PaymentMethod.CARD && order.paymentStatus === PaymentStatus.PAID;
