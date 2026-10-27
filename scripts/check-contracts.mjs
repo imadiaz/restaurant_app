@@ -318,6 +318,20 @@ assert.equal(initialPreparationTime(0), 5);
 assert.equal(initialPreparationTime(300), 240);
 console.log('PASS: preparation times match backend bounds and normalize historical defaults');
 
+for (const status of [OrderStatus.CONFIRMED, OrderStatus.PREPARING, OrderStatus.READY, OrderStatus.CANCELLED]) {
+  const requested = { status, timeInMinutes: 25, note: 'Restaurant action' };
+  const expectedStatus = status === OrderStatus.CONFIRMED ? OrderStatus.PREPARING : status;
+  axiosClient.defaults.adapter = async config => {
+    assert.equal(config.method, 'patch');
+    assert.equal(config.url, '/orders/order-accept/status');
+    assert.deepEqual(JSON.parse(config.data), { ...requested, status: expectedStatus });
+    return { data: { data: { id: 'order-accept', status: expectedStatus } }, status: 200, statusText: 'OK', headers: {}, config };
+  };
+  assert.equal((await orderService.updateStatus('order-accept', requested)).status, expectedStatus);
+  assert.equal(requested.status, status);
+}
+console.log('PASS: legacy acceptance requests send PREPARING, preserve preparation time/notes and leave other transitions unchanged');
+
 const statisticsUtils = load('src/utils/statistics.utils.ts');
 assert.equal(statisticsUtils.mexicoCityDate(new Date('2026-10-21T01:00:00Z')), '2026-10-20');
 assert.equal(statisticsUtils.validDashboardRange('2026-10-01', '2026-10-21'), true);

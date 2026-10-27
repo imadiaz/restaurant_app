@@ -3,7 +3,7 @@ import axiosClient from "./api/axiosClient";
 
 export const OrderStatus = {
   PENDING: "PENDING",
-  CONFIRMED: "CONFIRMED",
+  CONFIRMED: "CONFIRMED", // Legacy persisted state; acceptance now starts PREPARING.
   PREPARING: "PREPARING",
   READY: "READY",
   AT_RESTAURANT: "AT_RESTAURANT",
@@ -268,9 +268,11 @@ export const orderService = {
 
   // 3. Update Status (Restaurant Flow)
   async updateStatus(id: string, data: UpdateOrderStatusDto): Promise<Order> {
+    // Keep older acceptance callers consistent with the current restaurant flow.
+    const status = data.status === OrderStatus.CONFIRMED ? OrderStatus.PREPARING : data.status;
     const res = await axiosClient.patch<unknown, ApiResponse<Order>>(
       `/orders/${id}/status`,
-      data,
+      { ...data, status },
     );
     return res.data;
   },

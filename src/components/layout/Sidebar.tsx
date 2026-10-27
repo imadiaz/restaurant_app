@@ -131,7 +131,7 @@ const Sidebar: React.FC<SidebarProps> = ({ mobile = false, onNavigate }) => {
           <LogOut aria-hidden="true" className={`w-5 h-5 ${(!isSidebarCollapsed || mobile) ? 'mr-3' : ''}`} />
           {(!isSidebarCollapsed || mobile) && <span className="font-medium text-sm">{t('login.logout')}</span>}
         </button>
-        <span className='text text-sm text-text-muted'>v.1.0.31</span>
+        <span className='text text-sm text-text-muted'>{import.meta.env.VITE_APP_VERSION}</span>
       </div>
 
     </div>
