@@ -160,7 +160,8 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
   };
 
   const handleAcceptOrder = () => {
-    onStatusChange(OrderStatus.CONFIRMED, undefined, undefined);
+    // Accept and start preparation atomically; the service uses the restaurant's prep time.
+    onStatusChange(OrderStatus.PREPARING);
   };
 
   const canRefund =
